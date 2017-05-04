@@ -12,13 +12,16 @@ int InitWhole();
 /*** EndHeader */
 int InitWhole()
 {
-	 NmcInit();
-    //set servo parameters and enable servo
-    if (InitRoller()!=NO_ERROR)
-        return ERR_FLAT_FIND_FAIL;
-    if (RollerHome()!=NO_ERROR)
+	NmcInit();
+
+	//set servo parameters and enable servo
+	if (InitRoller() != NO_ERROR)
 		return ERR_FLAT_FIND_FAIL;
-    return NO_ERROR;
+
+	if (RollerHome() != NO_ERROR)
+		return ERR_FLAT_FIND_FAIL;
+
+	return NO_ERROR;
 }
 
 /*** BeginHeader init */
@@ -26,10 +29,10 @@ void init();
 /*** EndHeader */
 void init()
 {
-    /** initialize rabbit board, open serial port, and global variables */
-    InitIOBoard();
-    InitCommPort();
-    NmcInit();			//get servo address
+	/** initialize rabbit board, open serial port, and global variables */
+	InitIOBoard();
+	InitCommPort();
+	NmcInit();			//get servo address
 }
 
 /*** BeginHeader InitIOBoard */
@@ -37,35 +40,37 @@ void InitIOBoard();
 /*** EndHeader */
 void InitIOBoard()
 {
-    /**
-     *\code
-     * configure analog/digital port
-     * BL 2600:
-     *   1) 36 digital IO
-     *      - 16 protected digital inputs: DIN16-DIN31, use digIn() to read
-     *      - 4 high-current digital outputs: HOUT0-HOUT3
-     *      - 16 software-configurable as input/output: DIO00-DIO15
-     *   2) 12 analog channels
-     *      - 8 11-bit A/D converter inputs
-     *      - 4 12-bit D/A converter outputs
-     * \endcode
-     */
-    int i;
-    /* Initialize the board, it must be called at the begining of program */
-    brdInit();
-    /* Digital High-current outputs: 0 = sinking operation   */
-    //digHoutConfig(0x01);
-    digHoutConfig(0x00);
-    digHTriStateConfig(0x00);
-    for(i = 0; i <= 3; i++)
-        digHout(i, 1);
+	/**
+	 *\code
+	 * configure analog/digital port
+	 * BL 2600:
+	 *   1) 36 digital IO
+	 *      - 16 protected digital inputs: DIN16-DIN31, use digIn() to read
+	 *      - 4 high-current digital outputs: HOUT0-HOUT3
+	 *      - 16 software-configurable as input/output: DIO00-DIO15
+	 *   2) 12 analog channels
+	 *      - 8 11-bit A/D converter inputs
+	 *      - 4 12-bit D/A converter outputs
+	 * \endcode
+	 */
+	int i;
+	/* Initialize the board, it must be called at the begining of program */
+	brdInit();
+	/* Digital High-current outputs: 0 = sinking operation   */
+	//digHoutConfig(0x01);
+	digHoutConfig(0x00);
+	digHTriStateConfig(0x00);
 
-    /* 16 configurable I/O(DIO00-DIO15): configure 0 - 15 as digital output
-     * Set all digital outputs to be high-impedance state
-     */
-    digOutConfig(0xFFFF);
-    for(i = 0; i <= 15; i++)
-        digOut(i, 1);
+	for (i = 0; i <= 3; i++)
+		digHout(i, 1);
+
+	/* 16 configurable I/O(DIO00-DIO15): configure 0 - 15 as digital output
+	 * Set all digital outputs to be high-impedance state
+	 */
+	digOutConfig(0xFFFF);
+
+	for (i = 0; i <= 15; i++)
+		digOut(i, 1);
 }
 
 /*** BeginHeader InitCommPort */
@@ -73,17 +78,17 @@ void InitCommPort(void);
 /*** EndHeader */
 void InitCommPort(void)
 {
-    if (!serCopen(BAUD19200))       //to NMC
-	    return;
+	if (!serCopen(BAUD19200))       //to NMC
+		return;
 
-    serMode(0);
+	serMode(0);
 
-    // Clear serial data buffers
-    serCrdFlush();
-    serCwrFlush();
+	// Clear serial data buffers
+	serCrdFlush();
+	serCwrFlush();
 
-    serCdatabits(PARAM_8BIT);
-    serCparity(PARAM_NOPARITY);
+	serCdatabits(PARAM_8BIT);
+	serCparity(PARAM_NOPARITY);
 }
 
 /*** BeginHeader myinp */
@@ -91,24 +96,26 @@ int myinp(int port);
 /*** EndHeader */
 int myinp(int port)
 {
-    /** read input port
-      @return 1 or 0    */
-    int i, data;
-    float temp;
+	/** read input port
+	  @return 1 or 0    */
+	int i, data;
+	float temp;
 
-    while(1)
-    {
-        data = 0;
-        for (i=0;i<3;i++)
-        {
-          if(port>7) //DIO08-DIO15 AND DIN16-DIN31 digital inputs
-              	data += digIn(port);
-        }
-        if (data>2)
-           return TRUE;
-        else
-        	  return FALSE;
-    }
+	while (1)
+	{
+		data = 0;
+
+		for (i = 0; i < 3; i++)
+		{
+			if (port > 7) //DIO08-DIO15 AND DIN16-DIN31 digital inputs
+				data += digIn(port);
+		}
+
+		if (data > 2)
+			return TRUE;
+		else
+			return FALSE;
+	}
 }
 
 /*** BeginHeader boatCheck */
@@ -116,10 +123,11 @@ int boatCheck();
 /*** EndHeader */
 int boatCheck()
 {
-    if(IsBoatPresent())
-    		return NO_ERROR;
-    ServoStopMotor(ROLLER_MOTOR,AMP_ENABLE | STOP_SMOOTH , 1);
-    return ERR_FLAT_FIND_FAIL;
+	if (IsBoatPresent())
+		return NO_ERROR;
+
+	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+	return ERR_FLAT_FIND_FAIL;
 }
 
 /*---------------------------- end of func.lib -------------------------------*/

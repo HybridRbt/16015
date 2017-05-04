@@ -27,9 +27,8 @@
 /*==============================================================================
  *            error code
  *============================================================================*/
-#define		ERR_FLAT_FIND_FAIL				1
-
-#define		MAX_ERROR_NO				      1
+#define	ERR_FLAT_FIND_FAIL	1
+#define	MAX_ERROR_NO		1
 
 /*==============================================================================
  *                Constants and defines
@@ -49,34 +48,34 @@
  *            digital I/O assignment
  *============================================================================*/
 /* 4 high current outputs */
-#define     ALARM_TRIG        0   	  // Hout0
-#define     MOVE_UP_TRIG      1       // Hout1
+#define ALARM_TRIG        	0   	  // Hout0
+#define MOVE_UP_TRIG      	1       // Hout1
 //#define                     2
 //#define                     3       // Hout3
 
 /* 16 configurable I/O outputs (15-0) (J1-3 to J1-18) */
 //#define     MOVE_UP_TRIG                15
-#define     MOVE_DOWN_TRIG              14
+#define MOVE_DOWN_TRIG    	14
 
 /* 16 digital inputs (16-31) (J2-19 to J2-12 and J2-9 to J2-2) */
-#define     FLAT_FIND_UP_SEN            16
-#define     FLAT_FIND_DOWN_SEN	       17
-#define     BOAT_PRESENT_SEN			    18
-#define     FLAT_UP_DOWN_SEN		 		 19
+#define FLAT_FIND_UP_SEN    16
+#define FLAT_FIND_DOWN_SEN	17
+#define BOAT_PRESENT_SEN	18
+#define FLAT_UP_DOWN_SEN	19
 
-#define 		NEEDRESUME						 0
-#define     NEEDABORT                   200
+#define NEEDRESUME			0
+#define NEEDABORT           200
 
-#define CALIB_1200		0
-#define CALIB_0600		1
-#define CALIB_0100		2
+#define CALIB_1200			0
+#define CALIB_0600			1
+#define CALIB_0100			2
 
 const long BAUD115200 = 115200L;     //baud rate
 const long BAUD19200 = 19200L;
 
 const unsigned long TIMEOUT = 3000L;       /* time out value */
-const unsigned long  TIMEOUT_UPDOWN = 10000L;   // 10 sec
-const unsigned long  TIMEOUT_ROLLER = 10000L;   // 10 sec
-const unsigned long  TIMEOUT_CAMERA = 15000L;  // 15 sec
+const unsigned long TIMEOUT_UPDOWN = 10000L;   // 10 sec
+const unsigned long TIMEOUT_ROLLER = 10000L;   // 10 sec
+const unsigned long TIMEOUT_CAMERA = 15000L;  // 15 sec
 const unsigned long TIMEOUT_MSG = 1000L;    //for receiving and sending msg
 /*** EndHeader */

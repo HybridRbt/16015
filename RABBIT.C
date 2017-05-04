@@ -25,9 +25,9 @@
 
 typedef struct
 {
-    int bMoving;
-    int bMoveMode;        //0 speed mode 1 pos mode
-    long TargetPos;
+	int bMoving;
+	int bMoveMode;        //0 speed mode 1 pos mode
+	long TargetPos;
 } Move_data;
 
 Move_data       myRoller;
@@ -42,38 +42,44 @@ char g_bBoatRemoved;
  *============================================================================*/
 void main(void)
 {
-    int	re, iMode;
-    /**
-     * Get command from keypad, process the message,
-     * and display on LCD
-     */
-    init(); 	//initialize I/O and globle parameters
-    InitWhole();
-    if(IsBoatPresent())
-    	g_bBoatRemoved = FALSE;
-    else
-      g_bBoatRemoved = TRUE;
+	int	re, iMode;
+	/**
+	 * Get command from keypad, process the message,
+	 * and display on LCD
+	 */
+	init(); 	//initialize I/O and globle parameters
+	InitWhole();
+
+	if (IsBoatPresent())
+		g_bBoatRemoved = FALSE;
+	else
+		g_bBoatRemoved = TRUE;
+
 	//main loop
-    while(TRUE)
-    {
-	    if(!IsBoatPresent())
-	      g_bBoatRemoved = TRUE;
-       if(g_bBoatRemoved && IsBoatPresent())
-       {
-       	   re = NO_ERROR;
-        		re = FindFlat();
-            if(re==NO_ERROR)
-            {
-	            if(IsFlatToUp())
-	               g_flatOrientation = UP;
-	            else
-	               g_flatOrientation = DOWN;
-               if(g_flatOrientation==UP)
-	            	TurnFlatToTargetPos();
-            }
-            g_bBoatRemoved = FALSE;
-       }
-    }
+	while (TRUE)
+	{
+		if (!IsBoatPresent())
+			g_bBoatRemoved = TRUE;
+
+		if (g_bBoatRemoved && IsBoatPresent())
+		{
+			re = NO_ERROR;
+			re = FindFlat();
+
+			if (re == NO_ERROR)
+			{
+				if (IsFlatToUp())
+					g_flatOrientation = UP;
+				else
+					g_flatOrientation = DOWN;
+
+				if (g_flatOrientation == UP)
+					TurnFlatToTargetPos();
+			}
+
+			g_bBoatRemoved = FALSE;
+		}
+	}
 }
 
 /*------------------------------ end of rabbit.c -----------------------------*/
