@@ -25,10 +25,54 @@
 #define PCPORTOUTBUFSIZE    EINBUFSIZE
 
 /*==============================================================================
+ *             Command from host computer
+ *============================================================================*/
+#define CMD_SENSOR_STATUS		1
+#define CMD_INITIAL_DATA		2
+#define CMD_INITIALIZE			3
+#define CMD_IO					5  //=0, means idle and ready for op, turn on green light 
+
+#define CMD_NOTCH_FIND			6
+#define CMD_NF_SUPPORT_UP		7
+#define CMD_NF_SUPPORT_DOWN 	8
+
+#define CMD_RESUME              9
+#define CMD_ABORT               10
+#define CMD_ALARM               11
+#define CMD_LIGHT               12
+
+/*=============================================================================
+               message sent to host
+ *============================================================================*/
+#define MSG_NONE				0
+#define MSG_SB_ASK_READY		1
+#define MSG_SENSOR_STATUS		2
+#define MSG_INITIALIZED_OK		3
+#define MSG_START_OPERATION		4	// [2] = 12 (NF UP) OR 6 (NF DOWN)
+#define MSG_OPERATION_DONE		5 	// MAP: Byte 2, 3, 4, 5; [6] = 47 or 57
+#define MSG_OPERATION_ABORTED	6
+
+#define MSG_NF_DONE				7
+#define MSG_NOTCH_UP			8
+#define MSG_NOTCH_DOWN			9
+
+#define MSG_ERROR				10
+
+/*==============================================================================
  *            error code
  *============================================================================*/
-#define	ERR_FLAT_FIND_FAIL	1
-#define	MAX_ERROR_NO		1
+#define ERR_POWER_OFF			1
+#define	ERR_CASSETTE_PRESENT	2
+#define	ERR_NO_WAFER			3
+
+#define ERR_NF_FAILED			4
+#define ERR_NF_SUPPORT_HOME		5	// is not home when platform moving
+#define ERR_NF_SUPPORT_MOVING	6	// failed to reach position
+
+#define ERR_INSIDE_COMM			7
+#define ERR_OP_TIMEOUT			8
+
+#define	MAX_ERROR_NO			8
 
 /*==============================================================================
  *                Constants and defines
@@ -44,25 +88,56 @@
 #define DOWN	2
 #define LEFT	3
 #define RIGHT	4
+
 /*=============================================================================
  *            digital I/O assignment
  *============================================================================*/
 /* 4 high current outputs */
-#define ALARM_TRIG        	0   	  // Hout0
-#define MOVE_UP_TRIG      	1       // Hout1
-//#define                     2
-//#define                     3       // Hout3
+/* J16-3, 6, 9, 12*/
+#define ALARM_TRIG				0	// Hout0 J16-3
+#define MOVE_UP_TRIG			1	// Hout1 J16-6
+#define MOVE_DOWN_TRIG			2	// Hout2 J16-9
+#define LIGHT_RED_TRIG      	3	// Hout3 J16-12
 
 /* 16 configurable I/O outputs (15-0) (J1-3 to J1-18) */
-//#define     MOVE_UP_TRIG                15
-#define MOVE_DOWN_TRIG    	14
+/* J1-18 */
+#define LIGHT_GREEN_TRIG   		0	// J1-18
 
-/* 16 digital inputs (16-31) (J2-19 to J2-12 and J2-9 to J2-2) */
-#define FLAT_FIND_UP_SEN    16
-#define FLAT_FIND_DOWN_SEN	17
-#define BOAT_PRESENT_SEN	18
-#define FLAT_UP_DOWN_SEN	19
+/* J1-18 ~ J1-10 */
+#define WAFER_IN_SLOT_SEN_1		1	// J1-17
+#define WAFER_IN_SLOT_SEN_2		2	// 16
+#define WAFER_IN_SLOT_SEN_3		3	// 15
+#define WAFER_IN_SLOT_SEN_4		4	// 14
+#define WAFER_IN_SLOT_SEN_5		5	// 13
+#define WAFER_IN_SLOT_SEN_6		6	// 12
+#define WAFER_IN_SLOT_SEN_7		7	// 11
+#define WAFER_IN_SLOT_SEN_8		8	// 10
 
+#define WAFER_IN_SLOT_SEN_9		9	// J1-9
+#define WAFER_IN_SLOT_SEN_10	10	// 8 
+#define WAFER_IN_SLOT_SEN_11	11	// 7
+#define WAFER_IN_SLOT_SEN_12	12	// 6
+#define WAFER_IN_SLOT_SEN_13	13	// 5
+#define WAFER_IN_SLOT_SEN_14	14	// 4
+#define WAFER_IN_SLOT_SEN_15	15	// 3
+
+/* J2-19 ~ J2-12 */
+#define WAFER_IN_SLOT_SEN_16	16	// J2-19
+#define WAFER_IN_SLOT_SEN_17	17	// 18
+#define WAFER_IN_SLOT_SEN_18	18	// 17
+#define WAFER_IN_SLOT_SEN_19	19	// 16
+#define WAFER_IN_SLOT_SEN_20	20	// 15
+#define WAFER_IN_SLOT_SEN_21	21	// 14
+#define WAFER_IN_SLOT_SEN_22	22	// 13
+#define WAFER_IN_SLOT_SEN_23	23	// 12
+
+/* J2-9 ~ J2-8 */
+#define WAFER_IN_SLOT_SEN_24	24	// 9
+#define WAFER_IN_SLOT_SEN_25	25	// 8
+
+//****************************************************//
+//  constant definitions                              //
+//****************************************************//
 #define NEEDRESUME			0
 #define NEEDABORT           200
 
