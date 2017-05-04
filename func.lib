@@ -107,7 +107,7 @@ int myinp(int port)
 
 		for (i = 0; i < 3; i++)
 		{
-			if (port > 7) //DIO08-DIO15 AND DIN16-DIN31 digital inputs
+			if (port > 0) //DIO01-DIO15 AND DIN16-DIN31 digital inputs
 				data += digIn(port);
 		}
 
