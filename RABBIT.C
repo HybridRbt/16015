@@ -37,6 +37,8 @@ Move_data       myRoller;
 int  g_currentRotationDegree;
 int  g_flatOrientation;
 char g_bBoatRemoved;
+
+int g_waferMap[25]; //[i]==0: no wafer in i-th slot; 1: wafer exists in this slot
 /*==============================================================================
  *                  main
  *============================================================================*/
