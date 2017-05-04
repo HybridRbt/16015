@@ -135,6 +135,12 @@
 #define WAFER_IN_SLOT_SEN_24	24	// 9
 #define WAFER_IN_SLOT_SEN_25	25	// 8
 
+/* J2-7 ~ J2-4 */
+#define FLAT_FIND_UP_SEN    	26	// 7 
+#define FLAT_FIND_DOWN_SEN  	27	// 6 
+#define BOAT_PRESENT_SEN  		28	// 5 
+#define FLAT_UP_DOWN_SEN  		29	// 4 
+
 //****************************************************//
 //  constant definitions                              //
 //****************************************************//
