@@ -1,0 +1,446 @@
+/*******************************************************************************
+ *              Copyright(c) 2005, Mactronix Inc.
+ *              All rights reserved
+ *
+ *              File:        com.lib
+ *              Description: serial port communication functions of BL2600
+ *              Author:      Zhigang Liu
+ *              Date:        May, 2005
+ ******************************************************************************/
+/** \file
+ * \brief Serial port functions
+ */
+/*
+ * Message format:
+ * [0] = message ID
+ * [1] = length of data (not include 2-byte checksum
+ * [2 - len] = data
+ * [len+1, len+2] = checksum from [1]
+ */
+/*
+/// command message
+static const char *msg[] =
+   {"",
+    "sensor status",
+    "init machine",
+    "prescan",
+    "pick",
+    "insert",
+    "move",
+    "power on",
+    "flat finder",
+    "elev home",
+    "elev move to",
+    "sensor shadow",
+    "adjust slot 1 offset",
+    "adjust elev-up sensor",
+    "adjust elev-down sensor",
+    "elev ok sensor",
+    "chuck up",
+    "chuck down",
+    "pause",
+    "resume",
+    "abort",
+    "alarm",
+    "two beeps",
+    "light",
+    "tray up",
+    "tray down",
+    "tray in",
+    "tray out",
+    "tray vacuum",
+//     "turn arm",
+//     "arm up",
+//     "arm down",
+//     "arm vac1",
+//     "arm vac2",
+    "tilt",
+    "not tilt",
+    "init data",
+    "reply mode",
+    "init power",
+    "init elevator",
+    "init tray",
+    "init camera",
+    "camera home",
+//     "iomap",
+    "move camera"
+   };
+
+const static int MSGLEN = sizeof(msg)/sizeof(char*) - 1;
+*/
+/*** BeginHeader msgID */
+xmem int msgID();
+/*** EndHeader */
+
+/*==============================================================================
+ *           msgID
+ *============================================================================*/
+xmem int msgID()
+{
+    /** get the command ID */
+    return g_msgbuf[CMD_IDX];
+}
+
+/*** BeginHeader  validChecksum */
+xmem int validChecksum(int len);
+/*** EndHeader */
+/*==============================================================================
+ *          validChecksum
+ *============================================================================*/
+xmem int validChecksum(int len)
+{
+    /**
+     * Is checksum valid?
+     * @param len length of message
+     * @return TRUE/FALSE
+     */
+    int i, sum;
+    unsigned char buf[2], high, low;
+
+    /* Compute checksum */
+    sum = 0;
+
+    for (i = 0; i < len; i++)
+        sum += g_msgbuf[i];
+
+    buf[0] = g_msgbuf[len];
+    buf[1] = g_msgbuf[len + 1];
+
+    /* is checksum correct? */
+    high = (unsigned char)(sum >> 8);
+    low = (unsigned char) (sum & 0xFF);
+
+    if (high != buf[0] || low != buf[1]) // not correct
+        return FALSE;
+
+    return TRUE;
+}
+
+/*** BeginHeader getMsg */
+xmem int getMsg();
+/*** EndHeader */
+/*==============================================================================
+ *              getMsg
+ *============================================================================*/
+xmem int getMsg()
+{
+    /** Read a message from serial port, put it in a global buffer
+     *  @return TRUE or FALSE
+     */
+    unsigned long end;
+    int len, ch, n, i, re;
+    int ch1, ch2;
+
+    g_bRetry = TRUE;
+
+    if ((ch = serEgetc()) == -1)
+        return FALSE;         //no message
+
+    //printf("msg received %d\n",ch);
+    if (ch != ENQ)              /* wrong message */
+    {
+        ch1 = serEgetc();
+        ch2 = serEgetc();
+        serErdFlush();
+        //      while(serErdFree() != EINBUFSIZE);
+        //      serEwrFlush();
+        //      while(serEwrFree() != EOUTBUFSIZE);
+        printf("It's not ENQ, ch= %d, ch1= %d, ch2= %d\n", ch, ch1, ch2);
+
+        if (ch != -1 && ch1 != -1 && ch2 != -1)
+        {
+            if (g_bNeedForceSoftReset == TRUE)
+            {
+                g_bNeedForceSoftReset = FALSE;
+                serEclose();
+                forceSoftReset();
+            }
+        }
+
+        return FALSE;
+    }
+
+    serErdFlush();
+
+    while (serErdFree() != EINBUFSIZE);
+
+    serEwrFlush();
+
+    while (serEwrFree() != EOUTBUFSIZE);
+
+    /* send EQT and wait message from host */
+    if (!serEputc(EOT))
+        ;
+
+    //    printf("send out EOT\n");
+    /* read length and wait for the complete message */
+    end = MS_TIMER + TIMEOUT_MSG;
+
+    while (((len = serEgetc()) < 1)  && (MS_TIMER < end))
+        if ((re = powerCheck()) != NO_ERROR)
+            return FALSE;
+
+    //before send any other error check power first
+
+    if (len > (PCPORTOUTBUFSIZE - 2) )
+    {
+        //printf("The length has been trimed within PCPORTOUTBUFSIZE\n");
+        len = PCPORTOUTBUFSIZE - 3;
+    }
+
+    if (len < 1)
+    {
+        return FALSE;
+    }
+
+    memset(&g_msgbuf, 0, sizeof(int) * PCPORTOUTBUFSIZE);
+
+    end = MS_TIMER + TIMEOUT_MSG;
+
+    while ( !(n = serEread(g_msgbuf, len + 2, TIMEOUT_MSG))
+            && MS_TIMER < end)
+    {
+        if ((re = powerCheck()) != NO_ERROR)
+            return FALSE;
+    }
+
+    if (g_msgbuf[0] != 1) //do not print sensor status request
+    {
+        printf("received buf length is %d\n", n);
+
+        for (i = 0; i < n; i++)
+        {
+            printf(" %d", g_msgbuf[i]);
+        }
+
+        printf("\n");
+    }
+
+    if (n != len + 2)
+    {
+        printf("recv length is mot matching\n");
+    }
+
+    if (!validChecksum(len))
+    {
+        serEputc(NAK);
+        printf("checksum is wrong\n");
+        return FALSE;
+    }
+
+    serEputc(ACK);
+    //    if (msgID()!=1)
+    //       printf("Received msg %d\n",msgID());
+    return msgID();
+}
+
+/*** BeginHeader sendMsg */
+xmem int sendMsg(unsigned char *buf);
+/*** EndHeader */
+/*==============================================================================
+ *               sendMsg
+ *============================================================================*/
+xmem int sendMsg(unsigned char *buf)
+{
+    /** Send message in buf to host computer through serial port
+     * @return TRUE/FALSE    */
+    unsigned long end;
+    int ch, re;
+    int i, sum, len, k;
+
+    // printf("Going to send msg %d\n", buf[0]);
+    for (k = 0; k < 3; k++)      /* try 3 times at most */
+    {
+
+        serEwrFlush();
+
+        while (serEwrFree() != EOUTBUFSIZE);
+
+        serErdFlush();
+
+        while (serErdFree() != EINBUFSIZE);
+
+        if (!serEputc(ENQ))         /* Send ENQ */
+            ;
+
+        /* wait for EOT */
+        end = MS_TIMER + TIMEOUT_MSG;
+
+        while (((ch = serEgetc()) == -1) && MS_TIMER < end);
+
+        if (ch == -1) /* time out */
+            continue;
+
+        if (ch == ENQ)
+        {
+            /* wait for EOT */
+            end = MS_TIMER + TIMEOUT_MSG;
+
+            while (((ch = serEgetc()) == -1) && MS_TIMER < end);
+
+            if (ch == -1) /* time out */
+                continue;
+        }
+
+        if (ch != EOT)
+        {
+            printf("get %d msg from host (not EOT expected)\n", serEpeek());
+            continue;
+        }
+
+        serEwrFlush();
+
+        while (serEwrFree() != EOUTBUFSIZE);
+
+        /* compute checksum */
+        len = buf[0];
+        sum = 0;
+
+        for (i = 0; i < len; i++)
+            sum += buf[i + 1];
+
+        buf[len + 1] = (unsigned char)(sum >> 8);
+        buf[len + 2] = (unsigned char) (sum & 0xff);
+
+        /* send msg and wait for ACK/NAK */
+        len = serEwrite(buf, buf[0] + 3);
+
+        if (buf[1] != 1)
+        {
+            printf("serEwrite %d bytes\n", len);
+
+            for (i = 1; i < len; i++)
+            {
+                printf(" %d", buf[i]);
+            }
+
+            printf("\n");
+        }
+
+        //DelayMilliseconds(10);
+
+        end = MS_TIMER + TIMEOUT_MSG;
+
+        while ( ((ch = serEgetc()) == -1) && MS_TIMER < end)
+        {
+            if ((re = powerCheck()) != NO_ERROR)
+                return re;
+        }
+
+        if (ch == -1) // timeout
+            continue;
+
+        if (ch != ACK)
+        {
+            printf("Did not receive ACK\n");
+            continue;
+        }
+
+        return NO_ERROR;
+    }
+
+    printf("Send failed, message save if there is pause\n");
+
+    //    memcpy(g_savebuf, buf, buf[0]+2);
+    g_save0 = buf[0];
+    g_save1 = buf[1];
+    g_save2 = buf[2];
+    g_save3 = buf[3];
+    g_save4 = buf[4];
+    printf(" %d ,%d ,%d ", g_save0, g_save1, g_save2);
+    g_bSave = TRUE;
+
+    return NO_ERROR;
+}
+
+/// error message
+const static char *errmsg[] = {"",
+                               "power is off",
+                               "vacuum: off",
+                               "air: off",
+                               "crosswafer",
+                               "missing boat",
+                               "tray up",
+                               "tray down",
+                               "tray vacuum",
+                               "tray in",
+                               "tray out",
+                               "tray sensor",
+                               "flatfinder: cannot find",
+                               "flatfinder: up",
+                               "flatfinder: down",
+                               "elev down limit",
+                               "elev home",
+                               "no wafer on chuck",
+                               "wafer on chuck",
+                               "vtbf active",
+                               "pick",
+                               "area safety trigged",
+                               "tilt fail",
+                               " elev moving",
+                               "communication error",
+                               "time out in action",
+                               "boat not match",
+                               "Tray init fail",
+                               "Elev init fail",
+                               "camera init fail",
+                               "moving camera",
+                               //                             "Elev Limit triggered",
+                               "Platform flat failed",
+                               "boat wafer not match",
+                               "wafer out",
+                               "tray up down",
+                               "tray safety"
+                              };
+
+#define ERRMSG_LEN (sizeof(errmsg)/sizeof(char*) - 1)
+
+/*** BeginHeader sendErrMsg */
+xmem int sendErrMsg(int errcode, int retry);
+/*** EndHeader */
+/*==============================================================================
+ *              sendErrMsg
+ *============================================================================*/
+xmem int sendErrMsg(int errcode, int retry)
+{
+    /**
+     * Send error message to host computer and turn on alarm
+     * @param retry  :TRUE = the operation can be retry
+     *               FALSE = no retry
+     */
+    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+
+    if ((errcode < 1) || (errcode > MAX_ERROR_NO))
+        return NEEDABORT;
+
+    //printf("Retry is %d error %d = %s\n", retry, errcode, errmsg[errcode]);
+
+    g_bPOWER = TRUE;
+
+    if (powerCheck() != NO_ERROR)
+        return FALSE;        //do not send error message if power off and power
+
+    //off message is handled by powerCheck function
+    setErrorLight();           // 02-09-2016 dliu
+
+    msgbuf[0] = 5;
+    msgbuf[1] = MSG_ERROR;
+    msgbuf[2] = errcode;
+    msgbuf[3] = retry;
+    msgbuf[4] = g_wCrossWaferPosition;
+
+    if (errcode == ERR_DOUBLE_CROSS_WAFER)
+    	 msgbuf[5] = ScanBoatExist();   //update the boat status
+    else
+       msgbuf[5] = g_currentBoatExist; //use old value
+
+    msgbuf[msgbuf[0] + 1] = '\0';
+    sendMsg(msgbuf);
+    g_wCrossWaferPosition = 100;
+    return NO_ERROR;
+}
+
+
+#memmap xmem
+/*------------------------- end of com.lib -----------------------------------*/
