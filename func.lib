@@ -158,14 +158,23 @@ void InitCommPort(void)
 	if (!serCopen(BAUD19200))       //to NMC
 		return;
 
+    if (!serEopen(BAUD115200))      //to PC
+        return;
+
 	serMode(0);
 
 	// Clear serial data buffers
 	serCrdFlush();
 	serCwrFlush();
 
+	serErdFlush();
+    serEwrFlush();
+
 	serCdatabits(PARAM_8BIT);
 	serCparity(PARAM_NOPARITY);
+
+	serEdatabits(PARAM_8BIT);
+    serEparity(PARAM_NOPARITY);
 }
 
 /*** BeginHeader myinp */
