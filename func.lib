@@ -140,13 +140,14 @@ void InitIOBoard()
 	for (i = 0; i <= 3; i++)
 		digHout(i, 1);
 
-	/* 16 configurable I/O(DIO00-DIO15): configure 0 - 15 as digital output
+	/* 16 configurable I/O(DIO00-DIO15): configure 0 as digital output
 	 * Set all digital outputs to be high-impedance state
 	 */
-	digOutConfig(0xFFFF);
+	//0000 0000 0000 0001
+	//0001
+	digOutConfig(0x0001);
 
-	for (i = 0; i <= 15; i++)
-		digOut(i, 1);
+	digOut(0, 1);
 }
 
 /*** BeginHeader InitCommPort */
