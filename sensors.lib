@@ -7,12 +7,12 @@
  ******************************************************************************/
 
 /*** Function list ***/
-// int WaferInSlot(int slotNum) 
+// int IsWaferInSlot(int slotNum) 
 
-/*** BeginHeader WaferInSlot */
-int WaferInSlot(int slotNum);
+/*** BeginHeader IsWaferInSlot */
+int IsWaferInSlot(int slotNum);
 /*** EndHeader */
-int WaferInSlot(int slotNum)
+int IsWaferInSlot(int slotNum)
 {
     return myinp(slotNum);
 }
