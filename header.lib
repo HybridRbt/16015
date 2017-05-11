@@ -36,10 +36,9 @@
 #define CMD_FF_SUPPORT_UP		7
 #define CMD_FF_SUPPORT_DOWN 	8
 
-#define CMD_RESUME              9
-#define CMD_ABORT               10
-#define CMD_ALARM               11
-#define CMD_LIGHT               12
+#define CMD_ABORT               8
+#define CMD_ALARM               9
+#define CMD_LIGHT               10
 
 /*=============================================================================
                message sent to host
