@@ -32,9 +32,9 @@
 #define CMD_INITIALIZE			3
 #define CMD_IO					5  //=0, means idle and ready for op, turn on green light 
 
-#define CMD_NOTCH_FIND			6
-#define CMD_NF_SUPPORT_UP		7
-#define CMD_NF_SUPPORT_DOWN 	8
+#define CMD_FLAT_FIND			6
+#define CMD_FF_SUPPORT_UP		7
+#define CMD_FF_SUPPORT_DOWN 	8
 
 #define CMD_RESUME              9
 #define CMD_ABORT               10
