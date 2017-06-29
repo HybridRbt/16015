@@ -397,50 +397,30 @@ const static char *errmsg[] = {"",
 #define ERRMSG_LEN (sizeof(errmsg)/sizeof(char*) - 1)
 
 /*** BeginHeader sendErrMsg */
-xmem int sendErrMsg(int errcode, int retry);
+xmem int sendErrMsg(int errcode);
 /*** EndHeader */
 /*==============================================================================
  *              sendErrMsg
  *============================================================================*/
-xmem int sendErrMsg(int errcode, int retry)
+xmem int sendErrMsg(int errcode)
 {
     /**
-     * Send error message to host computer and turn on alarm
-     * @param retry  :TRUE = the operation can be retry
-     *               FALSE = no retry
+     * Send error message to host computer
      */
     unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
     if ((errcode < 1) || (errcode > MAX_ERROR_NO))
         return NEEDABORT;
 
-    //printf("Retry is %d error %d = %s\n", retry, errcode, errmsg[errcode]);
-
-    g_bPOWER = TRUE;
-
-    if (powerCheck() != NO_ERROR)
-        return FALSE;        //do not send error message if power off and power
-
-    //off message is handled by powerCheck function
-    setErrorLight();           // 02-09-2016 dliu
-
-    msgbuf[0] = 5;
+    msgbuf[0] = 2;
     msgbuf[1] = MSG_ERROR;
     msgbuf[2] = errcode;
-    msgbuf[3] = retry;
-    msgbuf[4] = g_wCrossWaferPosition;
-
-    if (errcode == ERR_DOUBLE_CROSS_WAFER)
-    	 msgbuf[5] = ScanBoatExist();   //update the boat status
-    else
-       msgbuf[5] = g_currentBoatExist; //use old value
 
     msgbuf[msgbuf[0] + 1] = '\0';
     sendMsg(msgbuf);
-    g_wCrossWaferPosition = 100;
+
     return NO_ERROR;
 }
-
 
 #memmap xmem
 /*------------------------- end of com.lib -----------------------------------*/
