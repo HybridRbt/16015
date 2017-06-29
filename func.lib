@@ -12,8 +12,7 @@ int InitWhole();
 /*** EndHeader */
 int InitWhole()
 {
-	NmcInit();
-
+	//NmcInit();
 	//set servo parameters and enable servo
 	if (InitRoller() != NO_ERROR)
 		return ERR_FLAT_FIND_FAIL;
