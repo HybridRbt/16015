@@ -178,8 +178,9 @@ xmem int getMsg()
     end = MS_TIMER + TIMEOUT_MSG;
 
     while (((len = serEgetc()) < 1)  && (MS_TIMER < end))
-        if ((re = powerCheck()) != NO_ERROR)
-            return FALSE;
+    {}
+        //if ((re = powerCheck()) != NO_ERROR)
+        //    return FALSE;
 
     //before send any other error check power first
 
@@ -201,8 +202,8 @@ xmem int getMsg()
     while ( !(n = serEread(g_msgbuf, len + 2, TIMEOUT_MSG))
             && MS_TIMER < end)
     {
-        if ((re = powerCheck()) != NO_ERROR)
-            return FALSE;
+        //if ((re = powerCheck()) != NO_ERROR)
+        //    return FALSE;
     }
 
     if (g_msgbuf[0] != 1) //do not print sensor status request
@@ -324,8 +325,8 @@ xmem int sendMsg(unsigned char *buf)
 
         while ( ((ch = serEgetc()) == -1) && MS_TIMER < end)
         {
-            if ((re = powerCheck()) != NO_ERROR)
-                return re;
+            //if ((re = powerCheck()) != NO_ERROR)
+            //    return re;
         }
 
         if (ch == -1) // timeout
