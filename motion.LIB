@@ -178,9 +178,9 @@ int TurnFlatToTargetPos()
 	}
 
 	if (g_flatOrientation == UP)
-		pos = 250000;
-	else
-		pos = 0;
+		pos = FLAT_UP_STEP;
+	else  // stay down
+		pos = FLAT_DOWN_STEP;
 
 	printf("Flat Target= %ld\n", pos);
 	pos = -pos;
