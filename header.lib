@@ -47,7 +47,7 @@
 #define MSG_SB_ASK_READY		1
 #define MSG_SENSOR_STATUS		2
 #define MSG_INITIALIZED_OK		3
-#define MSG_FF_DONE				4
+#define MSG_NOTCH_FIND			4
 #define MSG_START_OPERATION		5	// [2] = 12 (NF UP) OR 6 (NF DOWN)
 #define MSG_OPERATION_DONE		6 	// MAP: Byte 2, 3, 4, 5; [6] = 47 or 57
 
@@ -56,12 +56,21 @@
 /*==============================================================================
  *            error code
  *============================================================================*/
-#define	ERR_CASSETTE_PRESENT	1
-#define ERR_FF_FAILED			2
-#define ERR_NF_SUPPORT_HOME		3	// is not home when platform moving
-#define ERR_NF_SUPPORT_MOVING	4	// failed to reach position
+#define ERR_INITIALIZE_FAILED	1
+#define	ERR_CASSETTE_PRESENT	2
+#define ERR_NF_FAILED			3
+#define ERR_NF_SUPPORT_HOME		4	// is not home when platform moving
+#define ERR_NF_SUPPORT_MOVING	5	// failed to reach position
 
-#define	MAX_ERROR_NO			4
+#define	MAX_ERROR_NO			5
+
+/*==============================================================================
+ *                 communication protocol symbols
+ *============================================================================*/
+#define ENQ 0x05
+#define EOT 0x04
+#define ACK 0x06
+#define NAK 0x15
 
 /*==============================================================================
  *                Constants and defines
