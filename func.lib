@@ -583,6 +583,185 @@ xmem void GetDataFromHost()
     	printf("g_crossRatio_8 = %d\n", g_crossRatio_8);
     */
 //}
+
+/*** BeginHeader recvAlarmMsg */
+xmem void recvAlarmMsg();
+/*** EndHeader */
+
+/*==============================================================================
+ *            recvAlarmMsg
+ *============================================================================*/
+xmem void recvAlarmMsg()
+{
+    if (g_msgbuf[DATA_IDX])    /* turn on alarm */
+        AlarmOn();
+    else    /* turn off alarm */
+        AlarmOff();
+}
+
+/*** BeginHeader AlarmOn */
+xmem void AlarmOn();
+/*** EndHeader */
+/*==============================================================================
+ *             AlarmOn
+ *============================================================================*/
+xmem void AlarmOn()
+{
+    /** turn alamm on */
+    digHout(ALARM_TRIG, 0);
+}
+
+/*** BeginHeader AlarmOff */
+xmem void AlarmOff();
+/*** EndHeader */
+/*==============================================================================
+ *             AlarmOff
+ *============================================================================*/
+xmem void AlarmOff()
+{
+    /** turn alamm off */
+    digHout(ALARM_TRIG, 1);
+}
+
+/*** BeginHeader SetLight */
+xmem void SetLight();
+/*** EndHeader */
+/*==============================================================================
+ *               SetLight
+ *============================================================================*/
+xmem void SetLight()
+{
+    /** set light color */
+    int color;
+
+    color = g_msgbuf[DATA_IDX];
+
+	SetLightLocal(color);
+}
+
+/*** BeginHeader SetRedLight */
+xmem void SetRedLight();
+/*** EndHeader */
+/*==============================================================================
+ *               SetRedLight
+ *============================================================================*/
+xmem void SetRedLight()
+{
+    digHout(LIGHT_RED_TRIG, 0);
+}
+
+/*** BeginHeader ResetRedLight */
+xmem void ResetRedLight();
+/*** EndHeader */
+/*==============================================================================
+ *               ResetRedLight
+ *============================================================================*/
+xmem void ResetRedLight()
+{
+    digHout(LIGHT_RED_TRIG, 1);
+}
+
+/*** BeginHeader SetGreenLight */
+xmem void SetGreenLight();
+/*** EndHeader */
+/*==============================================================================
+ *               SetGreenLight
+ *============================================================================*/
+xmem void SetGreenLight()
+{
+    digHout(LIGHT_GREEN_TRIG, 0);
+}
+
+/*** BeginHeader ResetGreenLight */
+xmem void ResetGreenLight();
+/*** EndHeader */
+/*==============================================================================
+ *               ResetGreenLight
+ *============================================================================*/
+xmem void ResetGreenLight()
+{
+    digHout(LIGHT_GREEN_TRIG, 1);
+}
+
+/*** BeginHeader setIdleLight */
+xmem void setIdleLight();
+/*** EndHeader */
+/*==============================================================================
+ *             setIdleLight
+ *============================================================================*/
+xmem void setIdleLight()
+{
+    int color;
+    color = GREEN_LIGHT;
+
+    SetLightLocal(color);
+}
+
+/*** BeginHeader setOperationLight */
+xmem void setOperationLight();
+/*** EndHeader */
+/*==============================================================================
+ *             setOperationLight
+ *============================================================================*/
+xmem void setOperationLight()
+{
+    int color;
+    color = GREEN_LIGHT;
+
+    SetLightLocal(color);
+}
+
+/*** BeginHeader setErrorLight */
+xmem void setErrorLight();
+/*** EndHeader */
+/*==============================================================================
+ *             setErrorLight
+ *============================================================================*/
+xmem void setErrorLight()
+{
+    int color;
+    color = RED_LIGHT;
+
+    SetLightLocal(color);
+    AlarmOn();              
+}
+
+/*** BeginHeader SetLightLocal */
+xmem void SetLightLocal(int color);
+/*** EndHeader */
+/*==============================================================================
+ *               SetLightLocal
+ *============================================================================*/
+xmem void SetLightLocal(int color)
+{
+    switch (color)
+    {
+    case RED_LIGHT:
+        //        printf("light color: red\n");
+        SetRedLight();
+        ResetGreenLight();
+        //ResetAmberLight();
+        break;
+
+    case GREEN_LIGHT:
+        //printf("light color: green\n");
+        SetGreenLight();
+        ResetRedLight();
+        //ResetAmberLight();
+        break;
+
+    case YELLOW_LIGHT:
+        //printf("light color: yellow\n");
+        //SetAmberLight();
+        ResetGreenLight();
+        ResetRedLight();
+        break;
+
+    default:
+        break;
+    }
+}
+
 /*** BeginHeader GetFlatType */
 xmem int GetFlatType();
 /*** EndHeader */
