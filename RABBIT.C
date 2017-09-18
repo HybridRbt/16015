@@ -32,6 +32,8 @@ unsigned int g_save3;
 unsigned int g_save4;
 char g_bSave;                /**< Is sending message saved?      */
 char g_bRetry;               ///< if operation is in init and sensor adjust
+///< don't retry if error happened
+char g_bNeedForceSoftReset;
 
 typedef struct
 {
