@@ -112,6 +112,71 @@ xmem int GetWaferMap()
 
     return re;
 }
+
+/*** BeginHeader SendPcOpDone */
+xmem void SendPcOpDone();
+/*** EndHeader */
+/*==============================================================================
+ *              SendPcOpDone
+ *============================================================================*/
+xmem void SendPcOpDone()
+{
+    /** generate wafer map based on the sensor map */
+    void *p2, *p3, *p4, *p5, *p6;
+    int re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+
+    int slotnum;
+
+    msgbuf[0] = 6;
+    msgbuf[1] = MSG_OPERATION_DONE;    
+
+    //byte 1 to pc
+    p2 = &msgbuf[2];
+    memset(p2, 0, 1);
+    
+    for (slotnum = 1; slotnum <= 8; slotnum++)
+    {
+    	g_waferMap[slotnum - 1] ? set(p2, (slotnum - 1)) : 0;
+    }
+
+    //byte 2
+    p3 = &msgbuf[3];
+    memset(p3, 0, 1);
+
+    for (slotnum = 9; slotnum <= 16; slotnum++)
+    {
+    	g_waferMap[slotnum - 1] ? set(p3, (slotnum - 9)) : 0;
+    }
+
+    //byte 3
+    p4 = &msgbuf[4];
+    memset(p4, 0, 1);
+
+    for (slotnum = 17; slotnum <= 24; slotnum++)
+    {
+    	g_waferMap[slotnum - 1] ? set(p4, (slotnum - 17)) : 0;
+    }
+
+    //byte 4
+    p5 = &msgbuf[5];
+    memset(p5, 0, 1);
+    g_waferMap[24] ? set(p5, 0) : 0;
+    IsFlatToUp() ? set(p5, 1) : 0;
+    IsBoatPresent() ? set(p5, 2) : 0;
+    IsBlockUp() ? set(p5, 3) : 0;
+    IsBlockDown() ? set(p5, 4) : 0;
+
+    msgbuf[6] = g_flatType;
+
+    msgbuf[msgbuf[0] + 1] = '\0';
+
+    if ((re = sendMsg(msgbuf)) != NO_ERROR)
+        return re;
+
+    return NO_ERROR;
+}
+
 /*** BeginHeader GetSensorStatus */
 xmem int GetSensorStatus();
 /*** EndHeader */
