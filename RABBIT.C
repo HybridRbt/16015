@@ -49,6 +49,8 @@ int  g_flatOrientation;
 char g_bBoatRemoved;
 
 int g_waferMap[25]; //[i]==0: no wafer in i-th slot; 1: wafer exists in this slot
+unsigned char g_msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+
 int g_stage;  // indicate current machine stage
 int g_flatType;  // indicate the flat type (47 or 57)
 /*==============================================================================
