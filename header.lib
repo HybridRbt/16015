@@ -149,6 +149,32 @@
 #define CALIB_0600			1
 #define CALIB_0100			2
 
+#define NOT_READY			0
+#define READY 				1
+#define IN_IO 				2
+#define IN_OP				3
+#define IN_ERROR			4
+
+#define CMD_IDX             0       /* MSG command ID byte */
+#define DATA_IDX            1       /* MSG data bytes starting index */
+
+#define FLAT_UP 			12
+#define FLAT_DOWN 			6
+
+#define SM_WAFER			47
+#define BG_WAFER			57
+
+#define SM_STEP 			100  // move a small step for the big flat wafer so the wafer sensor can see them
+
+#define FLAT_UP_STEP		250000
+#define FLAT_DOWN_STEP		100		      
+
+/* Light color */
+#define RED_LIGHT          1
+#define GREEN_LIGHT        2
+#define YELLOW_LIGHT       3
+#define YELLOW_GREEN_LIGHT 4
+
 const long BAUD115200 = 115200L;     //baud rate
 const long BAUD19200 = 19200L;
 
