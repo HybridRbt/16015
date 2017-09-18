@@ -22,6 +22,9 @@
 #use "motion.lib"
 #use "func.lib"
 #use "nmc.lib"
+#use "sensors.lib"
+#use "com.lib"
+
 
 typedef struct
 {
