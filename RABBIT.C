@@ -62,37 +62,71 @@ void main(void)
 	 * and display on LCD
 	 */
 	init(); 	//initialize I/O and globle parameters
-	InitWhole();
+	
+	g_stage = NOT_READY;
 
 	if (IsBoatPresent())
 		g_bBoatRemoved = FALSE;
 	else
 		g_bBoatRemoved = TRUE;
 
+	if ((re = InitWhole()) != NO_ERROR)
+    {
+    	sendErrMsg(re);
+    	setErrorLight();
+    }	
+    else
+    {
+    	g_stage = READY;
+    	setIdleLight();
+    	do 
+    	{
+			re = SendPcReady();
+		} while (re != NO_ERROR);
+    }
+
 	//main loop
 	while (TRUE)
 	{
-		if (!IsBoatPresent())
-			g_bBoatRemoved = TRUE;
-
-		if (g_bBoatRemoved && IsBoatPresent())
+		if ((g_stage == READY) || (g_stage == IN_IO) || (g_stage == IN_ERROR))
 		{
-			re = NO_ERROR;
-			re = FindFlat();
-
-			if (re == NO_ERROR)
+       		handleMsg();
+       		DelayMilliseconds(2);
+    	}
+    	else
+    	{
+    		if (!IsBoatPresent())
 			{
-				if (IsFlatToUp())
-					g_flatOrientation = UP;
+				g_bBoatRemoved = TRUE;
+				g_stage = READY;
+			}	
+
+			if (g_bBoatRemoved && IsBoatPresent())
+			{
+				g_stage = IN_OP;
+				SendPcOpStarted();
+
+				if ((re = FindFlat()) != NO_ERROR)
+				{
+					g_stage = IN_ERROR;
+					sendErrMsg(re);
+				}	
 				else
-					g_flatOrientation = DOWN;
+				{
+					g_flatType = GetFlatType();
 
-				if (g_flatOrientation == UP)
+					if (IsFlatToUp())
+						g_flatOrientation = UP;	
+					else
+						g_flatOrientation = DOWN;						
+
 					TurnFlatToTargetPos();
-			}
+					SendPcOpDone();
+				}
 
-			g_bBoatRemoved = FALSE;
-		}
+				g_bBoatRemoved = FALSE;
+			}
+    	}
 	}
 }
 
