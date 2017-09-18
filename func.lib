@@ -31,6 +31,59 @@ int InitWhole()
 	return NO_ERROR;
 }
 
+/*** BeginHeader SendPcReady */
+xmem int SendPcReady();
+/*** EndHeader */
+/*==============================================================================
+ *              SendPcReady
+ *============================================================================*/
+xmem int SendPcReady()
+{
+    /** send ready signal to host computer */
+    int re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+
+    int slotnum;
+
+    msgbuf[0] = 1;
+    msgbuf[1] = MSG_SB_ASK_READY;
+    msgbuf[msgbuf[0] + 1] = '\0';
+
+    if ((re = sendMsg(msgbuf)) != NO_ERROR)
+        return re;
+
+    return NO_ERROR;
+}
+
+/*** BeginHeader SendPcOpStarted */
+xmem int SendPcOpStarted();
+/*** EndHeader */
+/*==============================================================================
+ *              SendPcOpStarted
+ *============================================================================*/
+xmem int SendPcOpStarted()
+{
+    /** send ready signal to host computer */
+    int re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+
+    int slotnum;
+
+    msgbuf[0] = 2;
+    msgbuf[1] = MSG_START_OPERATION;
+
+    if (IsFlatToUp())
+		msgbuf[2] = FLAT_UP;    	
+    else
+    	msgbuf[2] = FLAT_DOWN;
+    
+    msgbuf[msgbuf[0] + 1] = '\0';
+
+    if ((re = sendMsg(msgbuf)) != NO_ERROR)
+        return re;
+
+    return NO_ERROR;
+}
 /*** BeginHeader GetSensorStatus */
 xmem int GetSensorStatus();
 /*** EndHeader */
