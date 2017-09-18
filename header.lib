@@ -30,11 +30,11 @@
 #define CMD_SENSOR_STATUS		1
 #define CMD_INITIAL_DATA		2
 #define CMD_INITIALIZE			3
-#define CMD_IO					5  //=0, means idle and ready for op, turn on green light 
+#define CMD_IO					4  //=0, means idle and ready for op, turn on green light 
 
-#define CMD_FLAT_FIND			6
-#define CMD_FF_SUPPORT_UP		7
-#define CMD_FF_SUPPORT_DOWN 	8
+#define CMD_NOTCH_FIND			5
+#define CMD_NF_SUPPORT_UP		6
+#define CMD_NF_SUPPORT_DOWN 	7
 
 #define CMD_ABORT               8
 #define CMD_ALARM               9
