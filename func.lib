@@ -352,7 +352,7 @@ int boatCheck()
 		return NO_ERROR;
 
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
-	return ERR_FLAT_FIND_FAIL;
+	return ERR_NF_FAILED;
 }
 
 /*---------------------------- end of func.lib -------------------------------*/
