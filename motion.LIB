@@ -161,6 +161,16 @@ int TurnFlatToTargetPos()
 	vel = VEL_ROLLER[MED];
 	acc = ACC_ROLLER[MED];
 
+	// adjust the flat pos if it's a big flat one
+	if (g_flatType == BG_WAFER)
+	{
+		vel = VEL_ROLLER[MIN];
+		acc = ACC_ROLLER[MIN];
+		pos = SM_STEP;
+		RollerMoveRelative(pos, vel, acc);
+	}	
+
+	// get wafer map
 	if (g_flatOrientation == UP)
 		pos = 250000;
 	else
