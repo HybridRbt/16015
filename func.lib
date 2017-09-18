@@ -84,6 +84,34 @@ xmem int SendPcOpStarted()
 
     return NO_ERROR;
 }
+
+/*** BeginHeader GetWaferMap */
+xmem int GetWaferMap();
+/*** EndHeader */
+/*==============================================================================
+ *              GetWaferMap
+ *============================================================================*/
+xmem int GetWaferMap()
+{
+    /** generate wafer map based on the sensor map */
+    int slotnum;
+    int re;
+
+    re = NO_ERROR;
+
+    for (slotnum = 1; slotnum <= 25; slotnum++)
+    {
+    	if (IsWaferInSlot(slotnum))
+    		g_waferMap[slotnum - 1] = 1;
+    	else	
+		{
+			g_waferMap[slotnum - 1] = 0; 
+			re = ERROR;
+		}
+    }
+
+    return re;
+}
 /*** BeginHeader GetSensorStatus */
 xmem int GetSensorStatus();
 /*** EndHeader */
