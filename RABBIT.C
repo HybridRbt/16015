@@ -25,6 +25,13 @@
 #use "sensors.lib"
 #use "com.lib"
 
+unsigned int g_save0;
+unsigned int g_save1;
+unsigned int g_save2;
+unsigned int g_save3;
+unsigned int g_save4;
+char g_bSave;                /**< Is sending message saved?      */
+char g_bRetry;               ///< if operation is in init and sensor adjust
 
 typedef struct
 {
