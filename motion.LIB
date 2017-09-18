@@ -171,6 +171,12 @@ int TurnFlatToTargetPos()
 	}	
 
 	// get wafer map
+	if ((re = GetWaferMap()) != NO_ERROR)
+	{
+		// need to turn on red light
+		setErrorLight();
+	}
+
 	if (g_flatOrientation == UP)
 		pos = 250000;
 	else
