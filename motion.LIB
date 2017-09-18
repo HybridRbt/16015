@@ -17,7 +17,7 @@ int InitRoller()
 	if (re != NO_ERROR)
 	{
 		MessageDisplay(re);
-		return ERR_FLAT_FIND_FAIL;
+		return ERR_INITIALIZE_FAILED;
 	}
 
 	re = ServoOn(ROLLER_MOTOR);
@@ -25,7 +25,7 @@ int InitRoller()
 	if (re != NO_ERROR)
 	{
 		MessageDisplay(re);
-		return ERR_FLAT_FIND_FAIL;
+		return ERR_INITIALIZE_FAILED;
 	}
 
 	return NO_ERROR;
@@ -56,7 +56,7 @@ int RollerHome()
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
 
 	if (!ServoMoveDone(ROLLER_MOTOR))
-		return ERR_FLAT_FIND_FAIL;
+		return ERR_INITIALIZE_FAILED;
 
 	ServoResetCount(ROLLER_MOTOR, 1);  //reset first
 	return NO_ERROR;
@@ -212,7 +212,7 @@ int MoveBlockUp()
 	}
 
 	digHout(MOVE_UP_TRIG, 1);
-	return ERR_FLAT_FIND_FAIL;
+	return ERR_NF_FAILED;
 
 }
 
@@ -242,7 +242,7 @@ int MoveBlockDown()
 	}
 
 	digHout(MOVE_UP_TRIG, 1);
-	return ERR_FLAT_FIND_FAIL;
+	return ERR_NF_FAILED;
 }
 
 /*------------------------- end of tray.lib ----------------------------------*/
