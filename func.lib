@@ -13,12 +13,20 @@ int InitWhole();
 int InitWhole()
 {
 	//NmcInit();
+	int re;
+	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 	//set servo parameters and enable servo
-	if (InitRoller() != NO_ERROR)
-		return ERR_FLAT_FIND_FAIL;
+	if ((re = InitRoller()) != NO_ERROR)
+		return re;
 
-	if (RollerHome() != NO_ERROR)
-		return ERR_FLAT_FIND_FAIL;
+	if ((re = RollerHome()) != NO_ERROR)
+		return re;
+
+    msgbuf[0] = 1;
+	msgbuf[1] = MSG_INITIALIZED_OK;
+	msgbuf[msgbuf[0] + 1] = '\0';
+	if ((re = sendMsg(msgbuf)) != NO_ERROR)
+    	return re;
 
 	return NO_ERROR;
 }
