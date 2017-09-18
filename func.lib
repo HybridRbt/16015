@@ -583,4 +583,30 @@ xmem void GetDataFromHost()
     	printf("g_crossRatio_8 = %d\n", g_crossRatio_8);
     */
 //}
+/*** BeginHeader GetFlatType */
+xmem int GetFlatType();
+/*** EndHeader */
+/*==============================================================================
+ *               GetFlatType
+ *============================================================================*/
+xmem int GetFlatType()
+{
+	int slotnum;
+	int flatType;
+
+	flatType = BG_WAFER;
+
+	for (slotnum = 1; slotnum <= 25; slotnum++)
+	{
+		if (IsWaferInSlot(slotnum))
+		{
+			flatType = SM_WAFER;
+			break;
+		}	 
+	} 
+
+	return flatType;
+}
+
+
 /*---------------------------- end of func.lib -------------------------------*/
