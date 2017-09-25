@@ -96,11 +96,12 @@
 #define ALARM_TRIG				0	// Hout0 J16-3
 #define MOVE_UP_TRIG			1	// Hout1 J16-6
 //#define MOVE_DOWN_TRIG			2	// Hout2 J16-9
+#define LIGHT_GREEN_TRIG   		2	// Hout2 J16-9
 #define LIGHT_RED_TRIG      	3	// Hout3 J16-12
 
 /* 16 configurable I/O outputs (15-0) (J1-3 to J1-18) */
 /* J1-18 */
-#define LIGHT_GREEN_TRIG   		0	// J1-18
+//#define LIGHT_GREEN_TRIG   		0	// J1-18
 
 /* J1-18 ~ J1-10 */
 #define WAFER_IN_SLOT_SEN_1		1	// J1-17
