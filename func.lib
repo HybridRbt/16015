@@ -755,9 +755,12 @@ xmem void setOperationLight();
 xmem void setOperationLight()
 {
     int color;
-    color = GREEN_LIGHT;
+    //color = GREEN_LIGHT;
 
-    SetLightLocal(color);
+    ResetGreenLight();
+    ResetRedLight();
+    AlarmOff();
+    //SetLightLocal(color);
 }
 
 /*** BeginHeader setErrorLight */
