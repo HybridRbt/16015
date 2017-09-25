@@ -83,52 +83,92 @@ void main(void)
 	else
 	{
 		g_stage = READY;
+
+		do
+		{
 			re = SendPcReady();
-		} while (re != NO_ERROR);
-    }
+		}
+		while (re != NO_ERROR);
+	}
 
 	//main loop
 	while (TRUE)
 	{
-		if ((g_stage == READY) || (g_stage == IN_IO) || (g_stage == IN_ERROR))
+		if (g_stage == READY)
 		{
-       		handleMsg();
-       		DelayMilliseconds(2);
-    	}
-    	else
-    	{
-    		if (!IsBoatPresent())
+			setIdleLight();
+			handleMsg();
+			DelayMilliseconds(2);
+
+			if (!IsBoatPresent())
+			{
+				g_bBoatRemoved = TRUE;
+				AlarmOff();
+			}
+
+			if (g_bBoatRemoved && IsBoatPresent())
+				g_stage = IN_OP;
+		}
+		else if (g_stage == IN_IO)
+		{
+			setOperationLight();
+			handleMsg();
+			DelayMilliseconds(2);
+		}
+		else if (g_stage == IN_ERROR)
+		{
+			setErrorLight();
+			handleMsg();
+			DelayMilliseconds(2);
+		}
+		else     // in op
+		{
+			setOperationLight();
+
+			if (!IsBoatPresent())
 			{
 				g_bBoatRemoved = TRUE;
 				g_stage = READY;
-			}	
+				setIdleLight();
+			}
 
 			if (g_bBoatRemoved && IsBoatPresent())
 			{
-				g_stage = IN_OP;
+				g_bBoatRemoved = FALSE;
 				SendPcOpStarted();
 
 				if ((re = FindFlat()) != NO_ERROR)
 				{
 					g_stage = IN_ERROR;
 					sendErrMsg(re);
-				}	
+				}
 				else
 				{
+					PrepareForGetFlatType();
 					g_flatType = GetFlatType();
 
+					PrepareForGetWaferMap();
+					// get wafer map
+					fullBoat = GetWaferMap();
+
 					if (IsFlatToUp())
-						g_flatOrientation = UP;	
+						g_flatOrientation = UP;
 					else
-						g_flatOrientation = DOWN;						
+						g_flatOrientation = DOWN;
 
 					TurnFlatToTargetPos();
-					SendPcOpDone();
-				}
 
-				g_bBoatRemoved = FALSE;
+					if (!fullBoat)
+					{
+						// need to turn on red light
+						setErrorLight();
+					}
+
+					SendPcOpDone();
+					g_stage = READY;
+				}
 			}
-    	}
+		}
 	}
 }
 
