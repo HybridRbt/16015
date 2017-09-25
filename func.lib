@@ -16,24 +16,25 @@ int InitWhole()
 	int re;
 	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
-   //set servo parameters and enable servo
+	//set servo parameters and enable servo
 	if ((re = InitRoller()) != NO_ERROR)
 		return re;
 
 	if ((re = MoveBlockDown()) != NO_ERROR)
 		return re;
 
-   if ((re = RollerHome()) != NO_ERROR)
+	if ((re = RollerHome()) != NO_ERROR)
 		return re;
 
-   if (g_stage == IN_IO)
-   {
-   	msgbuf[0] = 1;
+	if (g_stage == IN_IO)
+	{
+		msgbuf[0] = 1;
 		msgbuf[1] = MSG_INITIALIZED_OK;
 		msgbuf[msgbuf[0] + 1] = '\0';
+
 		if ((re = sendMsg(msgbuf)) != NO_ERROR)
-    		return re;
-   }
+			return re;
+	}
 
 	return NO_ERROR;
 }
@@ -46,20 +47,20 @@ xmem int SendPcReady();
  *============================================================================*/
 xmem int SendPcReady()
 {
-    /** send ready signal to host computer */
-    int re;
-    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+	/** send ready signal to host computer */
+	int re;
+	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
-    int slotnum;
+	int slotnum;
 
-    msgbuf[0] = 1;
-    msgbuf[1] = MSG_SB_ASK_READY;
-    msgbuf[msgbuf[0] + 1] = '\0';
+	msgbuf[0] = 1;
+	msgbuf[1] = MSG_SB_ASK_READY;
+	msgbuf[msgbuf[0] + 1] = '\0';
 
-    if ((re = sendMsg(msgbuf)) != NO_ERROR)
-        return re;
+	if ((re = sendMsg(msgbuf)) != NO_ERROR)
+		return re;
 
-    return NO_ERROR;
+	return NO_ERROR;
 }
 
 /*** BeginHeader SendPcOpStarted */
@@ -70,26 +71,26 @@ xmem int SendPcOpStarted();
  *============================================================================*/
 xmem int SendPcOpStarted()
 {
-    /** send ready signal to host computer */
-    int re;
-    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+	/** send ready signal to host computer */
+	int re;
+	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
-    int slotnum;
+	int slotnum;
 
-    msgbuf[0] = 2;
-    msgbuf[1] = MSG_START_OPERATION;
+	msgbuf[0] = 2;
+	msgbuf[1] = MSG_START_OPERATION;
 
-    if (IsFlatToUp())
-		msgbuf[2] = FLAT_UP;    	
-    else
-    	msgbuf[2] = FLAT_DOWN;
-    
-    msgbuf[msgbuf[0] + 1] = '\0';
+	if (IsFlatToUp())
+		msgbuf[2] = FLAT_UP;
+	else
+		msgbuf[2] = FLAT_DOWN;
 
-    if ((re = sendMsg(msgbuf)) != NO_ERROR)
-        return re;
+	msgbuf[msgbuf[0] + 1] = '\0';
 
-    return NO_ERROR;
+	if ((re = sendMsg(msgbuf)) != NO_ERROR)
+		return re;
+
+	return NO_ERROR;
 }
 
 /*** BeginHeader GetWaferMap */
@@ -100,24 +101,24 @@ xmem int GetWaferMap();
  *============================================================================*/
 xmem int GetWaferMap()
 {
-    /** generate wafer map based on the sensor map */
-    int slotnum;
-    int fullBoat;
+	/** generate wafer map based on the sensor map */
+	int slotnum;
+	int fullBoat;
 
-    fullBoat = TRUE;
+	fullBoat = TRUE;
 
-    for (slotnum = 1; slotnum <= 25; slotnum++)
-    {
-    	if (IsWaferInSlot(slotnum))
-    		g_waferMap[slotnum - 1] = 1;
-    	else
+	for (slotnum = 1; slotnum <= 25; slotnum++)
+	{
+		if (IsWaferInSlot(slotnum))
+			g_waferMap[slotnum - 1] = 1;
+		else
 		{
 			g_waferMap[slotnum - 1] = 0;
 			fullBoat = FALSE;
 		}
-    }
+	}
 
-    return fullBoat;
+	return fullBoat;
 }
 
 /*** BeginHeader SendPcOpDone */
@@ -128,60 +129,54 @@ xmem void SendPcOpDone();
  *============================================================================*/
 xmem void SendPcOpDone()
 {
-    /** generate wafer map based on the sensor map */
-    void *p2, *p3, *p4, *p5, *p6;
-    int re;
-    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+	/** generate wafer map based on the sensor map */
+	void *p2, *p3, *p4, *p5, *p6;
+	int re;
+	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
-    int slotnum;
+	int slotnum;
 
-    msgbuf[0] = 6;
-    msgbuf[1] = MSG_OPERATION_DONE;    
+	msgbuf[0] = 6;
+	msgbuf[1] = MSG_OPERATION_DONE;
 
-    //byte 1 to pc
-    p2 = &msgbuf[2];
-    memset(p2, 0, 1);
-    
-    for (slotnum = 1; slotnum <= 8; slotnum++)
-    {
-    	g_waferMap[slotnum - 1] ? set(p2, (slotnum - 1)) : 0;
-    }
+	//byte 1 to pc
+	p2 = &msgbuf[2];
+	memset(p2, 0, 1);
 
-    //byte 2
-    p3 = &msgbuf[3];
-    memset(p3, 0, 1);
+	for (slotnum = 1; slotnum <= 8; slotnum++)
+		g_waferMap[slotnum - 1] ? set(p2, (slotnum - 1)) : 0;
 
-    for (slotnum = 9; slotnum <= 16; slotnum++)
-    {
-    	g_waferMap[slotnum - 1] ? set(p3, (slotnum - 9)) : 0;
-    }
+	//byte 2
+	p3 = &msgbuf[3];
+	memset(p3, 0, 1);
 
-    //byte 3
-    p4 = &msgbuf[4];
-    memset(p4, 0, 1);
+	for (slotnum = 9; slotnum <= 16; slotnum++)
+		g_waferMap[slotnum - 1] ? set(p3, (slotnum - 9)) : 0;
 
-    for (slotnum = 17; slotnum <= 24; slotnum++)
-    {
-    	g_waferMap[slotnum - 1] ? set(p4, (slotnum - 17)) : 0;
-    }
+	//byte 3
+	p4 = &msgbuf[4];
+	memset(p4, 0, 1);
 
-    //byte 4
-    p5 = &msgbuf[5];
-    memset(p5, 0, 1);
-    g_waferMap[24] ? set(p5, 0) : 0;
-    IsFlatToUp() ? set(p5, 1) : 0;
-    IsBoatPresent() ? set(p5, 2) : 0;
-    IsBlockUp() ? set(p5, 3) : 0;
-    IsBlockDown() ? set(p5, 4) : 0;
+	for (slotnum = 17; slotnum <= 24; slotnum++)
+		g_waferMap[slotnum - 1] ? set(p4, (slotnum - 17)) : 0;
 
-    msgbuf[6] = g_flatType;
+	//byte 4
+	p5 = &msgbuf[5];
+	memset(p5, 0, 1);
+	g_waferMap[24] ? set(p5, 0) : 0;
+	IsFlatToUp() ? set(p5, 1) : 0;
+	IsBoatPresent() ? set(p5, 2) : 0;
+	IsBlockUp() ? set(p5, 3) : 0;
+	IsBlockDown() ? set(p5, 4) : 0;
 
-    msgbuf[msgbuf[0] + 1] = '\0';
+	msgbuf[6] = g_flatType;
 
-    if ((re = sendMsg(msgbuf)) != NO_ERROR)
-        return re;
+	msgbuf[msgbuf[0] + 1] = '\0';
 
-    return NO_ERROR;
+	if ((re = sendMsg(msgbuf)) != NO_ERROR)
+		return re;
+
+	return NO_ERROR;
 }
 
 /*** BeginHeader GetSensorStatus */
@@ -192,58 +187,52 @@ xmem int GetSensorStatus();
  *============================================================================*/
 xmem int GetSensorStatus()
 {
-    /** send sensor's values to host computer */
-    void *p2, *p3, *p4, *p5, *p6;
-    int re;
-    unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+	/** send sensor's values to host computer */
+	void *p2, *p3, *p4, *p5, *p6;
+	int re;
+	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
-    int slotnum;
+	int slotnum;
 
-    msgbuf[0] = 5;
-    msgbuf[1] = MSG_SENSOR_STATUS;
+	msgbuf[0] = 5;
+	msgbuf[1] = MSG_SENSOR_STATUS;
 
-    //byte 1 to pc
-    p2 = &msgbuf[2];
-    memset(p2, 0, 1);
-    
-    for (slotnum = 1; slotnum <= 8; slotnum++)
-    {
-    	IsWaferInSlot(slotnum) ? set(p2, (slotnum - 1)) : 0;
-    }
+	//byte 1 to pc
+	p2 = &msgbuf[2];
+	memset(p2, 0, 1);
 
-    //byte 2
-    p3 = &msgbuf[3];
-    memset(p3, 0, 1);
+	for (slotnum = 1; slotnum <= 8; slotnum++)
+		IsWaferInSlot(slotnum) ? set(p2, (slotnum - 1)) : 0;
 
-    for (slotnum = 9; slotnum <= 16; slotnum++)
-    {
-    	IsWaferInSlot(slotnum) ? set(p3, (slotnum - 9)) : 0;
-    }
+	//byte 2
+	p3 = &msgbuf[3];
+	memset(p3, 0, 1);
 
-    //byte 3
-    p4 = &msgbuf[4];
-    memset(p4, 0, 1);
+	for (slotnum = 9; slotnum <= 16; slotnum++)
+		IsWaferInSlot(slotnum) ? set(p3, (slotnum - 9)) : 0;
 
-    for (slotnum = 17; slotnum <= 24; slotnum++)
-    {
-    	IsWaferInSlot(slotnum) ? set(p4, (slotnum - 17)) : 0;
-    }
+	//byte 3
+	p4 = &msgbuf[4];
+	memset(p4, 0, 1);
 
-    //byte 4
-    p5 = &msgbuf[5];
-    memset(p5, 0, 1);
-    IsWaferInSlot(25) ? set(p5, 0) : 0;
-    IsFlatToUp() ? set(p5, 1) : 0;
-    IsBoatPresent() ? 0 : set(p5, 2);
-    IsBlockUp() ? set(p5, 3) : 0;
-    IsBlockDown() ? set(p5, 4) : 0;
+	for (slotnum = 17; slotnum <= 24; slotnum++)
+		IsWaferInSlot(slotnum) ? set(p4, (slotnum - 17)) : 0;
 
-    msgbuf[msgbuf[0] + 1] = '\0';
+	//byte 4
+	p5 = &msgbuf[5];
+	memset(p5, 0, 1);
+	IsWaferInSlot(25) ? set(p5, 0) : 0;
+	IsFlatToUp() ? set(p5, 1) : 0;
+	IsBoatPresent() ? 0 : set(p5, 2);
+	IsBlockUp() ? set(p5, 3) : 0;
+	IsBlockDown() ? set(p5, 4) : 0;
 
-    if ((re = sendMsg(msgbuf)) != NO_ERROR)
-        return re;
+	msgbuf[msgbuf[0] + 1] = '\0';
 
-    return NO_ERROR;
+	if ((re = sendMsg(msgbuf)) != NO_ERROR)
+		return re;
+
+	return NO_ERROR;
 }
 
 /*** BeginHeader init */
@@ -304,8 +293,8 @@ void InitCommPort(void)
 	if (!serCopen(BAUD19200))       //to NMC
 		return;
 
-    if (!serEopen(BAUD115200))      //to PC
-        return;
+	if (!serEopen(BAUD115200))      //to PC
+		return;
 
 	serMode(0);
 
@@ -314,13 +303,13 @@ void InitCommPort(void)
 	serCwrFlush();
 
 	serErdFlush();
-    serEwrFlush();
+	serEwrFlush();
 
 	serCdatabits(PARAM_8BIT);
 	serCparity(PARAM_NOPARITY);
 
 	serEdatabits(PARAM_8BIT);
-    serEparity(PARAM_NOPARITY);
+	serEparity(PARAM_NOPARITY);
 }
 
 /*** BeginHeader myinp */
@@ -371,124 +360,129 @@ xmem int handleMsg();
  *============================================================================*/
 xmem int handleMsg()
 {
-    /**
-     * Message handler
-     */
-    unsigned char bankdata;
-    int id, re, in_io, keepSupportUp;
-    unsigned char msgbuf[PCPORTOUTBUFSIZE];
+	/**
+	 * Message handler
+	 */
+	unsigned char bankdata;
+	int id, re, in_io, keepSupportUp;
+	unsigned char msgbuf[PCPORTOUTBUFSIZE];
 
 
-    if (!(id = getMsg()))
-        return NO_ERROR;
+	if (!(id = getMsg()))
+		return NO_ERROR;
 
-    re = NO_ERROR;
+	re = NO_ERROR;
 
-    switch (id)
-    {
-    case CMD_SENSOR_STATUS: // 1
-        re = GetSensorStatus();
-        break;
-/*
-    case CMD_INITIAL_DATA:      // 2
-        GetDataFromHost();
-        break;
-*/
-    case CMD_INITIALIZE:    // 3
-        re = InitWhole();        
-        break;
+	switch (id)
+	{
+		case CMD_SENSOR_STATUS: // 1
+			re = GetSensorStatus();
+			break;
 
-    case CMD_IO:       // 4
-        in_io = g_msgbuf[DATA_IDX];
-        
-        if (in_io == 1)
-        {
-        	g_stage = IN_IO;
-        	setOperationLight();
-        }	
-        else
-        {
-        	g_stage = READY;
-        	setIdleLight();
-        }	
+		/*
+			case CMD_INITIAL_DATA:      // 2
+				GetDataFromHost();
+				break;
+		*/
+		case CMD_INITIALIZE:    // 3
+			re = InitWhole();
+			break;
 
-        break;
+		case CMD_IO:       // 4
+			in_io = g_msgbuf[DATA_IDX];
 
-    case CMD_NOTCH_FIND:          // 5
-        keepSupportUp = g_msgbuf[DATA_IDX];
-        if ((re = FindFlat()) != NO_ERROR)
-        		break;
-        else
-        {
-            msgbuf[0] = 1;
+			if (in_io == 1)
+			{
+				g_stage = IN_IO;
+				setOperationLight();
+			}
+			else
+			{
+				g_stage = READY;
+				setIdleLight();
+			}
+
+			break;
+
+		case CMD_NOTCH_FIND:          // 5
+			keepSupportUp = g_msgbuf[DATA_IDX];
+
+			if ((re = FindFlat()) != NO_ERROR)
+				break;
+			else
+			{
+				msgbuf[0] = 1;
 				msgbuf[1] = MSG_IO_DONE;
 				msgbuf[msgbuf[0] + 1] = '\0';
-		  		sendMsg(msgbuf);
+				sendMsg(msgbuf);
 
-            PrepareForGetFlatType();  //for test
-          /*
-            if (keepSupportUp)
-            {
-            	if ((re = MoveBlockUp()) == NO_ERROR)
-               {
-                  msgbuf[0] = 1;
+				PrepareForGetFlatType();  //for test
+				/*
+				if (keepSupportUp)
+				{
+					if ((re = MoveBlockUp()) == NO_ERROR)
+				   {
+					  msgbuf[0] = 1;
+							msgbuf[1] = MSG_IO_DONE;
+							msgbuf[msgbuf[0] + 1] = '\0';
+							re = sendMsg(msgbuf);
+				   }
+				}
+				else
+				{
+					msgbuf[0] = 1;
 						msgbuf[1] = MSG_IO_DONE;
 						msgbuf[msgbuf[0] + 1] = '\0';
 						re = sendMsg(msgbuf);
-               }
-            }
-            else
-            {
-            	msgbuf[0] = 1;
-					msgbuf[1] = MSG_IO_DONE;
-					msgbuf[msgbuf[0] + 1] = '\0';
-					re = sendMsg(msgbuf);
-            } */
-        }
-        break;
+				} */
+			}
 
-    case CMD_NF_SUPPORT_UP:        // 6
-        if ((re = MoveBlockUp()) == NO_ERROR)
-        {
-         	msgbuf[0] = 1;
+			break;
+
+		case CMD_NF_SUPPORT_UP:        // 6
+			if ((re = MoveBlockUp()) == NO_ERROR)
+			{
+				msgbuf[0] = 1;
 				msgbuf[1] = MSG_IO_DONE;
 				msgbuf[msgbuf[0] + 1] = '\0';
 				re = sendMsg(msgbuf);
-        }
-        break;
+			}
 
-    case CMD_NF_SUPPORT_DOWN:          // 7
+			break;
 
-        if ((re = MoveBlockDown()) == NO_ERROR)
-        {
-         	msgbuf[0] = 1;
+		case CMD_NF_SUPPORT_DOWN:          // 7
+
+			if ((re = MoveBlockDown()) == NO_ERROR)
+			{
+				msgbuf[0] = 1;
 				msgbuf[1] = MSG_IO_DONE;
 				msgbuf[msgbuf[0] + 1] = '\0';
 				re = sendMsg(msgbuf);
-        }
-        break;
+			}
 
-    case CMD_ABORT:
-        //ResetPausedSignalToHost();
-        //re = InitWhole();
-        break;
+			break;
 
-    case CMD_ALARM: // 21
-        recvAlarmMsg();
-        break;
+		case CMD_ABORT:
+			//ResetPausedSignalToHost();
+			//re = InitWhole();
+			break;
 
-    case CMD_LIGHT: // 23
-        SetLight();
-        break;
+		case CMD_ALARM: // 21
+			recvAlarmMsg();
+			break;
 
-    default:
-        break;
-    }
+		case CMD_LIGHT: // 23
+			SetLight();
+			break;
 
-    if (re != NO_ERROR)
-        sendErrMsg(re);    
+		default:
+			break;
+	}
 
-    return NO_ERROR;
+	if (re != NO_ERROR)
+		sendErrMsg(re);
+
+	return NO_ERROR;
 }
 
 
@@ -501,136 +495,136 @@ xmem int handleMsg()
 /*
 xmem void GetDataFromHost()
 {
-    long beamShadowBottom_6, beamShadowTop_6, beamShadowBottom_8, beamShadowTop_8;
+	long beamShadowBottom_6, beamShadowTop_6, beamShadowBottom_8, beamShadowTop_8;
 
-    g_posTrayIn_6 = (g_msgbuf[DATA_IDX] << 8);
-    g_posTrayIn_6 |= g_msgbuf[DATA_IDX + 1];
+	g_posTrayIn_6 = (g_msgbuf[DATA_IDX] << 8);
+	g_posTrayIn_6 |= g_msgbuf[DATA_IDX + 1];
 
-    g_posTrayOut_6 = (g_msgbuf[DATA_IDX + 2] << 8);
-    g_posTrayOut_6 |= g_msgbuf[DATA_IDX + 3];
+	g_posTrayOut_6 = (g_msgbuf[DATA_IDX + 2] << 8);
+	g_posTrayOut_6 |= g_msgbuf[DATA_IDX + 3];
 
-    g_elevDownStepsForPick_6 = (g_msgbuf[DATA_IDX + 4] << 8);
-    g_elevDownStepsForPick_6 |= g_msgbuf[DATA_IDX + 5];
+	g_elevDownStepsForPick_6 = (g_msgbuf[DATA_IDX + 4] << 8);
+	g_elevDownStepsForPick_6 |= g_msgbuf[DATA_IDX + 5];
 
-    g_slot1Offset_6 = ((long)g_msgbuf[DATA_IDX + 6] << 8);
-    g_slot1Offset_6 |= (long)g_msgbuf[DATA_IDX + 7];
+	g_slot1Offset_6 = ((long)g_msgbuf[DATA_IDX + 6] << 8);
+	g_slot1Offset_6 |= (long)g_msgbuf[DATA_IDX + 7];
 
-    g_slot26Offset_6 = ((long)g_msgbuf[DATA_IDX + 8] << 24);
-    g_slot26Offset_6 |= ((long)g_msgbuf[DATA_IDX + 9] << 16);
-    g_slot26Offset_6 |= ((long)g_msgbuf[DATA_IDX + 10] << 8);
-    g_slot26Offset_6 |= (long)g_msgbuf[DATA_IDX + 11];
+	g_slot26Offset_6 = ((long)g_msgbuf[DATA_IDX + 8] << 24);
+	g_slot26Offset_6 |= ((long)g_msgbuf[DATA_IDX + 9] << 16);
+	g_slot26Offset_6 |= ((long)g_msgbuf[DATA_IDX + 10] << 8);
+	g_slot26Offset_6 |= (long)g_msgbuf[DATA_IDX + 11];
 
-    g_sensorOffset_6 = ((long)g_msgbuf[DATA_IDX + 12] << 8);
-    g_sensorOffset_6 |= (long)g_msgbuf[DATA_IDX + 13];
+	g_sensorOffset_6 = ((long)g_msgbuf[DATA_IDX + 12] << 8);
+	g_sensorOffset_6 |= (long)g_msgbuf[DATA_IDX + 13];
 
-    beamShadowBottom_6 = (g_msgbuf[DATA_IDX + 14] << 8);
-    beamShadowBottom_6 |= g_msgbuf[DATA_IDX + 15];
+	beamShadowBottom_6 = (g_msgbuf[DATA_IDX + 14] << 8);
+	beamShadowBottom_6 |= g_msgbuf[DATA_IDX + 15];
 
-    beamShadowTop_6 = (g_msgbuf[DATA_IDX + 16] << 8);
-    beamShadowTop_6 |= g_msgbuf[DATA_IDX + 17];
+	beamShadowTop_6 = (g_msgbuf[DATA_IDX + 16] << 8);
+	beamShadowTop_6 |= g_msgbuf[DATA_IDX + 17];
 
-    g_FFupOffset = g_msgbuf[DATA_IDX + 18];
-    g_FFdownOffset = g_msgbuf[DATA_IDX + 19];
-    g_FFleftOffset = g_msgbuf[DATA_IDX + 20];
-    g_FFrightOffset = g_msgbuf[DATA_IDX + 21];
-    g_NFupOffset6 = g_msgbuf[DATA_IDX + 22];
-    g_NFdownOffset6 = g_msgbuf[DATA_IDX + 23];
-    g_NFleftOffset6 = g_msgbuf[DATA_IDX + 24];
-    g_NFrightOffset6 = g_msgbuf[DATA_IDX + 25];
+	g_FFupOffset = g_msgbuf[DATA_IDX + 18];
+	g_FFdownOffset = g_msgbuf[DATA_IDX + 19];
+	g_FFleftOffset = g_msgbuf[DATA_IDX + 20];
+	g_FFrightOffset = g_msgbuf[DATA_IDX + 21];
+	g_NFupOffset6 = g_msgbuf[DATA_IDX + 22];
+	g_NFdownOffset6 = g_msgbuf[DATA_IDX + 23];
+	g_NFleftOffset6 = g_msgbuf[DATA_IDX + 24];
+	g_NFrightOffset6 = g_msgbuf[DATA_IDX + 25];
 
-    g_slot1Offset_8 = ((long)g_msgbuf[DATA_IDX + 26] << 8);
-    g_slot1Offset_8 |= (long)g_msgbuf[DATA_IDX + 27];
+	g_slot1Offset_8 = ((long)g_msgbuf[DATA_IDX + 26] << 8);
+	g_slot1Offset_8 |= (long)g_msgbuf[DATA_IDX + 27];
 
-    g_slot26Offset_8 = ((long)g_msgbuf[DATA_IDX + 28] << 24);
-    g_slot26Offset_8 |= ((long)g_msgbuf[DATA_IDX + 29] << 16);
-    g_slot26Offset_8 |= ((long)g_msgbuf[DATA_IDX + 30] << 8);
-    g_slot26Offset_8 |= (long)g_msgbuf[DATA_IDX + 31];
+	g_slot26Offset_8 = ((long)g_msgbuf[DATA_IDX + 28] << 24);
+	g_slot26Offset_8 |= ((long)g_msgbuf[DATA_IDX + 29] << 16);
+	g_slot26Offset_8 |= ((long)g_msgbuf[DATA_IDX + 30] << 8);
+	g_slot26Offset_8 |= (long)g_msgbuf[DATA_IDX + 31];
 
-    g_sensorOffset_8 = ((long)g_msgbuf[DATA_IDX + 32] << 8);
-    g_sensorOffset_8 |= (long)g_msgbuf[DATA_IDX + 33];
+	g_sensorOffset_8 = ((long)g_msgbuf[DATA_IDX + 32] << 8);
+	g_sensorOffset_8 |= (long)g_msgbuf[DATA_IDX + 33];
 
-    beamShadowBottom_8 = (g_msgbuf[DATA_IDX + 34] << 8);
-    beamShadowBottom_8 |= g_msgbuf[DATA_IDX + 35];
+	beamShadowBottom_8 = (g_msgbuf[DATA_IDX + 34] << 8);
+	beamShadowBottom_8 |= g_msgbuf[DATA_IDX + 35];
 
-    beamShadowTop_8 = (g_msgbuf[DATA_IDX + 36] << 8);
-    beamShadowTop_8 |= g_msgbuf[DATA_IDX + 37];
+	beamShadowTop_8 = (g_msgbuf[DATA_IDX + 36] << 8);
+	beamShadowTop_8 |= g_msgbuf[DATA_IDX + 37];
 
-    g_NFupOffset8 = g_msgbuf[DATA_IDX + 38];
-    g_NFdownOffset8 = g_msgbuf[DATA_IDX + 39];
-    g_NFleftOffset8 = g_msgbuf[DATA_IDX + 40];
-    g_NFrightOffset8 = g_msgbuf[DATA_IDX + 41];
+	g_NFupOffset8 = g_msgbuf[DATA_IDX + 38];
+	g_NFdownOffset8 = g_msgbuf[DATA_IDX + 39];
+	g_NFleftOffset8 = g_msgbuf[DATA_IDX + 40];
+	g_NFrightOffset8 = g_msgbuf[DATA_IDX + 41];
 
-    g_posTrayIn_8 = (g_msgbuf[DATA_IDX + 42] << 8);
-    g_posTrayIn_8 |= g_msgbuf[DATA_IDX + 43];
+	g_posTrayIn_8 = (g_msgbuf[DATA_IDX + 42] << 8);
+	g_posTrayIn_8 |= g_msgbuf[DATA_IDX + 43];
 
-    g_posTrayOut_8 = (g_msgbuf[DATA_IDX + 44] << 8);
-    g_posTrayOut_8 |= g_msgbuf[DATA_IDX + 45];
+	g_posTrayOut_8 = (g_msgbuf[DATA_IDX + 44] << 8);
+	g_posTrayOut_8 |= g_msgbuf[DATA_IDX + 45];
 
-    g_pickWaferOffset6 = (g_msgbuf[DATA_IDX + 46] << 8);
-    g_pickWaferOffset6 |= g_msgbuf[DATA_IDX + 47];
+	g_pickWaferOffset6 = (g_msgbuf[DATA_IDX + 46] << 8);
+	g_pickWaferOffset6 |= g_msgbuf[DATA_IDX + 47];
 
-    g_pickWaferOffset8 = (g_msgbuf[DATA_IDX + 48] << 8);
-    g_pickWaferOffset8 |= g_msgbuf[DATA_IDX + 49];
+	g_pickWaferOffset8 = (g_msgbuf[DATA_IDX + 48] << 8);
+	g_pickWaferOffset8 |= g_msgbuf[DATA_IDX + 49];
 
-    g_trayPickWaferOffset_6 = (g_msgbuf[DATA_IDX + 50] << 8);
-    g_trayPickWaferOffset_6 |= g_msgbuf[DATA_IDX + 51];
+	g_trayPickWaferOffset_6 = (g_msgbuf[DATA_IDX + 50] << 8);
+	g_trayPickWaferOffset_6 |= g_msgbuf[DATA_IDX + 51];
 
-    g_trayPickWaferOffset_8 = (g_msgbuf[DATA_IDX + 52] << 8);
-    g_trayPickWaferOffset_8 |= g_msgbuf[DATA_IDX + 53];
+	g_trayPickWaferOffset_8 = (g_msgbuf[DATA_IDX + 52] << 8);
+	g_trayPickWaferOffset_8 |= g_msgbuf[DATA_IDX + 53];
 
-    //7/16/2015 3:19:12 PM @Jered add a global parameter for 8" wafer
-    g_elevDownStepsForPick_8 = (g_msgbuf[DATA_IDX + 54] << 8);
-    g_elevDownStepsForPick_8 |= g_msgbuf[DATA_IDX + 55];
+	//7/16/2015 3:19:12 PM @Jered add a global parameter for 8" wafer
+	g_elevDownStepsForPick_8 = (g_msgbuf[DATA_IDX + 54] << 8);
+	g_elevDownStepsForPick_8 |= g_msgbuf[DATA_IDX + 55];
 
-    //@Jered add a global parameter for platform tilt
-    // g_elevDwForPlatfromTilt = (g_msgbuf[DATA_IDX + 56] << 8);
-    // g_elevDwForPlatfromTilt |= (g_msgbuf[DATA_IDX + 57]);
+	//@Jered add a global parameter for platform tilt
+	// g_elevDwForPlatfromTilt = (g_msgbuf[DATA_IDX + 56] << 8);
+	// g_elevDwForPlatfromTilt |= (g_msgbuf[DATA_IDX + 57]);
 
-    // cross slot ratio per centage, 02-12-2016 dliu
-    g_crossRatio_6 = g_msgbuf[DATA_IDX + 56];
-    g_crossRatio_8 = g_msgbuf[DATA_IDX + 57];
+	// cross slot ratio per centage, 02-12-2016 dliu
+	g_crossRatio_6 = g_msgbuf[DATA_IDX + 56];
+	g_crossRatio_8 = g_msgbuf[DATA_IDX + 57];
 
-    g_beamShadow_6 = (beamShadowBottom_6 + beamShadowTop_6) / 2;
-    g_beamShadow_8 = (beamShadowBottom_8 + beamShadowTop_8) / 2;
+	g_beamShadow_6 = (beamShadowBottom_6 + beamShadowTop_6) / 2;
+	g_beamShadow_8 = (beamShadowBottom_8 + beamShadowTop_8) / 2;
 
-    //DelayMilliseconds(1000);
-    /*
-    	printf("g_posTrayIn= %d \n", g_posTrayIn_6);
-    	printf("g_posTrayOut= %d\n", g_posTrayOut_6);
-    	printf("g_posTrayIn_8= %d \n", g_posTrayIn_8);
-    	printf("g_posTrayOut_8= %d\n", g_posTrayOut_8);
-    	printf("g_elevDownStepsForPick_6= %d \n", g_elevDownStepsForPick_6);
-    	printf("g_elevDownStepsForPick_8= %d \n", g_elevDownStepsForPick_8);
-    	printf("slot1_6 offset = %ld\n", g_slot1Offset_6);
-    	printf("slot26_6 offset = %ld\n", g_slot26Offset_6);
-    	printf("6 Scan start at %ld\n", g_sensorOffset_6);
-    	printf("beamShadowBottom_6 = %ld\n", beamShadowBottom_6);
-    	printf("beamShadowTop_6 = %ld\n", beamShadowTop_6);
-    	printf("g_FFupOffset for 6= %d\n", g_FFupOffset);
-    	printf("g_FFdownOffset for 6= %d\n", g_FFdownOffset);
-    	printf("g_FFleftOffset for 6= %d\n", g_FFleftOffset);
-    	printf("g_FFrightOffset for 6= %d\n", g_FFrightOffset);
-    	printf("g_NFupOffset6= %d\n", g_NFupOffset6);
-    	printf("g_NFdownOffset6= %d\n", g_NFdownOffset6);
-    	printf("g_NFleftOffset6= %d\n", g_NFleftOffset6);
-    	printf("g_NFrightOffset6= %d\n", g_NFrightOffset6);
-    	printf("slot1_8 offset = %ld\n", g_slot1Offset_8);
-    	printf("slot26_8 offset = %ld\n", g_slot26Offset_8);
-    	printf("8 Scan start at %ld\n", g_sensorOffset_8);
-    	printf("beamShadowBottom_8 = %ld\n", beamShadowBottom_8);
-    	printf("beamShadowTop_8 = %ld\n", beamShadowTop_8);
-    	printf("g_NFupOffset8= %d\n", g_NFupOffset8);
-    	printf("g_NFdownOffset8= %d\n", g_NFdownOffset8);
-    	printf("g_NFleftOffset8= %d\n", g_NFleftOffset8);
-    	printf("g_NFrightOffset8= %d\n", g_NFrightOffset8);
-    	printf("g_pickWaferOffset6= %d\n", g_pickWaferOffset6);
-    	printf("g_pickWaferOffset8= %d\n", g_pickWaferOffset8);
-    	printf("g_trayPickWaferOffset_6= %d\n", g_trayPickWaferOffset_6);
-    	printf("g_trayPickWaferOffset_8= %d\n", g_trayPickWaferOffset_8);
-    	printf("g_elevDwForPlatfromTilt = %d \n", g_elevDwForPlatfromTilt);
-    	printf("g_crossRatio_6 = %d\n", g_crossRatio_6);
-    	printf("g_crossRatio_8 = %d\n", g_crossRatio_8);
-    */
+	//DelayMilliseconds(1000);
+	/*
+		printf("g_posTrayIn= %d \n", g_posTrayIn_6);
+		printf("g_posTrayOut= %d\n", g_posTrayOut_6);
+		printf("g_posTrayIn_8= %d \n", g_posTrayIn_8);
+		printf("g_posTrayOut_8= %d\n", g_posTrayOut_8);
+		printf("g_elevDownStepsForPick_6= %d \n", g_elevDownStepsForPick_6);
+		printf("g_elevDownStepsForPick_8= %d \n", g_elevDownStepsForPick_8);
+		printf("slot1_6 offset = %ld\n", g_slot1Offset_6);
+		printf("slot26_6 offset = %ld\n", g_slot26Offset_6);
+		printf("6 Scan start at %ld\n", g_sensorOffset_6);
+		printf("beamShadowBottom_6 = %ld\n", beamShadowBottom_6);
+		printf("beamShadowTop_6 = %ld\n", beamShadowTop_6);
+		printf("g_FFupOffset for 6= %d\n", g_FFupOffset);
+		printf("g_FFdownOffset for 6= %d\n", g_FFdownOffset);
+		printf("g_FFleftOffset for 6= %d\n", g_FFleftOffset);
+		printf("g_FFrightOffset for 6= %d\n", g_FFrightOffset);
+		printf("g_NFupOffset6= %d\n", g_NFupOffset6);
+		printf("g_NFdownOffset6= %d\n", g_NFdownOffset6);
+		printf("g_NFleftOffset6= %d\n", g_NFleftOffset6);
+		printf("g_NFrightOffset6= %d\n", g_NFrightOffset6);
+		printf("slot1_8 offset = %ld\n", g_slot1Offset_8);
+		printf("slot26_8 offset = %ld\n", g_slot26Offset_8);
+		printf("8 Scan start at %ld\n", g_sensorOffset_8);
+		printf("beamShadowBottom_8 = %ld\n", beamShadowBottom_8);
+		printf("beamShadowTop_8 = %ld\n", beamShadowTop_8);
+		printf("g_NFupOffset8= %d\n", g_NFupOffset8);
+		printf("g_NFdownOffset8= %d\n", g_NFdownOffset8);
+		printf("g_NFleftOffset8= %d\n", g_NFleftOffset8);
+		printf("g_NFrightOffset8= %d\n", g_NFrightOffset8);
+		printf("g_pickWaferOffset6= %d\n", g_pickWaferOffset6);
+		printf("g_pickWaferOffset8= %d\n", g_pickWaferOffset8);
+		printf("g_trayPickWaferOffset_6= %d\n", g_trayPickWaferOffset_6);
+		printf("g_trayPickWaferOffset_8= %d\n", g_trayPickWaferOffset_8);
+		printf("g_elevDwForPlatfromTilt = %d \n", g_elevDwForPlatfromTilt);
+		printf("g_crossRatio_6 = %d\n", g_crossRatio_6);
+		printf("g_crossRatio_8 = %d\n", g_crossRatio_8);
+	*/
 //}
 
 /*** BeginHeader recvAlarmMsg */
@@ -642,10 +636,10 @@ xmem void recvAlarmMsg();
  *============================================================================*/
 xmem void recvAlarmMsg()
 {
-    if (g_msgbuf[DATA_IDX])    /* turn on alarm */
-        AlarmOn();
-    else    /* turn off alarm */
-        AlarmOff();
+	if (g_msgbuf[DATA_IDX])    /* turn on alarm */
+		AlarmOn();
+	else    /* turn off alarm */
+		AlarmOff();
 }
 
 /*** BeginHeader AlarmOn */
@@ -656,8 +650,8 @@ xmem void AlarmOn();
  *============================================================================*/
 xmem void AlarmOn()
 {
-    /** turn alamm on */
-    digHout(ALARM_TRIG, 0);
+	/** turn alamm on */
+	digHout(ALARM_TRIG, 0);
 }
 
 /*** BeginHeader AlarmOff */
@@ -668,8 +662,8 @@ xmem void AlarmOff();
  *============================================================================*/
 xmem void AlarmOff()
 {
-    /** turn alamm off */
-    digHout(ALARM_TRIG, 1);
+	/** turn alamm off */
+	digHout(ALARM_TRIG, 1);
 }
 
 /*** BeginHeader SetLight */
@@ -680,10 +674,10 @@ xmem void SetLight();
  *============================================================================*/
 xmem void SetLight()
 {
-    /** set light color */
-    int color;
+	/** set light color */
+	int color;
 
-    color = g_msgbuf[DATA_IDX];
+	color = g_msgbuf[DATA_IDX];
 
 	SetLightLocal(color);
 }
@@ -696,7 +690,7 @@ xmem void SetRedLight();
  *============================================================================*/
 xmem void SetRedLight()
 {
-    digHout(LIGHT_RED_TRIG, 0);
+	digHout(LIGHT_RED_TRIG, 0);
 }
 
 /*** BeginHeader ResetRedLight */
@@ -707,7 +701,7 @@ xmem void ResetRedLight();
  *============================================================================*/
 xmem void ResetRedLight()
 {
-    digHout(LIGHT_RED_TRIG, 1);
+	digHout(LIGHT_RED_TRIG, 1);
 }
 
 /*** BeginHeader SetGreenLight */
@@ -718,7 +712,7 @@ xmem void SetGreenLight();
  *============================================================================*/
 xmem void SetGreenLight()
 {
-    digHout(LIGHT_GREEN_TRIG, 0);
+	digHout(LIGHT_GREEN_TRIG, 0);
 }
 
 /*** BeginHeader ResetGreenLight */
@@ -729,7 +723,7 @@ xmem void ResetGreenLight();
  *============================================================================*/
 xmem void ResetGreenLight()
 {
-    digHout(LIGHT_GREEN_TRIG, 1);
+	digHout(LIGHT_GREEN_TRIG, 1);
 }
 
 /*** BeginHeader setIdleLight */
@@ -740,10 +734,10 @@ xmem void setIdleLight();
  *============================================================================*/
 xmem void setIdleLight()
 {
-    int color;
-    color = GREEN_LIGHT;
+	int color;
+	color = GREEN_LIGHT;
 
-    SetLightLocal(color);
+	SetLightLocal(color);
 }
 
 /*** BeginHeader setOperationLight */
@@ -754,13 +748,13 @@ xmem void setOperationLight();
  *============================================================================*/
 xmem void setOperationLight()
 {
-    int color;
-    //color = GREEN_LIGHT;
+	int color;
+	//color = GREEN_LIGHT;
 
-    ResetGreenLight();
-    ResetRedLight();
-    AlarmOff();
-    //SetLightLocal(color);
+	ResetGreenLight();
+	ResetRedLight();
+	AlarmOff();
+	//SetLightLocal(color);
 }
 
 /*** BeginHeader setErrorLight */
@@ -771,11 +765,11 @@ xmem void setErrorLight();
  *============================================================================*/
 xmem void setErrorLight()
 {
-    int color;
-    color = RED_LIGHT;
+	int color;
+	color = RED_LIGHT;
 
-    SetLightLocal(color);
-    AlarmOn();              
+	SetLightLocal(color);
+	AlarmOn();
 }
 
 /*** BeginHeader SetLightLocal */
@@ -786,32 +780,32 @@ xmem void SetLightLocal(int color);
  *============================================================================*/
 xmem void SetLightLocal(int color)
 {
-    switch (color)
-    {
-    case RED_LIGHT:
-        //        printf("light color: red\n");
-        SetRedLight();
-        ResetGreenLight();
-        //ResetAmberLight();
-        break;
+	switch (color)
+	{
+		case RED_LIGHT:
+			//        printf("light color: red\n");
+			SetRedLight();
+			ResetGreenLight();
+			//ResetAmberLight();
+			break;
 
-    case GREEN_LIGHT:
-        //printf("light color: green\n");
-        SetGreenLight();
-        ResetRedLight();
-        //ResetAmberLight();
-        break;
+		case GREEN_LIGHT:
+			//printf("light color: green\n");
+			SetGreenLight();
+			ResetRedLight();
+			//ResetAmberLight();
+			break;
 
-    case YELLOW_LIGHT:
-        //printf("light color: yellow\n");
-        //SetAmberLight();
-        ResetGreenLight();
-        ResetRedLight();
-        break;
+		case YELLOW_LIGHT:
+			//printf("light color: yellow\n");
+			//SetAmberLight();
+			ResetGreenLight();
+			ResetRedLight();
+			break;
 
-    default:
-        break;
-    }
+		default:
+			break;
+	}
 }
 
 /*** BeginHeader GetFlatType */
@@ -833,8 +827,8 @@ xmem int GetFlatType()
 		{
 			flatType = SM_WAFER;
 			break;
-		}	 
-	} 
+		}
+	}
 
 	return flatType;
 }
