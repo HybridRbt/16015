@@ -55,6 +55,7 @@ unsigned char g_msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
 int g_stage;  // indicate current machine stage
 int g_flatType;  // indicate the flat type (47 or 57)
+int g_bConnected;  // indicate if pc is connected, if not, no msg will be sent
 /*==============================================================================
  *                  main
  *============================================================================*/
