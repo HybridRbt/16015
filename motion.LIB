@@ -52,8 +52,10 @@ int RollerHome()
 	end = MS_TIMER + TIMEOUT_ROLLER;
 	DelayMilliseconds(10);
 
-	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+	while (MS_TIMER < end)
 	{
+   	if (ServoMoveDone(ROLLER_MOTOR))
+      	break;
 	}
 
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
