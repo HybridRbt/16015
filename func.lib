@@ -375,7 +375,7 @@ xmem int handleMsg()
      * Message handler
      */
     unsigned char bankdata;
-    int id, re, in_io;
+    int id, re, in_io, keepSupportUp;
     unsigned char msgbuf[PCPORTOUTBUFSIZE];
 
 
@@ -415,7 +415,36 @@ xmem int handleMsg()
         break;
 
     case CMD_NOTCH_FIND:          // 5
-        re = FindFlat();
+        keepSupportUp = g_msgbuf[DATA_IDX];
+        if ((re = FindFlat()) != NO_ERROR)
+        		break;
+        else
+        {
+            msgbuf[0] = 1;
+				msgbuf[1] = MSG_IO_DONE;
+				msgbuf[msgbuf[0] + 1] = '\0';
+		  		sendMsg(msgbuf);
+
+            PrepareForGetFlatType();  //for test
+          /*
+            if (keepSupportUp)
+            {
+            	if ((re = MoveBlockUp()) == NO_ERROR)
+               {
+                  msgbuf[0] = 1;
+						msgbuf[1] = MSG_IO_DONE;
+						msgbuf[msgbuf[0] + 1] = '\0';
+						re = sendMsg(msgbuf);
+               }
+            }
+            else
+            {
+            	msgbuf[0] = 1;
+					msgbuf[1] = MSG_IO_DONE;
+					msgbuf[msgbuf[0] + 1] = '\0';
+					re = sendMsg(msgbuf);
+            } */
+        }
         break;
 
     case CMD_NF_SUPPORT_UP:        // 6
