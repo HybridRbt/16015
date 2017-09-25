@@ -7,14 +7,25 @@
  ******************************************************************************/
 
 /*** Function list ***/
-// int IsWaferInSlot(int slotNum) 
+// int IsWaferInSlot(int slotNum)
 
 /*** BeginHeader IsWaferInSlot */
 int IsWaferInSlot(int slotNum);
 /*** EndHeader */
 int IsWaferInSlot(int slotNum)
 {
-    return myinp(slotNum);
+	if (!myinp(25 - slotNum + 1))
+	{
+		//printf("slot %d: 1\n", slotNum);
+		return TRUE;
+	}
+	else
+	{
+		//printf("slot %d: 0\n", slotNum);
+		return FALSE;
+	}
+
+	//return myinp(25 - slotNum + 1);
 }
 
 /*** BeginHeader IsBlockUp */
