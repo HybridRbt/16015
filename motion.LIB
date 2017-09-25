@@ -136,8 +136,8 @@ int FindFlat()
 	acc = ACC_ROLLER[MED];
 	//servo on first if needed
 	//    ServoOn(ROLLER_MOTOR);
-	pos = 550000;
-	pos = -pos;
+	pos = 300000;
+	//pos = -pos;
 	RollerMoveRelative(pos, vel, acc);
 	end = MS_TIMER + TIMEOUT_ROLLER;
 	DelayMilliseconds(10);
