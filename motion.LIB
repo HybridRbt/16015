@@ -13,9 +13,9 @@ int InitRoller()
 {
 	int re;
 
-   NmcInit();
+	NmcInit();
 
-   re = ServoInit(ROLLER_MOTOR);
+	re = ServoInit(ROLLER_MOTOR);
 
 	if (re != NO_ERROR)
 	{
@@ -47,15 +47,15 @@ int RollerHome()
 	vel = VEL_ROLLER[MIN];
 	acc = ACC_ROLLER[MIN];
 
-   ServoPosMove(ROLLER_MOTOR, 30000, vel, acc);
+	ServoPosMove(ROLLER_MOTOR, 30000, vel, acc);
 
 	end = MS_TIMER + TIMEOUT_ROLLER;
 	DelayMilliseconds(10);
 
 	while (MS_TIMER < end)
 	{
-   	if (ServoMoveDone(ROLLER_MOTOR))
-      	break;
+		if (ServoMoveDone(ROLLER_MOTOR))
+			break;
 	}
 
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
@@ -74,9 +74,9 @@ void RollerMoveRelative(long nstep, long vel, long acc)
 {
 	long pos;
 
-   InitRoller();
+	InitRoller();
 
-   //make sure it is stoppped
+	//make sure it is stoppped
 	ServoGetPos(ROLLER_MOTOR, &pos);
 	pos += nstep;
 	ServoPosMove(ROLLER_MOTOR, pos, vel, acc);
@@ -126,10 +126,10 @@ int FindFlat()
 	long vel, acc, pos;
 	int re;
 
-	if ((re=PreworkForFlatFind())!=NO_ERROR)
-	    	return re;
+	if ((re = PreworkForFlatFind()) != NO_ERROR)
+		return re;
 
-   if ((re = MoveBlockDown()) != NO_ERROR)
+	if ((re = MoveBlockDown()) != NO_ERROR)
 		return re;
 
 	vel = VEL_ROLLER[MED];
@@ -149,18 +149,21 @@ int FindFlat()
 	}
 
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+
 	return NO_ERROR;
+}
+
 /*** BeginHeader PrepareForGetFlatType */
 int PrepareForGetFlatType();
 /*** EndHeader */
 int PrepareForGetFlatType()
 {
-   int re;
+	int re;
 
-   if ((re = RollWafersBySteps(STEP_FOR_FLAT_TYPE)) != NO_ERROR)
+	if ((re = RollWafersBySteps(STEP_FOR_FLAT_TYPE)) != NO_ERROR)
 		return re;
 
-   return NO_ERROR;
+	return NO_ERROR;
 }
 
 /*** BeginHeader PrepareForGetWaferMap */
@@ -168,12 +171,12 @@ int PrepareForGetWaferMap();
 /*** EndHeader */
 int PrepareForGetWaferMap()
 {
-   int re;
+	int re;
 
-   if ((re = RollWafersBySteps(STEP_FOR_WAFER_MAP)) != NO_ERROR)
+	if ((re = RollWafersBySteps(STEP_FOR_WAFER_MAP)) != NO_ERROR)
 		return re;
 
-   return NO_ERROR;
+	return NO_ERROR;
 }
 
 /*** BeginHeader RollWafersBySteps */
@@ -181,19 +184,19 @@ int RollWafersBySteps(int steps);
 /*** EndHeader */
 int RollWafersBySteps(int steps)
 {
-   int re;
+	int re;
 
-   //if ((re = MoveBlockDown()) != NO_ERROR)
-	if ((re=MoveBlockUp())!=NO_ERROR)
+	//if ((re = MoveBlockDown()) != NO_ERROR)
+	if ((re = MoveBlockUp()) != NO_ERROR)
 		return re;
 
-   RollerMoveBySteps(steps);
+	RollerMoveBySteps(steps);
 
-   if ((re = MoveBlockDown()) != NO_ERROR)
-	//if ((re=MoveBlockUp())!=NO_ERROR)
+	if ((re = MoveBlockDown()) != NO_ERROR)
+		//if ((re=MoveBlockUp())!=NO_ERROR)
 		return re;
 
-   return NO_ERROR;
+	return NO_ERROR;
 }
 
 /*** BeginHeader RollerMoveBySteps */
@@ -201,11 +204,11 @@ int RollerMoveBySteps(int steps);
 /*** EndHeader */
 int RollerMoveBySteps(int steps)
 {
-   unsigned long end;
+	unsigned long end;
 	long vel, acc, pos;
-   int re;
+	int re;
 
-   vel = VEL_ROLLER[MED];
+	vel = VEL_ROLLER[MED];
 	acc = ACC_ROLLER[MED];
 	//servo on first if needed
 	//    ServoOn(ROLLER_MOTOR);
@@ -222,7 +225,7 @@ int RollerMoveBySteps(int steps)
 	}
 
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
-   return NO_ERROR;
+	return NO_ERROR;
 }
 
 /*** BeginHeader TurnFlatToTargetPos */
@@ -243,18 +246,18 @@ int TurnFlatToTargetPos()
 
 	if (g_flatOrientation == UP)
 	{
-      if (g_flatType == BG_WAFER)
-      	pos = FLAT_UP_STEP_BG;
-      else
-      	pos = FLAT_UP_STEP_SM;
+		if (g_flatType == BG_WAFER)
+			pos = FLAT_UP_STEP_BG;
+		else
+			pos = FLAT_UP_STEP_SM;
 	}
 	else  // stay down
 	{
-      if (g_flatType == BG_WAFER)
-      	pos = -FLAT_DOWN_STEP_BG;
-      else
-      	pos = -FLAT_DOWN_STEP_SM;
-   }
+		if (g_flatType == BG_WAFER)
+			pos = -FLAT_DOWN_STEP_BG;
+		else
+			pos = -FLAT_DOWN_STEP_SM;
+	}
 
 	printf("Flat Target= %ld\n", pos);
 	//pos = -pos;
