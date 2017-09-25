@@ -104,36 +104,36 @@
 //#define LIGHT_GREEN_TRIG   		0	// J1-18
 
 /* J1-18 ~ J1-10 */
-#define WAFER_IN_SLOT_SEN_1		1	// J1-17
-#define WAFER_IN_SLOT_SEN_2		2	// 16
-#define WAFER_IN_SLOT_SEN_3		3	// 15
-#define WAFER_IN_SLOT_SEN_4		4	// 14
-#define WAFER_IN_SLOT_SEN_5		5	// 13
-#define WAFER_IN_SLOT_SEN_6		6	// 12
-#define WAFER_IN_SLOT_SEN_7		7	// 11
-#define WAFER_IN_SLOT_SEN_8		8	// 10
+#define WAFER_IN_SLOT_SEN_25		1	// J1-17
+#define WAFER_IN_SLOT_SEN_24		2	// 16
+#define WAFER_IN_SLOT_SEN_23		3	// 15
+#define WAFER_IN_SLOT_SEN_22		4	// 14
+#define WAFER_IN_SLOT_SEN_21		5	// 13
+#define WAFER_IN_SLOT_SEN_20		6	// 12
+#define WAFER_IN_SLOT_SEN_19		7	// 11
+#define WAFER_IN_SLOT_SEN_18		8	// 10
 
-#define WAFER_IN_SLOT_SEN_9		9	// J1-9
-#define WAFER_IN_SLOT_SEN_10	10	// 8 
-#define WAFER_IN_SLOT_SEN_11	11	// 7
-#define WAFER_IN_SLOT_SEN_12	12	// 6
+#define WAFER_IN_SLOT_SEN_17		9	// J1-9
+#define WAFER_IN_SLOT_SEN_16	10	// 8
+#define WAFER_IN_SLOT_SEN_15	11	// 7
+#define WAFER_IN_SLOT_SEN_14	12	// 6
 #define WAFER_IN_SLOT_SEN_13	13	// 5
-#define WAFER_IN_SLOT_SEN_14	14	// 4
-#define WAFER_IN_SLOT_SEN_15	15	// 3
+#define WAFER_IN_SLOT_SEN_12	14	// 4
+#define WAFER_IN_SLOT_SEN_11	15	// 3
 
 /* J2-19 ~ J2-12 */
-#define WAFER_IN_SLOT_SEN_16	16	// J2-19
-#define WAFER_IN_SLOT_SEN_17	17	// 18
-#define WAFER_IN_SLOT_SEN_18	18	// 17
-#define WAFER_IN_SLOT_SEN_19	19	// 16
-#define WAFER_IN_SLOT_SEN_20	20	// 15
-#define WAFER_IN_SLOT_SEN_21	21	// 14
-#define WAFER_IN_SLOT_SEN_22	22	// 13
-#define WAFER_IN_SLOT_SEN_23	23	// 12
+#define WAFER_IN_SLOT_SEN_10	16	// J2-19
+#define WAFER_IN_SLOT_SEN_9	17	// 18
+#define WAFER_IN_SLOT_SEN_8	18	// 17
+#define WAFER_IN_SLOT_SEN_7	19	// 16
+#define WAFER_IN_SLOT_SEN_6	20	// 15
+#define WAFER_IN_SLOT_SEN_5	21	// 14
+#define WAFER_IN_SLOT_SEN_4	22	// 13
+#define WAFER_IN_SLOT_SEN_3	23	// 12
 
 /* J2-9 ~ J2-8 */
-#define WAFER_IN_SLOT_SEN_24	24	// 9
-#define WAFER_IN_SLOT_SEN_25	25	// 8
+#define WAFER_IN_SLOT_SEN_2	24	// 9
+#define WAFER_IN_SLOT_SEN_1	25	// 8
 
 /* J2-7 ~ J2-4 */
 #define FLAT_FIND_UP_SEN    	26	// 7 
