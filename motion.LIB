@@ -239,26 +239,20 @@ int TurnFlatToTargetPos()
 	vel = VEL_ROLLER[MED];
 	acc = ACC_ROLLER[MED];
 
-	// adjust the flat pos if it's a big flat one
-	if (g_flatType == BG_WAFER)
-	{
-		vel = VEL_ROLLER[MIN];
-		acc = ACC_ROLLER[MIN];
-		pos = SM_STEP;
-		RollerMoveRelative(pos, vel, acc);
-	}	
-
-	// get wafer map
-	if ((re = GetWaferMap()) != NO_ERROR)
-	{
-		// need to turn on red light
-		setErrorLight();
-	}
-
 	if (g_flatOrientation == UP)
-		pos = FLAT_UP_STEP;
+	{
+      if (g_flatType == BG_WAFER)
+      	pos = FLAT_UP_STEP_BG;
+      else
+      	pos = FLAT_UP_STEP_SM;
+	}
 	else  // stay down
-		pos = FLAT_DOWN_STEP;
+	{
+      if (g_flatType == BG_WAFER)
+      	pos = -FLAT_DOWN_STEP_BG;
+      else
+      	pos = -FLAT_DOWN_STEP_SM;
+   }
 
 	printf("Flat Target= %ld\n", pos);
 	pos = -pos;
