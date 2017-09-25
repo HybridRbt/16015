@@ -310,6 +310,8 @@ xmem int sendMsg(unsigned char *buf)
         if (buf[1] != 1)
         {
             printf("serEwrite %d bytes\n", len);
+		//if (buf[1] != 1)
+		if (buf[1] != 2)
 
             for (i = 1; i < len; i++)
             {
