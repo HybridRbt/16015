@@ -255,7 +255,7 @@ int TurnFlatToTargetPos()
    }
 
 	printf("Flat Target= %ld\n", pos);
-	pos = -pos;
+	//pos = -pos;
 	RollerMoveRelative(pos, vel, acc);
 	end = MS_TIMER + TIMEOUT_ROLLER;
 	DelayMilliseconds(10);
