@@ -30,7 +30,7 @@
 #define CMD_SENSOR_STATUS		1
 #define CMD_INITIAL_DATA		2
 #define CMD_INITIALIZE			3
-#define CMD_IO					4  //=0, means idle and ready for op, turn on green light 
+#define CMD_IO					4  //=0, means idle and ready for op, turn on green light
 
 #define CMD_NOTCH_FIND			5
 #define CMD_NF_SUPPORT_UP		6
@@ -41,7 +41,7 @@
 #define CMD_LIGHT               10
 
 /*=============================================================================
-               message sent to host
+			   message sent to host
  *============================================================================*/
 #define MSG_NONE				0
 #define MSG_SB_ASK_READY		1
@@ -50,7 +50,7 @@
 #define MSG_NOTCH_FIND			4
 #define MSG_START_OPERATION		5	// [2] = 12 (NF UP) OR 6 (NF DOWN)
 #define MSG_OPERATION_DONE		6 	// MAP: Byte 2, 3, 4, 5; [6] = 47 or 57
-#define MSG_IO_DONE           7
+#define MSG_IO_DONE           	7
 
 #define MSG_ERROR				10
 
@@ -104,16 +104,16 @@
 //#define LIGHT_GREEN_TRIG   		0	// J1-18
 
 /* J1-18 ~ J1-10 */
-#define WAFER_IN_SLOT_SEN_25		1	// J1-17
-#define WAFER_IN_SLOT_SEN_24		2	// 16
-#define WAFER_IN_SLOT_SEN_23		3	// 15
-#define WAFER_IN_SLOT_SEN_22		4	// 14
-#define WAFER_IN_SLOT_SEN_21		5	// 13
-#define WAFER_IN_SLOT_SEN_20		6	// 12
-#define WAFER_IN_SLOT_SEN_19		7	// 11
-#define WAFER_IN_SLOT_SEN_18		8	// 10
+#define WAFER_IN_SLOT_SEN_25	1	// J1-17
+#define WAFER_IN_SLOT_SEN_24	2	// 16
+#define WAFER_IN_SLOT_SEN_23	3	// 15
+#define WAFER_IN_SLOT_SEN_22	4	// 14
+#define WAFER_IN_SLOT_SEN_21	5	// 13
+#define WAFER_IN_SLOT_SEN_20	6	// 12
+#define WAFER_IN_SLOT_SEN_19	7	// 11
+#define WAFER_IN_SLOT_SEN_18	8	// 10
 
-#define WAFER_IN_SLOT_SEN_17		9	// J1-9
+#define WAFER_IN_SLOT_SEN_17	9	// J1-9
 #define WAFER_IN_SLOT_SEN_16	10	// 8
 #define WAFER_IN_SLOT_SEN_15	11	// 7
 #define WAFER_IN_SLOT_SEN_14	12	// 6
@@ -123,23 +123,23 @@
 
 /* J2-19 ~ J2-12 */
 #define WAFER_IN_SLOT_SEN_10	16	// J2-19
-#define WAFER_IN_SLOT_SEN_9	17	// 18
-#define WAFER_IN_SLOT_SEN_8	18	// 17
-#define WAFER_IN_SLOT_SEN_7	19	// 16
-#define WAFER_IN_SLOT_SEN_6	20	// 15
-#define WAFER_IN_SLOT_SEN_5	21	// 14
-#define WAFER_IN_SLOT_SEN_4	22	// 13
-#define WAFER_IN_SLOT_SEN_3	23	// 12
+#define WAFER_IN_SLOT_SEN_9		17	// 18
+#define WAFER_IN_SLOT_SEN_8		18	// 17
+#define WAFER_IN_SLOT_SEN_7		19	// 16
+#define WAFER_IN_SLOT_SEN_6		20	// 15
+#define WAFER_IN_SLOT_SEN_5		21	// 14
+#define WAFER_IN_SLOT_SEN_4		22	// 13
+#define WAFER_IN_SLOT_SEN_3		23	// 12
 
 /* J2-9 ~ J2-8 */
-#define WAFER_IN_SLOT_SEN_2	24	// 9
-#define WAFER_IN_SLOT_SEN_1	25	// 8
+#define WAFER_IN_SLOT_SEN_2		24	// 9
+#define WAFER_IN_SLOT_SEN_1		25	// 8
 
 /* J2-7 ~ J2-4 */
-#define FLAT_FIND_UP_SEN    	26	// 7 
-#define FLAT_FIND_DOWN_SEN  	27	// 6 
-#define BOAT_PRESENT_SEN  		28	// 5 
-#define FLAT_UP_DOWN_SEN  		29	// 4 
+#define FLAT_FIND_UP_SEN    	26	// 7
+#define FLAT_FIND_DOWN_SEN  	27	// 6
+#define BOAT_PRESENT_SEN  		28	// 5
+#define FLAT_UP_DOWN_SEN  		29	// 4
 
 //****************************************************//
 //  constant definitions                              //
@@ -166,18 +166,18 @@
 #define SM_WAFER			47
 #define BG_WAFER			57
 
-#define STEP_FOR_FLAT_TYPE		3000
-#define STEP_FOR_WAFER_MAP    9000
+#define STEP_FOR_FLAT_TYPE	3000
+#define STEP_FOR_WAFER_MAP  9000
 #define FLAT_UP_STEP_BG		83000
 #define FLAT_UP_STEP_SM		80000
-#define FLAT_DOWN_STEP_BG		11000
-#define FLAT_DOWN_STEP_SM		14000
+#define FLAT_DOWN_STEP_BG	11000
+#define FLAT_DOWN_STEP_SM	14000
 
 /* Light color */
-#define RED_LIGHT          1
-#define GREEN_LIGHT        2
-#define YELLOW_LIGHT       3
-#define YELLOW_GREEN_LIGHT 4
+#define RED_LIGHT          	1
+#define GREEN_LIGHT        	2
+#define YELLOW_LIGHT       	3
+#define YELLOW_GREEN_LIGHT 	4
 
 const long BAUD115200 = 115200L;     //baud rate
 const long BAUD19200 = 19200L;
