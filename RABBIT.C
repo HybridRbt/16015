@@ -63,13 +63,15 @@ void main(void)
 {
 	int	re, iMode;
 	int fullBoat;
+	unsigned long end;
 
 	/**
 	 * Get command from keypad, process the message,
 	 * and display on LCD
 	 */
 	init(); 	//initialize I/O and globle parameters
-
+	
+	g_bConnected = FALSE;
 	g_stage = NOT_READY;
 
 	if (IsBoatPresent())
@@ -87,11 +89,15 @@ void main(void)
 	{
 		g_stage = READY;
 
-		do
+		end = MS_TIMER + TIMEOUT_PC_CONNECT;
+		while (MS_TIMER < end)
 		{
-			re = SendPcReady();
+			if ((re = SendPcReady()) == NO_ERROR)  // connected with PC
+			{
+				g_bConnected = TRUE;
+				break;
+			}	
 		}
-		while (re != NO_ERROR);
 	}
 
 	//main loop
