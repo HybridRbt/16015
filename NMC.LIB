@@ -343,7 +343,8 @@ const long VEL[][4] = {{0, 500000 * GEARRATIO, 500000, 500000},
 };
 const long ACC[][4] = {{0, 1000, 1000, 1000}, {0, 500, 500, 500}, {0, 500, 500, 500}};
 
-const long VEL_ROLLER[3] = {2500000, 2500000, 1500000};
+const long VEL_ROLLER[3] = {2500000, 1500000, 750000};
+//const long VEL_ROLLER[3] = {2500000, 2500000, 1500000};
 //const long VEL_ROLLER[3] = {700000,200000,160000};
 const long ACC_ROLLER[3] = {2000, 2000, 2000};
 //const long VEL_CAMERA[3] = {800000,400000,160000};
