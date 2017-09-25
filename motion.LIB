@@ -95,7 +95,7 @@ int PreworkForFlatFind()
 
 	vel = VEL_ROLLER[MED];
 	acc = ACC_ROLLER[MED];
-	pos = 35000;
+	pos = 10000;
 	pos = -pos;
 	RollerMoveRelative(pos, vel, acc);
 	end = MS_TIMER + TIMEOUT_ROLLER;
