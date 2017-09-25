@@ -77,6 +77,9 @@ xmem int SendPcOpStarted()
 
 	int slotnum;
 
+	if (!g_bConnected) // no connection, don't send
+		return NO_ERROR;
+	
 	msgbuf[0] = 2;
 	msgbuf[1] = MSG_START_OPERATION;
 
@@ -135,6 +138,9 @@ xmem void SendPcOpDone()
 	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
 	int slotnum;
+
+	if (!g_bConnected) // no connection, don't send
+		return NO_ERROR;
 
 	msgbuf[0] = 6;
 	msgbuf[1] = MSG_OPERATION_DONE;

@@ -404,6 +404,9 @@ xmem int sendErrMsg(int errcode)
 	 */
 	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
 
+	if (!g_bConnected) // no connection, don't send
+		return NO_ERROR;
+
 	if ((errcode < 1) || (errcode > MAX_ERROR_NO))
 		return NEEDABORT;
 
