@@ -174,6 +174,53 @@ int PrepareForGetWaferMap()
    return NO_ERROR;
 }
 
+/*** BeginHeader RollWafersBySteps */
+int RollWafersBySteps(int steps);
+/*** EndHeader */
+int RollWafersBySteps(int steps)
+{
+   int re;
+
+   //if ((re = MoveBlockDown()) != NO_ERROR)
+	if ((re=MoveBlockUp())!=NO_ERROR)
+		return re;
+
+   RollerMoveBySteps(steps);
+
+   if ((re = MoveBlockDown()) != NO_ERROR)
+	//if ((re=MoveBlockUp())!=NO_ERROR)
+		return re;
+
+   return NO_ERROR;
+}
+
+/*** BeginHeader RollerMoveBySteps */
+int RollerMoveBySteps(int steps);
+/*** EndHeader */
+int RollerMoveBySteps(int steps)
+{
+   unsigned long end;
+	long vel, acc, pos;
+   int re;
+
+   vel = VEL_ROLLER[MED];
+	acc = ACC_ROLLER[MED];
+	//servo on first if needed
+	//    ServoOn(ROLLER_MOTOR);
+	pos = steps;
+	//pos = -pos;
+	RollerMoveRelative(pos, vel, acc);
+	end = MS_TIMER + TIMEOUT_ROLLER;
+	DelayMilliseconds(10);
+
+	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+	{
+		if ((re = boatCheck()) != NO_ERROR)
+			return re;
+	}
+
+	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+   return NO_ERROR;
 }
 
 /*** BeginHeader TurnFlatToTargetPos */
