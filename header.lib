@@ -50,6 +50,7 @@
 #define MSG_NOTCH_FIND			4
 #define MSG_START_OPERATION		5	// [2] = 12 (NF UP) OR 6 (NF DOWN)
 #define MSG_OPERATION_DONE		6 	// MAP: Byte 2, 3, 4, 5; [6] = 47 or 57
+#define MSG_IO_DONE           7
 
 #define MSG_ERROR				10
 
