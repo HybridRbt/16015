@@ -12,7 +12,10 @@ int InitRoller();
 int InitRoller()
 {
 	int re;
-	re = ServoInit(ROLLER_MOTOR);
+
+   NmcInit();
+
+   re = ServoInit(ROLLER_MOTOR);
 
 	if (re != NO_ERROR)
 	{
@@ -69,7 +72,9 @@ void RollerMoveRelative(long nstep, long vel, long acc)
 {
 	long pos;
 
-	//make sure it is stoppped
+   InitRoller();
+
+   //make sure it is stoppped
 	ServoGetPos(ROLLER_MOTOR, &pos);
 	pos += nstep;
 	ServoPosMove(ROLLER_MOTOR, pos, vel, acc);
