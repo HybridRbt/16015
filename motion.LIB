@@ -124,10 +124,10 @@ int FindFlat()
 	long vel, acc, pos;
 	int re;
 
-	//	if ((re=PreworkForFlatFind())!=NO_ERROR)
-	//    	return re;
-	if ((re = MoveBlockDown()) != NO_ERROR)
-		//	if ((re=MoveBlockUp())!=NO_ERROR)
+	if ((re=PreworkForFlatFind())!=NO_ERROR)
+	    	return re;
+
+   if ((re = MoveBlockDown()) != NO_ERROR)
 		return re;
 
 	vel = VEL_ROLLER[MED];
