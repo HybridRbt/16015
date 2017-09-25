@@ -187,4 +187,5 @@ const unsigned long TIMEOUT_UPDOWN = 10000L;   // 10 sec
 const unsigned long TIMEOUT_ROLLER = 10000L;   // 10 sec
 const unsigned long TIMEOUT_CAMERA = 15000L;  // 15 sec
 const unsigned long TIMEOUT_MSG = 1000L;    //for receiving and sending msg
+const unsigned long TIMEOUT_PC_CONNECT = 30000L;    //for waiting for pc to connect after powering up
 /*** EndHeader */
