@@ -75,16 +75,14 @@ void main(void)
 		g_bBoatRemoved = TRUE;
 
 	if ((re = InitWhole()) != NO_ERROR)
-    {
-    	sendErrMsg(re);
-    	setErrorLight();
-    }	
-    else
-    {
-    	g_stage = READY;
-    	setIdleLight();
-    	do 
-    	{
+	{
+		sendErrMsg(re);
+		setErrorLight();
+		g_stage = IN_ERROR;
+	}
+	else
+	{
+		g_stage = READY;
 			re = SendPcReady();
 		} while (re != NO_ERROR);
     }
