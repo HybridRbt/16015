@@ -33,9 +33,10 @@ int IsBlockUp();
 /*** EndHeader */
 int IsBlockUp()
 {
-    if(!myinp(FLAT_FIND_UP_SEN))
-        return TRUE;
-    return FALSE;
+	if (!myinp(FLAT_FIND_UP_SEN))
+		return TRUE;
+
+	return FALSE;
 }
 
 /*** BeginHeader IsBlockDown */
@@ -43,9 +44,10 @@ int IsBlockDown();
 /*** EndHeader */
 int IsBlockDown()
 {
-    if(!myinp(FLAT_FIND_DOWN_SEN))
-        return TRUE;
-    return FALSE;
+	if (!myinp(FLAT_FIND_DOWN_SEN))
+		return TRUE;
+
+	return FALSE;
 }
 
 /*** BeginHeader IsBoatPresent */
@@ -53,9 +55,10 @@ int IsBoatPresent();
 /*** EndHeader */
 int IsBoatPresent()
 {
-    if(!myinp(BOAT_PRESENT_SEN))
-        return TRUE;
-    return FALSE;
+	if (!myinp(BOAT_PRESENT_SEN))
+		return TRUE;
+
+	return FALSE;
 }
 
 /*** BeginHeader IsFlatToUp */
@@ -63,7 +66,8 @@ int IsFlatToUp();
 /*** EndHeader */
 int IsFlatToUp()
 {
-    if(!myinp(FLAT_UP_DOWN_SEN))
-        return TRUE;
-    return FALSE;
+	if (!myinp(FLAT_UP_DOWN_SEN))
+		return TRUE;
+
+	return FALSE;
 }
