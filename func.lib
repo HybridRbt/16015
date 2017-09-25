@@ -102,22 +102,22 @@ xmem int GetWaferMap()
 {
     /** generate wafer map based on the sensor map */
     int slotnum;
-    int re;
+    int fullBoat;
 
-    re = NO_ERROR;
+    fullBoat = TRUE;
 
     for (slotnum = 1; slotnum <= 25; slotnum++)
     {
     	if (IsWaferInSlot(slotnum))
     		g_waferMap[slotnum - 1] = 1;
-    	else	
+    	else
 		{
-			g_waferMap[slotnum - 1] = 0; 
-			re = ERROR;
+			g_waferMap[slotnum - 1] = 0;
+			fullBoat = FALSE;
 		}
     }
 
-    return re;
+    return fullBoat;
 }
 
 /*** BeginHeader SendPcOpDone */
