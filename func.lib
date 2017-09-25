@@ -448,11 +448,24 @@ xmem int handleMsg()
         break;
 
     case CMD_NF_SUPPORT_UP:        // 6
-      	re = MoveBlockUp();
+        if ((re = MoveBlockUp()) == NO_ERROR)
+        {
+         	msgbuf[0] = 1;
+				msgbuf[1] = MSG_IO_DONE;
+				msgbuf[msgbuf[0] + 1] = '\0';
+				re = sendMsg(msgbuf);
+        }
         break;
 
     case CMD_NF_SUPPORT_DOWN:          // 7
-       	re = MoveBlockDown();
+
+        if ((re = MoveBlockDown()) == NO_ERROR)
+        {
+         	msgbuf[0] = 1;
+				msgbuf[1] = MSG_IO_DONE;
+				msgbuf[msgbuf[0] + 1] = '\0';
+				re = sendMsg(msgbuf);
+        }
         break;
 
     case CMD_ABORT:
