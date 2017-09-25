@@ -470,7 +470,7 @@ xmem int handleMsg()
 
     case CMD_ABORT:
         //ResetPausedSignalToHost();
-        re = InitWhole();
+        //re = InitWhole();
         break;
 
     case CMD_ALARM: // 21
