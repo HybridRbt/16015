@@ -47,7 +47,7 @@ int RollerHome()
 	vel = VEL_ROLLER[MIN];
 	acc = ACC_ROLLER[MIN];
 
-	ServoPosMove(ROLLER_MOTOR, -1000, vel, acc);
+   ServoPosMove(ROLLER_MOTOR, 30000, vel, acc);
 
 	end = MS_TIMER + TIMEOUT_ROLLER;
 	DelayMilliseconds(10);
