@@ -166,10 +166,12 @@
 #define SM_WAFER			47
 #define BG_WAFER			57
 
-#define SM_STEP 			100  // move a small step for the big flat wafer so the wafer sensor can see them
-
-#define FLAT_UP_STEP		250000
-#define FLAT_DOWN_STEP		100		      
+#define STEP_FOR_FLAT_TYPE		3000
+#define STEP_FOR_WAFER_MAP    9000
+#define FLAT_UP_STEP_BG		83000
+#define FLAT_UP_STEP_SM		80000
+#define FLAT_DOWN_STEP_BG		11000
+#define FLAT_DOWN_STEP_SM		14000
 
 /* Light color */
 #define RED_LIGHT          1
