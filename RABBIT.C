@@ -61,12 +61,14 @@ int g_flatType;  // indicate the flat type (47 or 57)
 void main(void)
 {
 	int	re, iMode;
+	int fullBoat;
+
 	/**
 	 * Get command from keypad, process the message,
 	 * and display on LCD
 	 */
 	init(); 	//initialize I/O and globle parameters
-	
+
 	g_stage = NOT_READY;
 
 	if (IsBoatPresent())
