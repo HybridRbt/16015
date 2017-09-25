@@ -148,6 +148,18 @@ int FindFlat()
 
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
 	return NO_ERROR;
+/*** BeginHeader PrepareForGetFlatType */
+int PrepareForGetFlatType();
+/*** EndHeader */
+int PrepareForGetFlatType()
+{
+   int re;
+
+   if ((re = RollWafersBySteps(STEP_FOR_FLAT_TYPE)) != NO_ERROR)
+		return re;
+
+   return NO_ERROR;
+}
 }
 
 /*** BeginHeader TurnFlatToTargetPos */
