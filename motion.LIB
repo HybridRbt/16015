@@ -160,6 +160,20 @@ int PrepareForGetFlatType()
 
    return NO_ERROR;
 }
+
+/*** BeginHeader PrepareForGetWaferMap */
+int PrepareForGetWaferMap();
+/*** EndHeader */
+int PrepareForGetWaferMap()
+{
+   int re;
+
+   if ((re = RollWafersBySteps(STEP_FOR_WAFER_MAP)) != NO_ERROR)
+		return re;
+
+   return NO_ERROR;
+}
+
 }
 
 /*** BeginHeader TurnFlatToTargetPos */
