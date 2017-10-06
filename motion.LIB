@@ -228,6 +228,31 @@ int RollerMoveBySteps(int steps)
 	return NO_ERROR;
 }
 
+/*** BeginHeader GetTargetPos */
+int GetTargetPos();
+/*** EndHeader */
+int GetTargetPos()
+{
+	long pos;
+
+	if (g_flatOrientation == UP)
+	{
+		if (g_flatType == BG_WAFER)
+			pos = FLAT_UP_STEP_BG;
+		else  // default to sm
+			pos = FLAT_UP_STEP_SM;
+	}
+	else  // stay down
+	{
+		if (g_flatType == BG_WAFER)
+			pos = -FLAT_DOWN_STEP_BG;
+		else // default to sm
+			pos = -FLAT_DOWN_STEP_SM;
+	}
+
+	return pos;
+}
+
 /*** BeginHeader TurnFlatToTargetPos */
 int TurnFlatToTargetPos();
 /*** EndHeader */
@@ -244,20 +269,7 @@ int TurnFlatToTargetPos()
 	vel = VEL_ROLLER[MED];
 	acc = ACC_ROLLER[MED];
 
-	if (g_flatOrientation == UP)
-	{
-		if (g_flatType == BG_WAFER)
-			pos = FLAT_UP_STEP_BG;
-		else
-			pos = FLAT_UP_STEP_SM;
-	}
-	else  // stay down
-	{
-		if (g_flatType == BG_WAFER)
-			pos = -FLAT_DOWN_STEP_BG;
-		else
-			pos = -FLAT_DOWN_STEP_SM;
-	}
+	pos = GetTargetPos();
 
 	printf("Flat Target= %ld\n", pos);
 	//pos = -pos;
