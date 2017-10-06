@@ -165,6 +165,7 @@
 
 #define SM_WAFER			47
 #define BG_WAFER			57
+#define MIXED				99
 
 #define STEP_FOR_FLAT_TYPE	3000
 #define STEP_FOR_WAFER_MAP  9000

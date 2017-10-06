@@ -824,18 +824,26 @@ xmem int GetFlatType()
 {
 	int slotnum;
 	int flatType;
+	int blockCounter;
 
-	flatType = BG_WAFER;
+	blockCounter = 0;
 
 	for (slotnum = 1; slotnum <= 25; slotnum++)
 	{
 		if (IsWaferInSlot(slotnum))
-		{
-			flatType = SM_WAFER;
-			break;
-		}
+			blockCounter++;  // if it's blocked, it's a sm
+		else
+			blockCounter--;  // if it's not blocked, it's a bg
 	}
 
+	if (blockCounter == 0) // all wafers are not blocked, all are bg
+		flatType = BG_WAFER;
+	else if (blockCounter == 25)  // all wafers are blocked, all are sm
+		flatType = SM_WAFER;
+	else
+		// report mixed
+		flatType = MIXED;
+	
 	return flatType;
 }
 
