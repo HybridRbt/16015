@@ -414,7 +414,7 @@ xmem int handleMsg()
 			if (in_io == 1)
 			{
 				g_stage = IN_IO;
-				setOperationLight();
+				//setOperationLight();
 			}
 			else
 			{
