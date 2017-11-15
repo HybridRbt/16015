@@ -131,35 +131,42 @@ void main(void)
 	{
 		if (g_stage == READY)
 		{
-			setIdleLight();
 			handleMsg();
 			DelayMilliseconds(2);
 
-			if (!IsBoatPresent())
+         if (!IsBoatPresent())
 			{
 				g_bBoatRemoved = TRUE;
 				AlarmOff();
 			}
 
 			if (g_bBoatRemoved && IsBoatPresent())
-				g_stage = IN_OP;
+			{
+            setOperationLight();
+            g_stage = IN_OP;
+         }
 		}
 		else if (g_stage == IN_IO)
 		{
-			setOperationLight();
+			//setOperationLight();
 			handleMsg();
 			DelayMilliseconds(2);
 		}
 		else if (g_stage == IN_ERROR)
 		{
-			setErrorLight();
 			handleMsg();
 			DelayMilliseconds(2);
+
+         if (!IsBoatPresent())
+			{
+				g_bBoatRemoved = TRUE;
+				AlarmOff();
+            setIdleLight();
+            g_stage = READY;
+			}
 		}
 		else     // in op
 		{
-			setOperationLight();
-
 			if (!IsBoatPresent())
 			{
 				g_bBoatRemoved = TRUE;
@@ -175,16 +182,17 @@ void main(void)
 				if ((re = FindFlat()) != NO_ERROR)
 				{
 					g_stage = IN_ERROR;
+               setErrorLight();
 					sendErrMsg(re);
 				}
 				else
 				{
 					PrepareForGetFlatType();
-					g_flatType = GetFlatType();
+					flatCount = GetFlatCount();
 
 					PrepareForGetWaferMap();
 					// get wafer map
-					fullBoat = GetWaferMap();
+					fullBoat = GetWaferMap(flatCount);
 
 					if (IsFlatToUp())
 						g_flatOrientation = UP;
@@ -193,14 +201,19 @@ void main(void)
 
 					TurnFlatToTargetPos();
 
-					if (!fullBoat)
-					{
+					if (!fullBoat || g_flatType == MIXED)
 						// need to turn on red light
-						setErrorLight();
-					}
+               {
+                  setErrorLight();
+                  g_stage = IN_ERROR;
+               }
+               else
+               {
+                  setIdleLight();
+                  g_stage = READY;
+               }
 
-					SendPcOpDone();
-					g_stage = READY;
+               SendPcOpDone();
 				}
 			}
 		}
