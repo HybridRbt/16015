@@ -399,11 +399,11 @@ xmem int handleMsg()
 			re = GetSensorStatus();
 			break;
 
-		/*
-			case CMD_INITIAL_DATA:      // 2
-				GetDataFromHost();
-				break;
-		*/
+
+		case CMD_INITIAL_DATA:      // 2
+			GetDataFromHost();
+			break;
+
 		case CMD_INITIALIZE:    // 3
 			re = InitWhole();
 			break;
