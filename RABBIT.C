@@ -105,12 +105,25 @@ void main(void)
 		end = MS_TIMER + TIMEOUT_PC_CONNECT;
 		while (MS_TIMER < end)
 		{
-			if ((re = SendPcReady()) == NO_ERROR)  // connected with PC
+         if (!g_bConnected)
 			{
-				g_bConnected = TRUE;
-				break;
-			}	
+         	if ((re = SendPcReady()) == NO_ERROR)  // connected with PC
+         		g_bConnected = TRUE;
+         }
+         else
+         {
+            printf("entering handleMsg()...\n");
+            handleMsg();
+
+            if (g_bGotData)
+         		break;
+         }
 		}
+
+      //if (!g_bGotData) // no data, use default
+      //	LoadDefaultValueForSteps();
+
+      setIdleLight();
 	}
 
 	//main loop
