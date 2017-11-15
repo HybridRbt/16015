@@ -160,7 +160,7 @@ int PrepareForGetFlatType()
 {
 	int re;
 
-	if ((re = RollWafersBySteps(STEP_FOR_FLAT_TYPE)) != NO_ERROR)
+	if ((re = RollWafersBySteps(g_checkFlatTypeStep)) != NO_ERROR)
 		return re;
 
 	return NO_ERROR;
@@ -173,7 +173,7 @@ int PrepareForGetWaferMap()
 {
 	int re;
 
-	if ((re = RollWafersBySteps(STEP_FOR_WAFER_MAP)) != NO_ERROR)
+	if ((re = RollWafersBySteps(g_mappingStep)) != NO_ERROR)
 		return re;
 
 	return NO_ERROR;
@@ -229,28 +229,28 @@ int RollerMoveBySteps(int steps)
 }
 
 /*** BeginHeader GetTargetPos */
-int GetTargetPos();
+xmem long GetTargetPos();
 /*** EndHeader */
-int GetTargetPos()
+xmem long GetTargetPos()
 {
 	long pos;
 
 	if (g_flatOrientation == UP)
 	{
-		if (g_flatType == BG_WAFER)
-			pos = FLAT_UP_STEP_BG;
-		else  // default to sm
-			pos = FLAT_UP_STEP_SM;
+		if (g_flatType == SM_WAFER)
+			pos = g_flatUpStep_47;
+		else  // default to big
+			pos = g_flatUpStep_57;
 	}
 	else  // stay down
 	{
-		if (g_flatType == BG_WAFER)
-			pos = -FLAT_DOWN_STEP_BG;
-		else // default to sm
-			pos = -FLAT_DOWN_STEP_SM;
+		if (g_flatType == SM_WAFER)
+			pos = g_flatDownStep_47;
+		else // default to big
+			pos = g_flatDownStep_57;
 	}
 
-	return pos;
+	return -pos;
 }
 
 /*** BeginHeader TurnFlatToTargetPos */
