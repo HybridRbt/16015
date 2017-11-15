@@ -57,9 +57,11 @@ xmem int SendPcReady()
 	msgbuf[1] = MSG_SB_ASK_READY;
 	msgbuf[msgbuf[0] + 1] = '\0';
 
+   printf("sending ask for ready msg...\n");
 	if ((re = sendMsg(msgbuf)) != NO_ERROR)
 		return re;
 
+   printf("msg sent.\n");
 	return NO_ERROR;
 }
 
@@ -79,7 +81,7 @@ xmem int SendPcOpStarted()
 
 	if (!g_bConnected) // no connection, don't send
 		return NO_ERROR;
-	
+
 	msgbuf[0] = 2;
 	msgbuf[1] = MSG_START_OPERATION;
 
