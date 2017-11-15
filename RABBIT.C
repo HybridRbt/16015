@@ -82,9 +82,10 @@ void main(void)
 	 * and display on LCD
 	 */
 	init(); 	//initialize I/O and globle parameters
-	
+
 	g_bConnected = FALSE;
 	g_stage = NOT_READY;
+   g_bGotData = FALSE;
 
 	if (IsBoatPresent())
 		g_bBoatRemoved = FALSE;
