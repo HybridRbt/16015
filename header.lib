@@ -168,7 +168,7 @@
 #define MIXED				99
 
 #define STEP_FOR_FLAT_TYPE	3000
-#define STEP_FOR_WAFER_MAP  9000
+#define STEP_FOR_WAFER_MAP 9000
 #define FLAT_UP_STEP_BG		83000
 #define FLAT_UP_STEP_SM		80000
 #define FLAT_DOWN_STEP_BG	11000
@@ -188,5 +188,5 @@ const unsigned long TIMEOUT_UPDOWN = 10000L;   // 10 sec
 const unsigned long TIMEOUT_ROLLER = 10000L;   // 10 sec
 const unsigned long TIMEOUT_CAMERA = 15000L;  // 15 sec
 const unsigned long TIMEOUT_MSG = 1000L;    //for receiving and sending msg
-const unsigned long TIMEOUT_PC_CONNECT = 30000L;    //for waiting for pc to connect after powering up
+const unsigned long TIMEOUT_PC_CONNECT = 10000L;    //for waiting for pc to connect after powering up
 /*** EndHeader */
