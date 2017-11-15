@@ -368,7 +368,7 @@ int boatCheck()
 		return NO_ERROR;
 
 	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
-	return ERR_NF_FAILED;
+	return ERR_CASSETTE_PRESENT;
 }
 
 /*** BeginHeader handleMsg */
