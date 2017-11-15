@@ -1,7 +1,6 @@
 LIB\AFF-600C\com.lib
-LIB\AFF-600C\dcmotion.lib
-LIB\AFF-600C\servomotion.lib
-LIB\AFF-600C\sensor.lib
+LIB\AFF-600C\motion.lib
+LIB\AFF-600C\sensors.lib
 LIB\AFF-600C\func.lib
 LIB\AFF-600C\nmc.lib
 LIB\AFF-600C\header.lib
