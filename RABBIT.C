@@ -74,7 +74,7 @@ void main(void)
 {
 	int re, iMode;
 	int fullBoat;
-   int flatCount;
+	int flatCount;
 	unsigned long end;
 
 	/**
@@ -85,7 +85,7 @@ void main(void)
 
 	g_bConnected = FALSE;
 	g_stage = NOT_READY;
-   g_bGotData = FALSE;
+	g_bGotData = FALSE;
 
 	if (IsBoatPresent())
 		g_bBoatRemoved = FALSE;
@@ -103,27 +103,28 @@ void main(void)
 		g_stage = READY;
 
 		end = MS_TIMER + TIMEOUT_PC_CONNECT;
+
 		while (MS_TIMER < end)
 		{
-         if (!g_bConnected)
+			if (!g_bConnected)
 			{
-         	if ((re = SendPcReady()) == NO_ERROR)  // connected with PC
-         		g_bConnected = TRUE;
-         }
-         else
-         {
-            printf("entering handleMsg()...\n");
-            handleMsg();
+				if ((re = SendPcReady()) == NO_ERROR)  // connected with PC
+					g_bConnected = TRUE;
+			}
+			else
+			{
+				printf("entering handleMsg()...\n");
+				handleMsg();
 
-            if (g_bGotData)
-         		break;
-         }
+				if (g_bGotData)
+					break;
+			}
 		}
 
-      //if (!g_bGotData) // no data, use default
-      //	LoadDefaultValueForSteps();
+		//if (!g_bGotData) // no data, use default
+		//	LoadDefaultValueForSteps();
 
-      setIdleLight();
+		setIdleLight();
 	}
 
 	//main loop
@@ -134,7 +135,7 @@ void main(void)
 			handleMsg();
 			DelayMilliseconds(2);
 
-         if (!IsBoatPresent())
+			if (!IsBoatPresent())
 			{
 				g_bBoatRemoved = TRUE;
 				AlarmOff();
@@ -142,9 +143,9 @@ void main(void)
 
 			if (g_bBoatRemoved && IsBoatPresent())
 			{
-            setOperationLight();
-            g_stage = IN_OP;
-         }
+				setOperationLight();
+				g_stage = IN_OP;
+			}
 		}
 		else if (g_stage == IN_IO)
 		{
@@ -157,12 +158,12 @@ void main(void)
 			handleMsg();
 			DelayMilliseconds(2);
 
-         if (!IsBoatPresent())
+			if (!IsBoatPresent())
 			{
 				g_bBoatRemoved = TRUE;
 				AlarmOff();
-            setIdleLight();
-            g_stage = READY;
+				setIdleLight();
+				g_stage = READY;
 			}
 		}
 		else     // in op
@@ -182,7 +183,7 @@ void main(void)
 				if ((re = FindFlat()) != NO_ERROR)
 				{
 					g_stage = IN_ERROR;
-               setErrorLight();
+					setErrorLight();
 					sendErrMsg(re);
 				}
 				else
@@ -203,17 +204,17 @@ void main(void)
 
 					if (!fullBoat || g_flatType == MIXED)
 						// need to turn on red light
-               {
-                  setErrorLight();
-                  g_stage = IN_ERROR;
-               }
-               else
-               {
-                  setIdleLight();
-                  g_stage = READY;
-               }
+					{
+						setErrorLight();
+						g_stage = IN_ERROR;
+					}
+					else
+					{
+						setIdleLight();
+						g_stage = READY;
+					}
 
-               SendPcOpDone();
+					SendPcOpDone();
 				}
 			}
 		}
