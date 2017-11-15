@@ -48,11 +48,11 @@ StepSetOutputs,StepSetParam,StepGetPos,StepGetAD,StepGetInByte,StepGetHome,
 StepGetStepTime,Calc16bitTimer */
 
 #ifndef CINBUFSIZE
- #define CINBUFSIZE (512-1)		//define a 512 byte input buffer
+	#define CINBUFSIZE (512-1)		//define a 512 byte input buffer
 #endif
 
 #ifndef COUTBUFSIZE
- #define COUTBUFSIZE (512-1)		//define a 512 byte output buffer
+	#define COUTBUFSIZE (512-1)		//define a 512 byte output buffer
 #endif
 
 #define PIC_SERVO
@@ -116,7 +116,7 @@ StepGetStepTime,Calc16bitTimer */
 
 //PIC-SERVO Status byte bit definitions:
 #define MOVE_DONE       0x01    //Set when goal position or vel is reached or
-				//in PWM mode, clear otherwise
+//in PWM mode, clear otherwise
 #define COM_ERROR       0x02    //Set if UART or cksum error, clear otherwise
 #define OVERCURRENT     0x04    //Set on overcurrent, cleared with CLEAR_BITS
 #define POWER_ON        0x08    //Set if motor power on, clear if off
@@ -329,25 +329,27 @@ Specilized for AWV-600
 /**********************************************
 	global variables.
  **********************************************/
-const unsigned int KP[4] = {0,500,500,500};
-const unsigned int KD[4] = {0,1000,1000,1000};
-const unsigned int KI[4] = {0,1,0,0};
-const unsigned int IL[4] = {0,0,0,0};
-const unsigned int OL[4] = {255,255,255,255};
-const unsigned int CL[4] = {0,255,255,255};
-const unsigned int EL[4] = {0,400,400,400};
-const unsigned int SR[4] = {0,1,1,1};
-const unsigned int DC[4] = {0,0,0,0};
-const long VEL[][4]= {{0,500000*GEARRATIO,500000,500000},
-		{0,300000*GEARRATIO,300000,300000},{0,100000*GEARRATIO,100000,100000}};
-const long ACC[][4] = {{0,1000,1000,1000},{0,500,500,500},{0,500,500,500}};
+const unsigned int KP[4] = {0, 500, 500, 500};
+const unsigned int KD[4] = {0, 1000, 1000, 1000};
+const unsigned int KI[4] = {0, 1, 0, 0};
+const unsigned int IL[4] = {0, 0, 0, 0};
+const unsigned int OL[4] = {255, 255, 255, 255};
+const unsigned int CL[4] = {0, 255, 255, 255};
+const unsigned int EL[4] = {0, 400, 400, 400};
+const unsigned int SR[4] = {0, 1, 1, 1};
+const unsigned int DC[4] = {0, 0, 0, 0};
+const long VEL[][4] = {{0, 500000 * GEARRATIO, 500000, 500000},
+	{0, 300000 * GEARRATIO, 300000, 300000}, {0, 100000 * GEARRATIO, 100000, 100000}
+};
+const long ACC[][4] = {{0, 1000, 1000, 1000}, {0, 500, 500, 500}, {0, 500, 500, 500}};
 
-const long VEL_ROLLER[3] = {2500000,2500000,1500000};
+const long VEL_ROLLER[3] = {2500000, 1500000, 750000};
+//const long VEL_ROLLER[3] = {2500000, 2500000, 1500000};
 //const long VEL_ROLLER[3] = {700000,200000,160000};
-const long ACC_ROLLER[3] = {2000,2000,2000};
+const long ACC_ROLLER[3] = {2000, 2000, 2000};
 //const long VEL_CAMERA[3] = {800000,400000,160000};
-const long VEL_CAMERA[3] = {800000,290000,160000};
-const long ACC_CAMERA[3] = {2000,1000,800};
+const long VEL_CAMERA[3] = {800000, 290000, 160000};
+const long ACC_CAMERA[3] = {2000, 1000, 800};
 
 const long MAXDIST = 300000;
 
@@ -360,62 +362,63 @@ xmem char ServoGetLimit(char addr, char option);
 
 //**** Data type definitions:
 typedef struct
-		{
-		long pos;        //motor position
-      long target_pos;	//target position
-		char ad;         //A/D value
-		int  vel_current;        //velocity
-      int	poserror;		//position error
-		char aux;        //auxillary status byte
-		long home;       //home position
-		unsigned int	kp;
-      unsigned int	kd;
-      unsigned int	ki;
-      unsigned int	il;
-      unsigned int	ol;
-      unsigned int	cl;
-      unsigned int	el;
-      unsigned int	sr;
-      unsigned int	dc;
-      char	homing;	//doing home or not
-      long	vel[3];
-      long	acc[3];
-		} servo_data;
+{
+	long pos;        //motor position
+	long target_pos;	//target position
+	char ad;         //A/D value
+	int  vel_current;        //velocity
+	int	poserror;		//position error
+	char aux;        //auxillary status byte
+	long home;       //home position
+	unsigned int	kp;
+	unsigned int	kd;
+	unsigned int	ki;
+	unsigned int	il;
+	unsigned int	ol;
+	unsigned int	cl;
+	unsigned int	el;
+	unsigned int	sr;
+	unsigned int	dc;
+	char	homing;	//doing home or not
+	long	vel[3];
+	long	acc[3];
+} servo_data;
 
 typedef struct
-		{
-		unsigned int input;	//input bit values
-		char ad1;         	//A/D1 value
-		char ad2;         	//A/D2 value
-		char ad3;         	//A/D3 value
-		unsigned long tmr;   //timer value
-		unsigned int sinput; //synch'd input
-		unsigned long stmr;  //synch'd timer
-		} io_data;
+{
+	unsigned int input;	//input bit values
+	char ad1;         	//A/D1 value
+	char ad2;         	//A/D2 value
+	char ad3;         	//A/D3 value
+	unsigned long tmr;   //timer value
+	unsigned int sinput; //synch'd input
+	unsigned long stmr;  //synch'd timer
+} io_data;
 
 typedef struct
-		{
-		long pos;        //motor position
-		char ad;         //A/D value
-		int  st;         //raw step time
-		char inputs;     //input byte
-		long home;       //home position
-		} step_data;
+{
+	long pos;        //motor position
+	char ad;         //A/D value
+	int  st;         //raw step time
+	char inputs;     //input byte
+	long home;       //home position
+} step_data;
 
 
 typedef struct
-		{
-		char devtype;		//device type
-		char version;		//version number
-		char sdef;		//status items returned
-		char stat;		//status byte
-		char out;		//output byte
-		union {			//module specific data
-		       servo_data ps;
-		       io_data    pio;
-		       step_data  step;
-		      } md;
-		} mod_data;
+{
+	char devtype;		//device type
+	char version;		//version number
+	char sdef;		//status items returned
+	char stat;		//status byte
+	char out;		//output byte
+	union  			//module specific data
+	{
+		servo_data ps;
+		io_data    pio;
+		step_data  step;
+	} md;
+} mod_data;
 
 //******* Function prototypes:
 xmem void DelayMilliseconds(unsigned int n);
@@ -423,7 +426,7 @@ xmem void get_byte1(char *b);
 xmem int  NmcSIOError();
 xmem int  NmcSetBaud(char rate);
 xmem int  NmcSetAddress(char addr, char new_addr, char new_group,
-		  int group_leader, int wait_for_reply);
+                        int group_leader, int wait_for_reply);
 xmem int  NmcReadStat(char addr, char status_items, int permanent, int wait_for_reply);
 xmem int  NmcNop(char addr, int wait_for_reply);
 xmem void NmcHardReset(char grp_addr);
@@ -461,33 +464,33 @@ xmem char  ServoStopMotor(char addr, char control, int wait_for_reply);
 xmem char  ServoSetHomeMode(char addr, char control, int wait_for_reply);
 xmem char  ServoSetIOMode(char addr, char control, int wait_for_reply);
 xmem char  ServoSetGain(char addr, unsigned int kp,
-	  	  unsigned int kd,
-		  unsigned int ki,
-		  unsigned int il,
-		  unsigned int ol,
-		  unsigned int cl,
-		  unsigned int el,
-		  unsigned int sr,
-		  unsigned int dc,
-		  int wait_for_reply);
+                        unsigned int kd,
+                        unsigned int ki,
+                        unsigned int il,
+                        unsigned int ol,
+                        unsigned int cl,
+                        unsigned int el,
+                        unsigned int sr,
+                        unsigned int dc,
+                        int wait_for_reply);
 xmem char  ServoSetSSPhasing(char addr, char adv, char offset);
 #endif
 
 #ifdef PIC_IO
-xmem char IOGetInput(char addr);
-xmem void IONewMod(char addr, char ver);
-xmem void Iorcvstatus(char addr, char *cksum);
-xmem int  IOSetOutputs(char addr, unsigned int outval, int wait_for_reply);
-xmem int  IOSetBitDir(char addr, unsigned int bitdir, int wait_for_reply);
-xmem int  IOSetPwms(char addr, char pwm1, char pwm2, int wait_for_reply);
-xmem int  IOSetTimerMode(char addr, char mode, int wait_for_reply);
-xmem int  IOLoadSyncOutputs(char addr, unsigned int outval, char pwm1, char pwm2, int wait_for_reply);
-xmem int  IOSyncOutput(char addr, int wait_for_reply);
+	xmem char IOGetInput(char addr);
+	xmem void IONewMod(char addr, char ver);
+	xmem void Iorcvstatus(char addr, char *cksum);
+	xmem int  IOSetOutputs(char addr, unsigned int outval, int wait_for_reply);
+	xmem int  IOSetBitDir(char addr, unsigned int bitdir, int wait_for_reply);
+	xmem int  IOSetPwms(char addr, char pwm1, char pwm2, int wait_for_reply);
+	xmem int  IOSetTimerMode(char addr, char mode, int wait_for_reply);
+	xmem int  IOLoadSyncOutputs(char addr, unsigned int outval, char pwm1, char pwm2, int wait_for_reply);
+	xmem int  IOSyncOutput(char addr, int wait_for_reply);
 #endif
 
 #ifdef PIC_STEP
 xmem int  StepLoadTraj(char addr, long pos, char nmc_speed, char acc, int wait_for_reply);
-xmem int  StepUnProfPos(char addr, long pos, long timer_cnt, char ni_speed, int START_MO,int wait_for_reply);
+xmem int  StepUnProfPos(char addr, long pos, long timer_cnt, char ni_speed, int START_MO, int wait_for_reply);
 xmem int  StepStartMove(char addr, int wait_for_reply);
 xmem int  StepSetSpeed(char addr, char nmc_speed, char acc, int wait_for_reply);
 xmem int  StepResetCount(char addr, int wait_for_reply);
@@ -496,7 +499,7 @@ xmem int  StepStopMotor(char addr, char control, int wait_for_reply);
 xmem int  StepSetHomeMode(char addr, char control, int wait_for_reply);
 xmem int  StepSetOutputs(char addr, char outbyte, int wait_for_reply);
 xmem int  StepSetParam(char addr, char ctrlmode, char minspeed, char run_current,
- 		       char hold_current, char thermlim, int wait_for_reply);
+                       char hold_current, char thermlim, int wait_for_reply);
 xmem long StepGetPos(char addr);
 xmem char StepGetAD(char addr);
 xmem char StepGetInByte(char addr);
@@ -515,29 +518,29 @@ int cum_sio_error;				//log of number of SIO errors
 xmem void MessageDisplay(char error_code)
 {
 	char filtered;
-   filtered = error_code&ERROR_BIT;
+	filtered = error_code & ERROR_BIT;
 
-   return;
-/*	if (filtered == ERR_TORQUE)
-   {
-        xdata output {"NMC Motor Torque Limit"};
-        printf("%ls\n",output);
-   }
-	if (filtered == ERR_SEND)
-   {
-        xdata output {"NMC Sending error"};
-        printf("%ls\n",output);
-   }
-   if (filtered == ERR_COMMAND)
-   {
-        xdata output {"Wrong command"};
-        printf("%ls\n",output);
-   }
-   if (filtered == ERR_POWER)
-   {
-        xdata output {"NMC No Power"};
-        printf("%ls\n",output);
-   }   */
+	return;
+	/*	if (filtered == ERR_TORQUE)
+	   {
+			xdata output {"NMC Motor Torque Limit"};
+			printf("%ls\n",output);
+	   }
+		if (filtered == ERR_SEND)
+	   {
+			xdata output {"NMC Sending error"};
+			printf("%ls\n",output);
+	   }
+	   if (filtered == ERR_COMMAND)
+	   {
+			xdata output {"Wrong command"};
+			printf("%ls\n",output);
+	   }
+	   if (filtered == ERR_POWER)
+	   {
+			xdata output {"NMC No Power"};
+			printf("%ls\n",output);
+	   }   */
 }
 /* START FUNCTION DESCRIPTION ********************************************
 IOInit              <AE1.lib>
@@ -546,7 +549,7 @@ SYNTAX: char IOInit(char addr)
 
 DESCRIPTION: Do init IO parameters defined
 
-	          addr = module address
+			  addr = module address
 
 RETURN VALUE: NO_ERROR on success, ERR_SEND on failure.
 END DESCRIPTION **********************************************************/
@@ -555,53 +558,53 @@ xmem char IOInit(char addr)
 {
    if (!IOSetBitDir(addr,0x7F,1))
    {
-      printf("Failed to init IO Board!\n");
-      return ERR_SEND;
+	  printf("Failed to init IO Board!\n");
+	  return ERR_SEND;
    }
    return NO_ERROR;
 }
 */
 /* START FUNCTION DESCRIPTION ********************************************
-              <AE1.lib>
+			  <AE1.lib>
 
 SYNTAX: char ServoMacroHome(char addr)
 
 DESCRIPTION: Do home to the Homing defined with Med speed
- 			If the original position is at home, done
+			If the original position is at home, done
 
-            addr = module address
-            direction = the move toward or away from home sensor
+			addr = module address
+			direction = the move toward or away from home sensor
 RETURN VALUE: NO_ERROR on success  error code on failure
 END DESCRIPTION **********************************************************/
 /*
 xmem char ServoMacroHome(char addr)
 {
 	char mycontrol,mylimit,home;
-    long myvel,myacc;
+	long myvel,myacc;
 
-    mycontrol = HOME_CONTROL[addr];
-    mylimit = LIMIT[addr];
+	mycontrol = HOME_CONTROL[addr];
+	mylimit = LIMIT[addr];
 
-    home = ServoGetLimit(addr,mylimit);
+	home = ServoGetLimit(addr,mylimit);
 
 //   if (!home)	//not at home and no error
-    {
-   		myvel = -VEL[1][addr] * 10;
-	   	myacc = ACC[1][addr];
+	{
+		myvel = -VEL[1][addr] * 10;
+		myacc = ACC[1][addr];
 
 	//   printf("control, vel and acc are %d , %ld,  %ld\n",mycontrol, myvel,myacc);
-	   	if (ServoHome(addr,mycontrol,myvel, myacc)!=NO_ERROR)
-	   	{
-	      	printf("Failed to Marco home Motor Driver!\n");
-	      	return ERR_SEND;
-	   	}
-	   	mod[addr].md.ps.homing = 0x01;
-	   	return NO_ERROR;
-   	}
-   	if (home == YES)
-   		return YES;
-   	else
-   		return home;
+		if (ServoHome(addr,mycontrol,myvel, myacc)!=NO_ERROR)
+		{
+			printf("Failed to Marco home Motor Driver!\n");
+			return ERR_SEND;
+		}
+		mod[addr].md.ps.homing = 0x01;
+		return NO_ERROR;
+	}
+	if (home == YES)
+		return YES;
+	else
+		return home;
 }
 */
 /* START FUNCTION DESCRIPTION ********************************************
@@ -610,8 +613,8 @@ MotorMacroHome              <AE1.lib>
 SYNTAX: char ServoMicroHome(char addr)
 
 DESCRIPTION: Do home away the Homing defined with slow speed
-             If the original position is not at home, need go to home first
-	          addr = module address
+			 If the original position is not at home, need go to home first
+			  addr = module address
 
 RETURN VALUE: NO_ERROR on success, error code on failure.
 END DESCRIPTION **********************************************************/
@@ -622,8 +625,8 @@ xmem char ServoMicroHome(char addr)
    long myvel,myacc;
 
    mycontrol = HOME_CONTROL[addr-1];
-  	mylimit = LIMIT[addr-1];
-    myvel = -VEL[2][addr];
+	mylimit = LIMIT[addr-1];
+	myvel = -VEL[2][addr];
 	   myacc = ACC[2][addr];
  //  myvel = mod[addr].md.ps.vel[MIN];
  //	myacc = mod[addr].md.ps.acc[MIN];
@@ -631,25 +634,25 @@ xmem char ServoMicroHome(char addr)
    home = ServoGetLimit(addr,mylimit);
 
    if (home&ERROR_BIT != NO_ERROR)      //if error
-   	return home;
+	return home;
 	if (!home)    //not at home
    {
 	   if (ServoHome(addr,mycontrol,myvel,myacc)!=NO_ERROR)
 	   {
-	      printf("Failed to Micro home Elev Motor Driver!\n");
-	      return ERR_SEND;
+		  printf("Failed to Micro home Elev Motor Driver!\n");
+		  return ERR_SEND;
 	   }
 	   mod[addr].md.ps.homing = 0x02;
-      while (!ServoHomeDone(addr));     //wait home
-      if ( (ServoHomeDone(addr)&ERROR_BIT) != NO_ERROR)
-      	return (ServoHomeDone(addr));
+	  while (!ServoHomeDone(addr));     //wait home
+	  if ( (ServoHomeDone(addr)&ERROR_BIT) != NO_ERROR)
+		return (ServoHomeDone(addr));
    }
  //away home
-  	myvel = -myvel;
+	myvel = -myvel;
    if (ServoHome(addr,mycontrol,myvel, myacc)!=NO_ERROR)
    {
-      printf("Failed to Micro home Elev Motor Driver!\n");
-      return ERR_SEND;
+	  printf("Failed to Micro home Elev Motor Driver!\n");
+	  return ERR_SEND;
    }
    mod[addr].md.ps.homing = 0x02;
    return NO_ERROR;
@@ -662,7 +665,8 @@ void DelayMilliseconds(unsigned int wDelayTime)
 	unsigned long dwDoneTime;
 
 	dwDoneTime = MS_TIMER + wDelayTime;
-	while(MS_TIMER < dwDoneTime);
+
+	while (MS_TIMER < dwDoneTime);
 }
 
 xmem void get_byte1(char *b)
@@ -670,20 +674,21 @@ xmem void get_byte1(char *b)
 //timeout.  Calls sio_error() if a timeout occurs.  Monitor cum_sio_error
 //to detect a timeout.
 {
-unsigned long start_time;
+	unsigned long start_time;
 
-   start_time = MS_TIMER;
-do
-  {
-   if  ((MS_TIMER-start_time) >= 10)    //10 millisec timeout
-     {
-       NmcSIOError();   	 	//on timeout, call sio_error
-       return;
-     }
-  }
-while (serCpeek() == -1);
+	start_time = MS_TIMER;
 
-*b = serCgetc();
+	do
+	{
+		if  ((MS_TIMER - start_time) >= 10)  //10 millisec timeout
+		{
+			NmcSIOError();   	 	//on timeout, call sio_error
+			return;
+		}
+	}
+	while (serCpeek() == -1);
+
+	*b = serCgetc();
 }
 
 
@@ -694,81 +699,84 @@ xmem int NmcSIOError()
 //of an SIO error.  It does this by filling up any PIC-SERVO command buffers
 //with zeros, waits for a bit, and then flushes whatever might have come back.
 {
-int i;
-char c;
+	int i;
+	char c;
 
-cum_sio_error++;
- DelayMilliseconds(5);
- for (i=0; i<16; i++) serCputc(0);
- 	DelayMilliseconds(5);
+	cum_sio_error++;
+	DelayMilliseconds(5);
 
-serCrdFlush();
-return(cum_sio_error);
+	for (i = 0; i < 16; i++) serCputc(0);
+
+	DelayMilliseconds(5);
+
+	serCrdFlush();
+	return (cum_sio_error);
 }
 
 xmem void ServoNewMod(char addr, char ver)
 //Initialize the data for a servo module
 {
-int i;
-mod[addr].devtype = SERVO_TYPE;
-mod[addr].version = ver;
-mod[addr].sdef = 0;
-mod[addr].stat = 0;
-mod[addr].out = 0x10;
-mod[addr].md.ps.pos = 0;
-mod[addr].md.ps.target_pos = 0;
-mod[addr].md.ps.ad = 0;
-mod[addr].md.ps.vel_current = 0;
-mod[addr].md.ps.aux = 0;
-mod[addr].md.ps.home = 0;
-mod[addr].md.ps.homing = 0;     //not doing homing
-mod[addr].md.ps.kp = KP[addr-1];
-mod[addr].md.ps.kd = KD[addr-1];
-mod[addr].md.ps.ki = KI[addr-1];
-mod[addr].md.ps.il = IL[addr-1];
-mod[addr].md.ps.ol = OL[addr-1];
-mod[addr].md.ps.cl = CL[addr-1];
-mod[addr].md.ps.el = EL[addr-1];
-mod[addr].md.ps.sr = SR[addr-1];
-mod[addr].md.ps.dc = DC[addr-1];
-for (i=0;i<3;i++)
-{
-	mod[addr].md.ps.vel[i]=VEL[i][addr-1];
-   mod[addr].md.ps.acc[i]=ACC[i][addr-1];
-}
+	int i;
+	mod[addr].devtype = SERVO_TYPE;
+	mod[addr].version = ver;
+	mod[addr].sdef = 0;
+	mod[addr].stat = 0;
+	mod[addr].out = 0x10;
+	mod[addr].md.ps.pos = 0;
+	mod[addr].md.ps.target_pos = 0;
+	mod[addr].md.ps.ad = 0;
+	mod[addr].md.ps.vel_current = 0;
+	mod[addr].md.ps.aux = 0;
+	mod[addr].md.ps.home = 0;
+	mod[addr].md.ps.homing = 0;     //not doing homing
+	mod[addr].md.ps.kp = KP[addr - 1];
+	mod[addr].md.ps.kd = KD[addr - 1];
+	mod[addr].md.ps.ki = KI[addr - 1];
+	mod[addr].md.ps.il = IL[addr - 1];
+	mod[addr].md.ps.ol = OL[addr - 1];
+	mod[addr].md.ps.cl = CL[addr - 1];
+	mod[addr].md.ps.el = EL[addr - 1];
+	mod[addr].md.ps.sr = SR[addr - 1];
+	mod[addr].md.ps.dc = DC[addr - 1];
+
+	for (i = 0; i < 3; i++)
+	{
+		mod[addr].md.ps.vel[i] = VEL[i][addr - 1];
+		mod[addr].md.ps.acc[i] = ACC[i][addr - 1];
+	}
 }
 
 xmem void IONewMod(char addr, char ver)
 //Initialize the data for an I/O module
 {
-mod[addr].devtype = IO_TYPE;
-mod[addr].version = ver;
-mod[addr].sdef = 0;
-mod[addr].stat = 0;
-mod[addr].out = 0x10;
-mod[addr].md.pio.input = 0;
-mod[addr].md.pio.ad1 = 0;
-mod[addr].md.pio.ad2 = 0;
-mod[addr].md.pio.ad3 = 0;
-mod[addr].md.pio.tmr = 0;
-mod[addr].md.pio.sinput = 0;
-mod[addr].md.pio.stmr = 0;
+	mod[addr].devtype = IO_TYPE;
+	mod[addr].version = ver;
+	mod[addr].sdef = 0;
+	mod[addr].stat = 0;
+	mod[addr].out = 0x10;
+	mod[addr].md.pio.input = 0;
+	mod[addr].md.pio.ad1 = 0;
+	mod[addr].md.pio.ad2 = 0;
+	mod[addr].md.pio.ad3 = 0;
+	mod[addr].md.pio.tmr = 0;
+	mod[addr].md.pio.sinput = 0;
+	mod[addr].md.pio.stmr = 0;
 }
 
 
 xmem void StepNewMod(char addr, char ver)
 //Initialize the data for a step module
 {
-mod[addr].devtype = STEP_TYPE;
-mod[addr].version = ver;
-mod[addr].sdef = 0;
-mod[addr].stat = 0;
-mod[addr].out = 0x10;
-mod[addr].md.step.pos = 0;
-mod[addr].md.step.ad = 0;
-mod[addr].md.step.st = 0;
-mod[addr].md.step.inputs = 0;
-mod[addr].md.step.home = 0;
+	mod[addr].devtype = STEP_TYPE;
+	mod[addr].version = ver;
+	mod[addr].sdef = 0;
+	mod[addr].stat = 0;
+	mod[addr].out = 0x10;
+	mod[addr].md.step.pos = 0;
+	mod[addr].md.step.ad = 0;
+	mod[addr].md.step.st = 0;
+	mod[addr].md.step.inputs = 0;
+	mod[addr].md.step.home = 0;
 }
 
 
@@ -776,142 +784,141 @@ xmem void ServoRcvStatus(char addr, char *cksum)
 //Read in a status byte for a servo module - called from NmcSendCommand
 //cksum simply accepts a partial checksum and returns a modified partial checksum
 {
-char *p;
+	char *p;
 
-if (mod[addr].sdef & SEND_POS)        //get position
-  {
-  p = (char *)&(mod[addr].md.ps.pos);
-  get_byte1(p);
-  get_byte1(p+1);
-  get_byte1(p+2);
-  get_byte1(p+3);
-  *cksum += p[0] + p[1] + p[2] + p[3];
-  }
+	if (mod[addr].sdef & SEND_POS)        //get position
+	{
+		p = (char *) & (mod[addr].md.ps.pos);
+		get_byte1(p);
+		get_byte1(p + 1);
+		get_byte1(p + 2);
+		get_byte1(p + 3);
+		*cksum += p[0] + p[1] + p[2] + p[3];
+	}
 
-if (mod[addr].sdef & SEND_AD)         //get a/d value
-  {
-  get_byte1( &(mod[addr].md.ps.ad) );
-  *cksum += mod[addr].md.ps.ad;
-  }
+	if (mod[addr].sdef & SEND_AD)         //get a/d value
+	{
+		get_byte1( &(mod[addr].md.ps.ad) );
+		*cksum += mod[addr].md.ps.ad;
+	}
 
-if (mod[addr].sdef & SEND_VEL)        //get velocity
-  {
-  p = (char *)&(mod[addr].md.ps.vel_current);
-  get_byte1(p);
-  get_byte1(p+1);
-  *cksum += p[0] + p[1];
-  }
+	if (mod[addr].sdef & SEND_VEL)        //get velocity
+	{
+		p = (char *) & (mod[addr].md.ps.vel_current);
+		get_byte1(p);
+		get_byte1(p + 1);
+		*cksum += p[0] + p[1];
+	}
 
-if (mod[addr].sdef & SEND_AUX)         //get aux stat value
-  {
-  get_byte1( &(mod[addr].md.ps.aux) );
-  *cksum += mod[addr].md.ps.aux;
-  }
+	if (mod[addr].sdef & SEND_AUX)         //get aux stat value
+	{
+		get_byte1( &(mod[addr].md.ps.aux) );
+		*cksum += mod[addr].md.ps.aux;
+	}
 
-if (mod[addr].sdef & SEND_HOME_POS)   //get home position
-  {
-  p = (char *)&(mod[addr].md.ps.home);
-  get_byte1(p);
-  get_byte1(p+1);
-  get_byte1(p+2);
-  get_byte1(p+3);
-  *cksum += p[0] + p[1] + p[2] + p[3];
-  }
+	if (mod[addr].sdef & SEND_HOME_POS)   //get home position
+	{
+		p = (char *) & (mod[addr].md.ps.home);
+		get_byte1(p);
+		get_byte1(p + 1);
+		get_byte1(p + 2);
+		get_byte1(p + 3);
+		*cksum += p[0] + p[1] + p[2] + p[3];
+	}
 
-if (mod[addr].sdef & SEND_POS_ERROR)   //get position error
-  {
-  p = (char *)&(mod[addr].md.ps.poserror);
-  get_byte1(p);
-  get_byte1(p+1);
-  *cksum += p[0] + p[1];
-  }
+	if (mod[addr].sdef & SEND_POS_ERROR)   //get position error
+	{
+		p = (char *) & (mod[addr].md.ps.poserror);
+		get_byte1(p);
+		get_byte1(p + 1);
+		*cksum += p[0] + p[1];
+	}
 
-if (mod[addr].sdef & SEND_ID)         //get device id, version #
-  {
-  get_byte1( &(mod[addr].devtype));
-  *cksum += mod[addr].devtype;
-  get_byte1( &(mod[addr].version) );
-  *cksum += mod[addr].version;
-  }
+	if (mod[addr].sdef & SEND_ID)         //get device id, version #
+	{
+		get_byte1( &(mod[addr].devtype));
+		*cksum += mod[addr].devtype;
+		get_byte1( &(mod[addr].version) );
+		*cksum += mod[addr].version;
+	}
 
 }
 
 xmem char IOGetInput(char addr)
 {
-  if ( NmcReadStat((char)addr, SEND_INPUTS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Input
-  	{
-  	 return(mod[addr].md.pio.input);
-  	}
-  return(FALSE);
+	if ( NmcReadStat((char)addr, SEND_INPUTS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Input
+		return (mod[addr].md.pio.input);
+
+	return (FALSE);
 }
 
 xmem void IORcvStatus(char addr, char *cksum)
 //Read in a status byte for a servo module - called from NmcSendCommand
 //cksum simply accepts a partial checksum and returns a modified partial checksum
 {
-char *p;
+	char *p;
 
-if (mod[addr].sdef & SEND_INPUTS)        //get inputs
-  {
-  p = (char *)&(mod[addr].md.pio.input);
-  get_byte1(p);
-  get_byte1(p+1);
-  *cksum += p[0] + p[1];
-  }
+	if (mod[addr].sdef & SEND_INPUTS)        //get inputs
+	{
+		p = (char *) & (mod[addr].md.pio.input);
+		get_byte1(p);
+		get_byte1(p + 1);
+		*cksum += p[0] + p[1];
+	}
 
-if (mod[addr].sdef & SEND_AD1)         //get a/d1 value
-  {
-  get_byte1( &(mod[addr].md.pio.ad1) );
-  *cksum += mod[addr].md.pio.ad1;
-  }
+	if (mod[addr].sdef & SEND_AD1)         //get a/d1 value
+	{
+		get_byte1( &(mod[addr].md.pio.ad1) );
+		*cksum += mod[addr].md.pio.ad1;
+	}
 
-if (mod[addr].sdef & SEND_AD2)         //get a/d2 value
-  {
-  get_byte1( &(mod[addr].md.pio.ad2) );
-  *cksum += mod[addr].md.pio.ad2;
-  }
+	if (mod[addr].sdef & SEND_AD2)         //get a/d2 value
+	{
+		get_byte1( &(mod[addr].md.pio.ad2) );
+		*cksum += mod[addr].md.pio.ad2;
+	}
 
-if (mod[addr].sdef & SEND_AD3)         //get a/d3 value
-  {
-  get_byte1( &(mod[addr].md.pio.ad3) );
-  *cksum += mod[addr].md.pio.ad3;
-  }
+	if (mod[addr].sdef & SEND_AD3)         //get a/d3 value
+	{
+		get_byte1( &(mod[addr].md.pio.ad3) );
+		*cksum += mod[addr].md.pio.ad3;
+	}
 
-if (mod[addr].sdef & SEND_TIMER)        //get timer
-  {
-  p = (char *)&(mod[addr].md.pio.tmr);
-  get_byte1(p);
-  get_byte1(p+1);
-  get_byte1(p+2);
-  get_byte1(p+3);
-  *cksum += p[0] + p[1] + p[2] + p[3];
-  }
+	if (mod[addr].sdef & SEND_TIMER)        //get timer
+	{
+		p = (char *) & (mod[addr].md.pio.tmr);
+		get_byte1(p);
+		get_byte1(p + 1);
+		get_byte1(p + 2);
+		get_byte1(p + 3);
+		*cksum += p[0] + p[1] + p[2] + p[3];
+	}
 
-if (mod[addr].sdef & SEND_ID)         //get device id, version #
-  {
-  get_byte1( &(mod[addr].devtype));
-  *cksum += mod[addr].devtype;
-  get_byte1( &(mod[addr].version) );
-  *cksum += mod[addr].version;
-  }
+	if (mod[addr].sdef & SEND_ID)         //get device id, version #
+	{
+		get_byte1( &(mod[addr].devtype));
+		*cksum += mod[addr].devtype;
+		get_byte1( &(mod[addr].version) );
+		*cksum += mod[addr].version;
+	}
 
-if (mod[addr].sdef & SEND_SYNC_IN)     //get synch'd inputs
-  {
-  p = (char *)&(mod[addr].md.pio.sinput);
-  get_byte1(p);
-  get_byte1(p+1);
-  *cksum += p[0] + p[1];
-  }
+	if (mod[addr].sdef & SEND_SYNC_IN)     //get synch'd inputs
+	{
+		p = (char *) & (mod[addr].md.pio.sinput);
+		get_byte1(p);
+		get_byte1(p + 1);
+		*cksum += p[0] + p[1];
+	}
 
-if (mod[addr].sdef & SEND_SYNC_TMR)    //get synch'd timer
-  {
-  p = (char *)&(mod[addr].md.pio.stmr);
-  get_byte1(p);
-  get_byte1(p+1);
-  get_byte1(p+2);
-  get_byte1(p+3);
-  *cksum += p[0] + p[1] + p[2] + p[3];
-  }
+	if (mod[addr].sdef & SEND_SYNC_TMR)    //get synch'd timer
+	{
+		p = (char *) & (mod[addr].md.pio.stmr);
+		get_byte1(p);
+		get_byte1(p + 1);
+		get_byte1(p + 2);
+		get_byte1(p + 3);
+		*cksum += p[0] + p[1] + p[2] + p[3];
+	}
 }
 
 
@@ -919,55 +926,55 @@ xmem void StepRcvStatus(char addr, char *cksum)
 //Read in a status byte for a step module - called from NmcSendCommand
 //cksum simply accepts a partial checksum and returns a modified partial checksum
 {
-char *p;
+	char *p;
 
-if (mod[addr].sdef & SEND_POS)        //get position
-  {
-  p = (char *)&(mod[addr].md.step.pos);
-  get_byte1(p);
-  get_byte1(p+1);
-  get_byte1(p+2);
-  get_byte1(p+3);
-  *cksum += p[0] + p[1] + p[2] + p[3];
-  }
+	if (mod[addr].sdef & SEND_POS)        //get position
+	{
+		p = (char *) & (mod[addr].md.step.pos);
+		get_byte1(p);
+		get_byte1(p + 1);
+		get_byte1(p + 2);
+		get_byte1(p + 3);
+		*cksum += p[0] + p[1] + p[2] + p[3];
+	}
 
-if (mod[addr].sdef & SEND_AD)         //get a/d value
-  {
-  get_byte1( &(mod[addr].md.step.ad) );
-  *cksum += mod[addr].md.step.ad;
-  }
+	if (mod[addr].sdef & SEND_AD)         //get a/d value
+	{
+		get_byte1( &(mod[addr].md.step.ad) );
+		*cksum += mod[addr].md.step.ad;
+	}
 
-if (mod[addr].sdef & SEND_ST)         //get step time
-  {
-  p = (char *)&(mod[addr].md.step.st);
-  get_byte1(p);
-  get_byte1(p+1);
-  *cksum += p[0] + p[1];
-  }
+	if (mod[addr].sdef & SEND_ST)         //get step time
+	{
+		p = (char *) & (mod[addr].md.step.st);
+		get_byte1(p);
+		get_byte1(p + 1);
+		*cksum += p[0] + p[1];
+	}
 
-if (mod[addr].sdef & SEND_INBITS)     //get input bits
-  {
-  get_byte1( &(mod[addr].md.step.inputs) );
-  *cksum += mod[addr].md.step.inputs;
-  }
+	if (mod[addr].sdef & SEND_INBITS)     //get input bits
+	{
+		get_byte1( &(mod[addr].md.step.inputs) );
+		*cksum += mod[addr].md.step.inputs;
+	}
 
-if (mod[addr].sdef & SEND_HOME_POS)   //get home position
-  {
-  p = (char *)&(mod[addr].md.step.home);
-  get_byte1(p);
-  get_byte1(p+1);
-  get_byte1(p+2);
-  get_byte1(p+3);
-  *cksum += p[0] + p[1] + p[2] + p[3];
-  }
+	if (mod[addr].sdef & SEND_HOME_POS)   //get home position
+	{
+		p = (char *) & (mod[addr].md.step.home);
+		get_byte1(p);
+		get_byte1(p + 1);
+		get_byte1(p + 2);
+		get_byte1(p + 3);
+		*cksum += p[0] + p[1] + p[2] + p[3];
+	}
 
-if (mod[addr].sdef & SEND_ID)         //get device id, version #
-  {
-  get_byte1( &(mod[addr].devtype));
-  *cksum += mod[addr].devtype;
-  get_byte1( &(mod[addr].version) );
-  *cksum += mod[addr].version;
-  }
+	if (mod[addr].sdef & SEND_ID)         //get device id, version #
+	{
+		get_byte1( &(mod[addr].devtype));
+		*cksum += mod[addr].devtype;
+		get_byte1( &(mod[addr].version) );
+		*cksum += mod[addr].version;
+	}
 
 }
 
@@ -980,11 +987,11 @@ SYNTAX: int NmcSendCommand(char addr, int n, int wait_for_reply);
 DESCRIPTION: Sends a command loaded into the global string
 	command_string[] out on the NMC network.
 
-	                 addr = module address (individual or group)
-	                    n = number of additional data bytes
-	    command_string[0] = command value
+					 addr = module address (individual or group)
+						n = number of additional data bytes
+		command_string[0] = command value
 	command_string[1 - n] = additional data required for the command
-	       wait_for_reply = 1 if individual address, 0 if group address
+		   wait_for_reply = 1 if individual address, 0 if group address
 
 	After the command is sent, the returned status data is automatically
 	loaded into the global data structure mod[addr].stat
@@ -993,66 +1000,73 @@ RETURN VALUE: TRUE on success;  FALSE otherwise.
 END DESCRIPTION **********************************************************/
 xmem int NmcSendCommand(char addr, int n, int wait_for_reply)
 {
-char cksum, scksum;
-char *p;
-int i, n_err;
+	char cksum, scksum;
+	char *p;
+	int i, n_err;
 
-if (addr > num_mod && addr<128)
-  {
-  return(FALSE); //punt if address out of range
-  }
+	if (addr > num_mod && addr < 128)
+	{
+		return (FALSE); //punt if address out of range
+	}
 
-n_err = cum_sio_error;          //mark initial error count
+	n_err = cum_sio_error;          //mark initial error count
 
-serCputc(HeadB);               	//send header
+	serCputc(HeadB);               	//send header
 
-cksum = addr;                   //send address
-serCputc(addr);
+	cksum = addr;                   //send address
+	serCputc(addr);
 
-//Merge command code with number of additional data bytes
-command_string[0] = (command_string[0]&0x0F) | ((n&0x0F)<<4);
+	//Merge command code with number of additional data bytes
+	command_string[0] = (command_string[0] & 0x0F) | ((n & 0x0F) << 4);
 
-//Tally cksum and send out command string
-for (i=0; i<(n+1); i++)
-  {
-  cksum += command_string[i];
-  serCputc(command_string[i]);
-  }
+	//Tally cksum and send out command string
+	for (i = 0; i < (n + 1); i++)
+	{
+		cksum += command_string[i];
+		serCputc(command_string[i]);
+	}
 
-serCrdFlush();       //Flush any crap in the rcv buffer before completing command
-serCputc(cksum);     //send cksum
+	serCrdFlush();       //Flush any crap in the rcv buffer before completing command
+	serCputc(cksum);     //send cksum
 
-if (!wait_for_reply)     		//punt on getting status for group commands
-  {                       		//with no group leader
-  while (COUTBUFSIZE != serCwrFree() ); //wait for cmd to be sent
-    	DelayMilliseconds(2);			//wait for cmd to be processed
-  return(TRUE);
-  }
+	if (!wait_for_reply)     		//punt on getting status for group commands
+	{
+		//with no group leader
+		while (COUTBUFSIZE != serCwrFree() ); //wait for cmd to be sent
 
-get_byte1( &(mod[addr].stat) );  //get status byte
-cksum = mod[addr].stat;          //start cksum total
+		DelayMilliseconds(2);			//wait for cmd to be processed
+		return (TRUE);
+	}
 
-if (cum_sio_error > n_err) return(FALSE);  //punt immediately if no status
+	get_byte1( &(mod[addr].stat) );  //get status byte
+	cksum = mod[addr].stat;          //start cksum total
 
-//Call appropriate XXXXXXStatus function to get module specific data:
-switch (mod[addr].devtype)
-  {
-  case SERVO_TYPE: ServoRcvStatus(addr, &cksum);
-  		   break;
-  case IO_TYPE:    IORcvStatus(addr, &cksum);
-  		   break;
-  case STEP_TYPE:  StepRcvStatus(addr, &cksum);
-  		   break;
-  }
+	if (cum_sio_error > n_err) return (FALSE); //punt immediately if no status
 
-//Finally, get the checksum byte
-get_byte1( &scksum );
+	//Call appropriate XXXXXXStatus function to get module specific data:
+	switch (mod[addr].devtype)
+	{
+		case SERVO_TYPE:
+			ServoRcvStatus(addr, &cksum);
+			break;
+
+		case IO_TYPE:
+			IORcvStatus(addr, &cksum);
+			break;
+
+		case STEP_TYPE:
+			StepRcvStatus(addr, &cksum);
+			break;
+	}
+
+	//Finally, get the checksum byte
+	get_byte1( &scksum );
 
 
-if ( cksum != scksum )  return(FALSE);
+	if ( cksum != scksum )  return (FALSE);
 
-if (cum_sio_error > n_err) return(FALSE);
-else return(TRUE);
+	if (cum_sio_error > n_err) return (FALSE);
+	else return (TRUE);
 }
 
 
@@ -1071,31 +1085,42 @@ RETURN VALUE: TRUE on success;  FALSE otherwise.
 END DESCRIPTION **********************************************************/
 xmem int NmcSetBaud(char rate)
 {
-int retval;
-long hostbaud;
+	int retval;
+	long hostbaud;
 
-switch ( (int)rate )
-  {
-  case PB19200:  hostbaud = 19200; break;
-  case PB57600:  hostbaud = 57600; break;
-  case PB115200: hostbaud = 115200; break;
-  default: printf("Invalid baud rate\n"); return(FALSE);
-  }
+	switch ( (int)rate )
+	{
+		case PB19200:
+			hostbaud = 19200;
+			break;
 
-command_string[0] = SET_BAUD;
-command_string[1] = rate;
-retval = NmcSendCommand(0xFF,1, GROUP_ADDR);
+		case PB57600:
+			hostbaud = 57600;
+			break;
 
-if ( retval )  //Only change port C rate if PIC command successful
-  {
-  serCwrFlush(); 		// Flush write buffer
-  serCrdFlush();		// Flush read buffer
-  serCclose(); 			// Close Port C
-  DelayMilliseconds(5);		 		// Wait 5 ms
-  serCopen(hostbaud);	// Open Port C at the New Baud Rate
-  }
+		case PB115200:
+			hostbaud = 115200;
+			break;
 
-return( retval  );
+		default:
+			printf("Invalid baud rate\n");
+			return (FALSE);
+	}
+
+	command_string[0] = SET_BAUD;
+	command_string[1] = rate;
+	retval = NmcSendCommand(0xFF, 1, GROUP_ADDR);
+
+	if ( retval )  //Only change port C rate if PIC command successful
+	{
+		serCwrFlush(); 		// Flush write buffer
+		serCrdFlush();		// Flush read buffer
+		serCclose(); 			// Close Port C
+		DelayMilliseconds(5);		 		// Wait 5 ms
+		serCopen(hostbaud);	// Open Port C at the New Baud Rate
+	}
+
+	return ( retval  );
 }
 
 
@@ -1108,24 +1133,25 @@ SYNTAX: int NmcSetAddress(char addr, char new_addr, char new_group,
 DESCRIPTION: Changes the individual and group address of an NMC
 	controller.
 
-	          addr = module's original individual address
-	      new_addr = new individual address (1 - 127)
-	     new_group = new group address (128 - 255)
+			  addr = module's original individual address
+		  new_addr = new individual address (1 - 127)
+		 new_group = new group address (128 - 255)
 	  group_leader = 1 = leader, 0 = member
 	wait_for_reply = always set to 1
 
 RETURN VALUE: TRUE on success;  FALSE otherwise.
 END DESCRIPTION **********************************************************/
 xmem int NmcSetAddress(char addr, char new_addr, char new_group,
-			   int group_leader, int wait_for_reply)
+                       int group_leader, int wait_for_reply)
 {
-mod[addr].stat = 0;
-command_string[0] = SET_ADDRESS;
-command_string[1] = new_addr;
-if (group_leader) command_string[2] = new_group & 0x7F; //clear upper bit
-else              command_string[2] = new_group | 0x80; //set upper bit
+	mod[addr].stat = 0;
+	command_string[0] = SET_ADDRESS;
+	command_string[1] = new_addr;
 
-return( NmcSendCommand(addr,2,wait_for_reply)  );
+	if (group_leader) command_string[2] = new_group & 0x7F; //clear upper bit
+	else              command_string[2] = new_group | 0x80; //set upper bit
+
+	return ( NmcSendCommand(addr, 2, wait_for_reply)  );
 }
 
 
@@ -1140,30 +1166,32 @@ DESCRIPTION: Read or permanently define the status items returned
 	will include the specified status items and will be stored in the
 	global data structure mod[addr].
 
-	          addr = module address
+			  addr = module address
 	  status_items = logical OR of a module type status items bits
-	     permanent = 1 to make permanent, 0 to read just once
+		 permanent = 1 to make permanent, 0 to read just once
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success;  FALSE otherwise.
 END DESCRIPTION **********************************************************/
 xmem int NmcReadStat(char addr, char status_items, int permanent, int wait_for_reply)
 {
-int retval;
-char old_sdef;
+	int retval;
+	char old_sdef;
 
-old_sdef = mod[addr].sdef;            //Save old value for non-perm. read
-mod[addr].sdef = status_items;
+	old_sdef = mod[addr].sdef;            //Save old value for non-perm. read
+	mod[addr].sdef = status_items;
 
-if (permanent) command_string[0] = SET_STATUS;
-else           command_string[0] = READ_STATUS;
-command_string[1] = status_items;
+	if (permanent) command_string[0] = SET_STATUS;
+	else           command_string[0] = READ_STATUS;
 
-retval = NmcSendCommand(addr,1,wait_for_reply);
+	command_string[1] = status_items;
 
-//restore old sdef if not perm. or if command error
-if (!permanent || retval) mod[addr].sdef = old_sdef;
-return(retval);
+	retval = NmcSendCommand(addr, 1, wait_for_reply);
+
+	//restore old sdef if not perm. or if command error
+	if (!permanent || retval) mod[addr].sdef = old_sdef;
+
+	return (retval);
 }
 
 
@@ -1175,16 +1203,16 @@ SYNTAX: int NmcNop(char addr, int wait_for_reply);
 DESCRIPTION: Performs no operation, simply causes the current status
 	data of a module to be returned.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success;  FALSE otherwise.
 END DESCRIPTION **********************************************************/
 xmem int NmcNop(char addr, int wait_for_reply)
 {
-command_string[0] = NO_OP;
+	command_string[0] = NO_OP;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 
 
@@ -1201,9 +1229,9 @@ RETURN VALUE: none.
 END DESCRIPTION **********************************************************/
 xmem void NmcHardReset(char grp_addr)
 {
-command_string[0] = HARD_RESET;
-NmcSendCommand(grp_addr, 0, GROUP_ADDR  );
-DelayMilliseconds(50);
+	command_string[0] = HARD_RESET;
+	NmcSendCommand(grp_addr, 0, GROUP_ADDR  );
+	DelayMilliseconds(50);
 }
 
 
@@ -1221,10 +1249,10 @@ RETURN VALUE: none.
 END DESCRIPTION **********************************************************/
 xmem void NmcShutdown(char grp_addr)
 {
-command_string[0] = HARD_RESET;
-NmcSendCommand(grp_addr, 0, GROUP_ADDR  );
-DelayMilliseconds(50);
-serCclose();
+	command_string[0] = HARD_RESET;
+	NmcSendCommand(grp_addr, 0, GROUP_ADDR  );
+	DelayMilliseconds(50);
+	serCclose();
 }
 
 
@@ -1241,7 +1269,7 @@ RETURN VALUE: none.
 END DESCRIPTION **********************************************************/
 xmem int NmcGetModType(char addr)
 {
-  return(mod[addr].devtype);
+	return (mod[addr].devtype);
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1257,11 +1285,10 @@ RETURN VALUE: version of requested module
 END DESCRIPTION **********************************************************/
 xmem int NmcGetModVer(char addr)
 {
-if ( NmcReadStat((char)addr, SEND_ID, READ_ONE_TIME, INDIVIDUAL_ADDR) )
-     {
-      return(mod[addr].version);
-     }
-  return(FALSE);
+	if ( NmcReadStat((char)addr, SEND_ID, READ_ONE_TIME, INDIVIDUAL_ADDR) )
+		return (mod[addr].version);
+
+	return (FALSE);
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1281,64 +1308,67 @@ RETURN VALUE: number of modules found on the network.
 END DESCRIPTION **********************************************************/
 xmem int NmcInit()
 {
-    int i;
+	int i;
 
-    //Port C talks to the PIC MODULE (default baud = 19200)
-    //following will be implemented at void InitCommPort()
-/*    if (!serCopen(19200))
+	//Port C talks to the PIC MODULE (default baud = 19200)
+	//following will be implemented at void InitCommPort()
+	/*    if (!serCopen(19200))
+		{
+			printf("Error Initializing Port\n");
+			return FALSE;
+		}
+
+		//added by JQShen
+		serMode(0);
+		serCdatabits(PARAM_8BIT);
+		serCparity(PARAM_NOPARITY);
+		//end of added
+	*/
+	NmcHardReset(0xFF);  		//reset all controllers on the net (group 0xFF)
+	DelayMilliseconds(50);
+	NmcHardReset(0xFF);
+
+	serCwrFlush(); 			// Flush write buffer
+	serCrdFlush(); 			// Flush read buffer
+
+	num_mod = 0;
+
+	//Check for controllers by trying to set address of end controller
+	if ( !NmcSetAddress(0, 0x01, 0xFF, 0, 1) )
+		return (num_mod);
+
+	//Set addresses of remaining mods from 2 to num_mod
+	for (i = 2; i < MAX_MOD; i++)  //punt when they stop responding
 	{
-	    printf("Error Initializing Port\n");
-	    return FALSE;
+		if ( !NmcSetAddress(0, (char)i, 0xFF, 0, 1) )
+			break;
 	}
 
-    //added by JQShen
-    serMode(0);
-    serCdatabits(PARAM_8BIT);
-    serCparity(PARAM_NOPARITY);
-    //end of added
-*/
-    NmcHardReset(0xFF);  		//reset all controllers on the net (group 0xFF)
-    DelayMilliseconds(50);
-    NmcHardReset(0xFF);
+	num_mod = i - 1;
+	printf("Servos found= %d", num_mod);
 
-    serCwrFlush(); 			// Flush write buffer
-    serCrdFlush(); 			// Flush read buffer
+	for (i = 1; i <= num_mod; i++)
+	{
+		mod[(char)i].devtype = SERVO_TYPE; 	//Assume devtype = SERVO_TYPE
+		NmcReadStat((char)i, SEND_ID, READ_ONE_TIME, INDIVIDUAL_ADDR);  	//Verify the actual device type
 
-    num_mod = 0;
+		switch (mod[(char)i].devtype)
+		{
+			case SERVO_TYPE:
+				ServoNewMod( (char)i, mod[(char)i].version );
+				break;
 
-    //Check for controllers by trying to set address of end controller
-    if ( !NmcSetAddress(0, 0x01, 0xFF, 0, 1) )
-    {
-        return(num_mod);
-    }
+			case IO_TYPE:
+				IONewMod( (char)i, mod[(char)i].version );
+				break;
 
-    //Set addresses of remaining mods from 2 to num_mod
-    for (i=2; i<MAX_MOD; i++)      //punt when they stop responding
-    {
-        if ( !NmcSetAddress(0, (char)i, 0xFF, 0, 1) )
-            break;
-    }
+			case STEP_TYPE:
+				StepNewMod( (char)i, mod[(char)i].version );
+				break;
+		}
+	}
 
-    num_mod = i-1;
-printf("Servos found= %d",num_mod);
-    for (i=1; i<=num_mod; i++)
-    {
-        mod[(char)i].devtype = SERVO_TYPE; 	//Assume devtype = SERVO_TYPE
-        NmcReadStat((char)i, SEND_ID, READ_ONE_TIME, INDIVIDUAL_ADDR);  	//Verify the actual device type
-        switch (mod[(char)i].devtype) {
-  		case SERVO_TYPE:
-            ServoNewMod( (char)i, mod[(char)i].version );
-  			break;
-  		case IO_TYPE:
-            IONewMod( (char)i, mod[(char)i].version );
-  			break;
-  		case STEP_TYPE:
-            StepNewMod( (char)i, mod[(char)i].version );
-  			break;
-  		}
-  }
-
-    return(num_mod);
+	return (num_mod);
 }
 
 #ifdef PIC_SERVO
@@ -1351,26 +1381,28 @@ SYNTAX: char ServoGetPos(char addr, long *pos);
 
 DESCRIPTION: Returns the current Position
 
-	   	 addr  = Address of NMC Module
+		 addr  = Address of NMC Module
 
 RETURN VALUE: Current Position, -1 ERR_GENERAL on Error
 END DESCRIPTION **********************************************************/
 
 xmem char ServoGetPos(char addr, long *pos )
 {
-    int loop;
+	int loop;
 
-    for (loop = 0; loop < 10; loop++)
-    {
-      if ( NmcReadStat((char)addr, SEND_POS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Position
-      	{
-      	 *pos = (mod[addr].md.ps.pos);
-        return (NO_ERROR);
-        }
-      	DelayMilliseconds(20);
-    }
-    printf("error to get module %d pos after 10 times\n", addr);
-  	return ERR_SEND;
+	for (loop = 0; loop < 10; loop++)
+	{
+		if ( NmcReadStat((char)addr, SEND_POS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Position
+		{
+			*pos = (mod[addr].md.ps.pos);
+			return (NO_ERROR);
+		}
+
+		DelayMilliseconds(20);
+	}
+
+	printf("error to get module %d pos after 10 times\n", addr);
+	return ERR_SEND;
 }
 
 //******* PIC-SERVO commands:
@@ -1381,7 +1413,7 @@ char ServoInit(char addr);
 DESCRIPTION: Sets the gains and other servo parameters for a
 	PIC-SERVOmodule
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: NO_ERROR on success, error code on failure.
@@ -1389,44 +1421,45 @@ END DESCRIPTION **********************************************************/
 
 xmem char ServoInit(char addr)
 {
-	unsigned int mykp,mykd,myki,myil,myol,mycl,myel,mysr,mydc;
+	unsigned int mykp, mykd, myki, myil, myol, mycl, myel, mysr, mydc;
 
-   char result;
+	char result;
 
-   result = ServoPowerOn(addr);
-/*   if (result!=YES)
-   {
-      return (ERR_POWER);
-   }*/
-/*   if(result&ERROR_BIT!=NO_ERROR)
-   {
-      return (result);
-   }  */
-   mykp = KP[addr];
-   mykd = KD[addr];
-   myki = KI[addr];
-   myil = IL[addr];
-   myol = OL[addr];
-   mycl = CL[addr];
-   myel = EL[addr];
-   mysr = SR[addr];
-   mydc = DC[addr];
-	if (!ServoSetGain(addr,mykp,
-   	mykd,myki,
-   	myil,myol,
-      mycl,myel,
-      mysr,mydc,1))
+	result = ServoPowerOn(addr);
+	/*   if (result!=YES)
+	   {
+		  return (ERR_POWER);
+	   }*/
+	/*   if(result&ERROR_BIT!=NO_ERROR)
+	   {
+		  return (result);
+	   }  */
+	mykp = KP[addr];
+	mykd = KD[addr];
+	myki = KI[addr];
+	myil = IL[addr];
+	myol = OL[addr];
+	mycl = CL[addr];
+	myel = EL[addr];
+	mysr = SR[addr];
+	mydc = DC[addr];
 
-/*	if (!ServoSetGain(addr,mod[addr].md.ps.kp,
-   	mod[addr].md.ps.kd,mod[addr].md.ps.ki,
-   	mod[addr].md.ps.il,mod[addr].md.ps.ol,
-      mod[addr].md.ps.cl,mod[addr].md.ps.el,
-      mod[addr].md.ps.sr,mod[addr].md.ps.dc,wait_for_reply))     */
-/*   {
-   	printf("Failed to set servo gain!\n");
-      return ERR_SEND;
-   }  */
-   return NO_ERROR;
+	if (!ServoSetGain(addr, mykp,
+	                  mykd, myki,
+	                  myil, myol,
+	                  mycl, myel,
+	                  mysr, mydc, 1))
+
+		/*	if (!ServoSetGain(addr,mod[addr].md.ps.kp,
+			mod[addr].md.ps.kd,mod[addr].md.ps.ki,
+			mod[addr].md.ps.il,mod[addr].md.ps.ol,
+			  mod[addr].md.ps.cl,mod[addr].md.ps.el,
+			  mod[addr].md.ps.sr,mod[addr].md.ps.dc,wait_for_reply))     */
+		/*   {
+			printf("Failed to set servo gain!\n");
+			  return ERR_SEND;
+		   }  */
+		return NO_ERROR;
 }
 //******* PIC-SERVO commands:
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1435,41 +1468,42 @@ int ServoHome(char addr, char control, char vel, char acc);
 
 DESCRIPTION: Enable servo, Clear error bits and Do homing with control option.
 
-	          addr = module address
-	          control = homing option
+			  addr = module address
+			  control = homing option
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoOn(char addr)
 {
-   if (!ServoStopMotor(addr,(AMP_ENABLE | STOP_ABRUPT),1))
-   {
-//      BrakeAction(ON);
-      return ERR_SEND;
-   }
-//   BrakeAction(OFF);
-   return NO_ERROR;
+	if (!ServoStopMotor(addr, (AMP_ENABLE | STOP_ABRUPT), 1))
+	{
+		//      BrakeAction(ON);
+		return ERR_SEND;
+	}
+
+	//   BrakeAction(OFF);
+	return NO_ERROR;
 }
 xmem char ServoHome(char addr, char control, long vel, long acc)
 {
- 	if (!ServoClearBits(addr,1))
-   {
-      return ERR_SEND;
-   }
-   //control = ON_LIMIT1 | HOME_STOP_SMOOTH; // liu
-   if (!ServoSetHomeMode(addr, control, 1))
-   {
-//   	printf("Failed to set Home Mode for the Motor Driver!\n");
-      return ERR_SEND;
-   }
+	if (!ServoClearBits(addr, 1))
+		return ERR_SEND;
 
-   if (!ServoSetVel(addr,vel,acc, 1))
-   {
-//   	printf("Failed to set Vel for the homing for the Motor!\n");
-      return ERR_SEND;
-   }
-//   DelayMilliseconds(100);
-   return NO_ERROR;
+	//control = ON_LIMIT1 | HOME_STOP_SMOOTH; // liu
+	if (!ServoSetHomeMode(addr, control, 1))
+	{
+		//   	printf("Failed to set Home Mode for the Motor Driver!\n");
+		return ERR_SEND;
+	}
+
+	if (!ServoSetVel(addr, vel, acc, 1))
+	{
+		//   	printf("Failed to set Vel for the homing for the Motor!\n");
+		return ERR_SEND;
+	}
+
+	//   DelayMilliseconds(100);
+	return NO_ERROR;
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1479,19 +1513,20 @@ SYNTAX: char ServoGetPosError(char addr, long *err_pos);
 
 DESCRIPTION: Returns the current Position  Error count
 
-	   	 addr  = Address of NMC Module
+		 addr  = Address of NMC Module
 
 RETURN VALUE: Current Position Error Count, -1 on Error
 END DESCRIPTION **********************************************************/
 
 xmem char ServoGetPosError(char addr, long *err_pos)
 {
-  if ( NmcReadStat((char)addr, SEND_POS_ERROR, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Position
-  	{
-   	*err_pos = mod[addr].md.ps.poserror;
-      return NO_ERROR;
-  	}
-  return ERR_SEND;
+	if ( NmcReadStat((char)addr, SEND_POS_ERROR, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Position
+	{
+		*err_pos = mod[addr].md.ps.poserror;
+		return NO_ERROR;
+	}
+
+	return ERR_SEND;
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1501,28 +1536,30 @@ SYNTAX: int ServoMoveDone(char addr);
 
 DESCRIPTION: Check move done status.
 
-	          addr = module address
+			  addr = module address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoMoveDone(char addr)
 {
-/*    if (ServoOverCurrent(addr) | ServoPosError(addr))
-    {
-   	    printf("Elev Torque Limit error!\n");
-   	    return ERR_TORQUE;
-    }*/
+	/*    if (ServoOverCurrent(addr) | ServoPosError(addr))
+		{
+			printf("Elev Torque Limit error!\n");
+			return ERR_TORQUE;
+		}*/
 
-    if (NmcNop(addr,1))   //Request status Bits
-  	{
-   	    if (mod[addr].stat&MOVE_DONE)
-   	    {
-       	    if (addr == ROLLER_MOTOR)
-                myRoller.bMoving = FALSE;
-          	return TRUE;
-      	}
-  	}
-    return FALSE;
+	if (NmcNop(addr, 1))  //Request status Bits
+	{
+		if (mod[addr].stat & MOVE_DONE)
+		{
+			if (addr == ROLLER_MOTOR)
+				myRoller.bMoving = FALSE;
+
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }
 /* START FUNCTION DESCRIPTION ********************************************
 ServoGetLimit                <nmc.lib>
@@ -1531,28 +1568,30 @@ SYNTAX: char ServoGetLimit(char addr, char option);
 
 DESCRIPTION: Check limit1 or limit2 switch status.
 
-	          addr = module address
-             option =
+			  addr = module address
+			 option =
 
 RETURN VALUE: YES on at limit, error code error, NO_ERROR on not at limit.
 END DESCRIPTION **********************************************************/
 xmem char ServoGetLimit(char addr, char option)
 {
-    int loop;
+	int loop;
 
-    for (loop = 0; loop < 10; loop++)
-    {
-       if (NmcNop(addr,1))   //Request status Bits
-      	{
-       	if(mod[addr].stat&option)
-          	return YES;
-          else
-          	return NO_ERROR;
-      	}
-      	DelayMilliseconds(20);
-    }
-    printf("error to get module %d limit after 10 times\n", addr);
-  	return ERR_SEND;
+	for (loop = 0; loop < 10; loop++)
+	{
+		if (NmcNop(addr, 1))  //Request status Bits
+		{
+			if (mod[addr].stat & option)
+				return YES;
+			else
+				return NO_ERROR;
+		}
+
+		DelayMilliseconds(20);
+	}
+
+	printf("error to get module %d limit after 10 times\n", addr);
+	return ERR_SEND;
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1562,7 +1601,7 @@ SYNTAX: char ServoHomeDone(char addr);
 
 DESCRIPTION: Check Home done status.
 
-	          addr = module address
+			  addr = module address
 
 RETURN VALUE: TRUE on finish home, FALSE on still homing.
 END DESCRIPTION **********************************************************/
@@ -1570,28 +1609,26 @@ xmem char ServoHomeDone(char addr)
 {
 	char over1, over2, homing;
 
-   over1 = ServoOverCurrent(addr);
-   over2 = ServoPosError(addr);
-   if ((over1 & ERROR_BIT!=NO_ERROR) ||
-   		(over2&ERROR_BIT!=NO_ERROR))
-   {
-   	return ERR_SEND;
-   }
-   if ((over1 == YES) || (over2==YES))
-   {
-   	return ERR_TORQUE;
-   }
-   if (NmcNop(addr,1))   //Request status Bits
-  	{
-   	homing = mod[addr].stat&HOME_IN_PROG;
-  	}
-   if (!homing)
-   {
-   	mod[addr].md.ps.homing = 0x00;
-      return YES;
-   }
-   else
-	   return NO_ERROR;
+	over1 = ServoOverCurrent(addr);
+	over2 = ServoPosError(addr);
+
+	if ((over1 & ERROR_BIT != NO_ERROR) ||
+	        (over2 & ERROR_BIT != NO_ERROR))
+		return ERR_SEND;
+
+	if ((over1 == YES) || (over2 == YES))
+		return ERR_TORQUE;
+
+	if (NmcNop(addr, 1))  //Request status Bits
+		homing = mod[addr].stat & HOME_IN_PROG;
+
+	if (!homing)
+	{
+		mod[addr].md.ps.homing = 0x00;
+		return YES;
+	}
+	else
+		return NO_ERROR;
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1601,22 +1638,23 @@ SYNTAX: char DoServoResume(char addr);
 
 DESCRIPTION: Pause PIC-SERVO module and return current position.
 
-	          addr = module address
+			  addr = module address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char DoServoResume(char addr)
 {
-    long ltemp, current_pos, vel, acc;
-	if(myRoller.bMoving && (addr == ROLLER_MOTOR))
+	long ltemp, current_pos, vel, acc;
+
+	if (myRoller.bMoving && (addr == ROLLER_MOTOR))
 	{
-        if (myRoller.bMoveMode)  //pos mode
-            return(ServoPosMove(addr,myRoller.TargetPos,VEL_ROLLER[MED],ACC_ROLLER[MED]));
-        else if (myRoller.TargetPos>0)
-            return ServoSetVel(addr, VEL_ROLLER[MIN], ACC_ROLLER[MIN], 1);
-        else
-            return ServoSetVel(addr, -VEL_ROLLER[MIN], ACC_ROLLER[MIN], 1);
-    }
+		if (myRoller.bMoveMode)  //pos mode
+			return (ServoPosMove(addr, myRoller.TargetPos, VEL_ROLLER[MED], ACC_ROLLER[MED]));
+		else if (myRoller.TargetPos > 0)
+			return ServoSetVel(addr, VEL_ROLLER[MIN], ACC_ROLLER[MIN], 1);
+		else
+			return ServoSetVel(addr, -VEL_ROLLER[MIN], ACC_ROLLER[MIN], 1);
+	}
 }
 //******* PIC-SERVO commands:
 
@@ -1627,7 +1665,7 @@ SYNTAX: char DoServoPause(char addr);
 
 DESCRIPTION: Pause PIC-SERVO module and return current position.
 
-	          addr = module address
+			  addr = module address
 				stop mode STOP_SMOOTH |AMP_ENABLE
 	wait_for_reply = 1 for individual address, 0 for group address
 
@@ -1636,15 +1674,17 @@ END DESCRIPTION **********************************************************/
 xmem char DoServoPause(char addr)
 {
 	char temp;
-   if (myRoller.bMoving && (addr==ROLLER_MOTOR))
-   {
-	   if(!ServoStopMotor(addr,STOP_SMOOTH |AMP_ENABLE,1))
-	   {
-	      //printf("Failed to stop motor!\n");
-	      return ERR_SEND;
-	   }
-   }
-   return NO_ERROR;
+
+	if (myRoller.bMoving && (addr == ROLLER_MOTOR))
+	{
+		if (!ServoStopMotor(addr, STOP_SMOOTH | AMP_ENABLE, 1))
+		{
+			//printf("Failed to stop motor!\n");
+			return ERR_SEND;
+		}
+	}
+
+	return NO_ERROR;
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1654,20 +1694,21 @@ SYNTAX: char ServoOverCurrent(char addr);
 
 DESCRIPTION: Check Servo OverCurrent status.
 
-	          addr = module address
+			  addr = module address
 
 RETURN VALUE: TRUE on OverCurrent, FALSE on NO OverCurrent.
 END DESCRIPTION **********************************************************/
 xmem char ServoOverCurrent(char addr)
 {
-  if (NmcNop(addr,1))   //Request status Bits
-  	{
-   	if (mod[addr].stat&OVERCURRENT)
-      	return YES;
-      else
-      	return NO_ERROR;
-  	}
-  return ERR_SEND;
+	if (NmcNop(addr, 1))  //Request status Bits
+	{
+		if (mod[addr].stat & OVERCURRENT)
+			return YES;
+		else
+			return NO_ERROR;
+	}
+
+	return ERR_SEND;
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -1677,20 +1718,21 @@ SYNTAX: int ServoPowerOn(char addr);
 
 DESCRIPTION: Check Servo Power on status.
 
-	          addr = module address
+			  addr = module address
 
 RETURN VALUE: YES on Power On, NO_ERROR on NO Power or ERR code on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoPowerOn(char addr)
 {
-  if (NmcNop(addr,1))   //Request status Bits
-  	{
-   	if (mod[addr].stat&POWER_ON)
-      	return YES;
-      else
-      	return NO_ERROR;
-  	}
-  return ERR_SEND;
+	if (NmcNop(addr, 1))  //Request status Bits
+	{
+		if (mod[addr].stat & POWER_ON)
+			return YES;
+		else
+			return NO_ERROR;
+	}
+
+	return ERR_SEND;
 }
 /* START FUNCTION DESCRIPTION ********************************************
 ServoPosError                 <nmc.lib>
@@ -1699,57 +1741,61 @@ SYNTAX: int ServoPosError(char addr);
 
 DESCRIPTION: Check Servo Position Error status.
 
-	          addr = module address
+			  addr = module address
 
 RETURN VALUE: YES on pos error NO_ERROR on pos error free, ERR code on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoPosError(char addr)
 {
-  if (NmcNop(addr,1))   //Request status Bits
-  	{
-   	if ( mod[addr].stat&POS_ERROR)
-      	return YES;
-      else
-   		return NO_ERROR;
-  	}
-  return ERR_SEND;
+	if (NmcNop(addr, 1))  //Request status Bits
+	{
+		if ( mod[addr].stat & POS_ERROR)
+			return YES;
+		else
+			return NO_ERROR;
+	}
+
+	return ERR_SEND;
 }
 //******* PIC-SERVO commands:
 /* START FUNCTION DESCRIPTION ********************************************
 ServoPreMove                <nmc.lib>
 
 SYNTAX: char ServoPosMove(char addr,
-               long pos, long vel, long acc);
+			   long pos, long vel, long acc);
 
 DESCRIPTION: Loads a PIC-SERVO module with a goal position, velocity
 	and acceleration for a trapeziodal profile move.  it will be
    started using the function ServoStartMove().
 
-	          addr = module address
-	           pos = goal position
-	           vel = maximum velocity
-	           acc = maximum acceleration
+			  addr = module address
+			   pos = goal position
+			   vel = maximum velocity
+			   acc = maximum acceleration
 
-           RETURN VALUE: NO_ERROR on success, ERR code on failure.
+		   RETURN VALUE: NO_ERROR on success, ERR code on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoPosMove(char addr, long pos, long vel, long acc)
 {
-  	ServoLoadTraj(addr,pos,vel,acc,1);
+	ServoLoadTraj(addr, pos, vel, acc, 1);
 
-    if (addr == ROLLER_MOTOR)
-    {
-    	myRoller.TargetPos = pos;
-        myRoller.bMoving = TRUE;
-        myRoller.bMoveMode = 1;
-    }
-   mod[addr].md.ps.target_pos = pos;
-   if (!ServoStartMove(addr, 1))
-   {
-      //printf("Failed to start move!\n");
-      return ERR_SEND;
-   }
-   DelayMilliseconds(5);
-   return NO_ERROR;
+	if (addr == ROLLER_MOTOR)
+	{
+		myRoller.TargetPos = pos;
+		myRoller.bMoving = TRUE;
+		myRoller.bMoveMode = 1;
+	}
+
+	mod[addr].md.ps.target_pos = pos;
+
+	if (!ServoStartMove(addr, 1))
+	{
+		//printf("Failed to start move!\n");
+		return ERR_SEND;
+	}
+
+	DelayMilliseconds(5);
+	return NO_ERROR;
 }
 
 //******* PIC-SERVO commands:
@@ -1758,43 +1804,43 @@ xmem char ServoPosMove(char addr, long pos, long vel, long acc)
 ServoLoadTraj                 <nmc.lib>
 
 SYNTAX: char ServoLoadTraj(char addr,
-               long pos, long vel, long acc, int wait_for_reply);
+			   long pos, long vel, long acc, int wait_for_reply);
 
 DESCRIPTION: Loads a PIC-SERVO module with a goal position, velocity
 	and acceleration for a trapeziodal profile move.  The motion must
 	be started using the function ServoStartMove().
 
-	          addr = module address
-	           pos = goal position
-	           vel = maximum velocity
-	           acc = maximum acceleration
+			  addr = module address
+			   pos = goal position
+			   vel = maximum velocity
+			   acc = maximum acceleration
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoLoadTraj(char addr, long pos, long vel, long acc, int wait_for_reply)
 {
-char *p;
+	char *p;
 
-command_string[0] = LOAD_TRAJ;
-command_string[1] = LOAD_POS | LOAD_VEL | LOAD_ACC | POS_SERVO;
-p = (char *)&pos;                  //send position
-command_string[2] = p[0];
-command_string[3] = p[1];
-command_string[4] = p[2];
-command_string[5] = p[3];
-p = (char *)&vel;                  //send velocity
-command_string[6] = p[0];
-command_string[7] = p[1];
-command_string[8] = p[2];
-command_string[9] = p[3];
-p = (char *)&acc;                  //send acceleration
-command_string[10] = p[0];
-command_string[11] = p[1];
-command_string[12] = p[2];
-command_string[13] = p[3];
+	command_string[0] = LOAD_TRAJ;
+	command_string[1] = LOAD_POS | LOAD_VEL | LOAD_ACC | POS_SERVO;
+	p = (char *)&pos;                  //send position
+	command_string[2] = p[0];
+	command_string[3] = p[1];
+	command_string[4] = p[2];
+	command_string[5] = p[3];
+	p = (char *)&vel;                  //send velocity
+	command_string[6] = p[0];
+	command_string[7] = p[1];
+	command_string[8] = p[2];
+	command_string[9] = p[3];
+	p = (char *)&acc;                  //send acceleration
+	command_string[10] = p[0];
+	command_string[11] = p[1];
+	command_string[12] = p[2];
+	command_string[13] = p[3];
 
-return( NmcSendCommand(addr,13,wait_for_reply) );
+	return ( NmcSendCommand(addr, 13, wait_for_reply) );
 }
 
 
@@ -1806,18 +1852,19 @@ SYNTAX: char ServoStartMove(char addr, int wait_for_reply);
 DESCRIPTION: Starts the motion for a PIC-SERVO module with a
 	previously loaded trajectory.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoStartMove(char addr, int wait_for_reply)
 {
-command_string[0] = START_MOVE;
+	command_string[0] = START_MOVE;
 
-        if (addr == ROLLER_MOTOR)
-            myRoller.bMoving = TRUE;
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	if (addr == ROLLER_MOTOR)
+		myRoller.bMoving = TRUE;
+
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 
 }
 
@@ -1830,66 +1877,69 @@ SYNTAX: char ServoSetVel(char addr,
 DESCRIPTION: Loads a PIC-SERVO moddual with a goal velocity and
 	acceleration, and starts the velocity mode motion immediately.
 
-	          addr = module address
-	           vel = goal velocity
-	           acc = maximum acceleration
+			  addr = module address
+			   vel = goal velocity
+			   acc = maximum acceleration
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoSetVel(char addr, long vel, long acc, int wait_for_reply)
 {
-char *p;
-char control;
-long pos;
+	char *p;
+	char control;
+	long pos;
 
-pos = (long)MAXDIST;
-if (vel<0L)
-	pos *= -1;
-if (addr == ROLLER_MOTOR)
-{
-   myRoller.TargetPos = pos;
-   myRoller.bMoving = TRUE;
-   myRoller.bMoveMode = 0;        //speed mode
-}
+	pos = (long)MAXDIST;
 
-control = LOAD_VEL | LOAD_ACC | POS_SERVO | VEL_MODE | START_NOW;
-if (vel<0)
-  {
-  vel = -vel;
-  control |= VEL_REV;
-  }
+	if (vel < 0L)
+		pos *= -1;
 
-command_string[0] = LOAD_TRAJ;
-command_string[1] = control;
-p = (char *)&vel;                  //send velocity
-command_string[2] = p[0];
-command_string[3] = p[1];
-command_string[4] = p[2];
-command_string[5] = p[3];
-p = (char *)&acc;                  //send acceleration
-command_string[6] = p[0];
-command_string[7] = p[1];
-command_string[8] = p[2];
-command_string[9] = p[3];
-/*
-pos = (long)MAXDIST;
-if (vel<0L)
-	pos *= -1;
-if (addr == ROLLER_MOTOR)
-{
-   myRoller.TargetPos = pos;
-   myRoller.bMoving = TRUE;
-   myRoller.bMoveMode = 0;        //speed mode
-}
-else
-{
-   myCamera.TargetPos = pos;
-   myCamera.bMoving = TRUE;
-   myCamera.bMoveMode = 0;        //speed mode
-}
-*/
-return( NmcSendCommand(addr,9,wait_for_reply) );
+	if (addr == ROLLER_MOTOR)
+	{
+		myRoller.TargetPos = pos;
+		myRoller.bMoving = TRUE;
+		myRoller.bMoveMode = 0;        //speed mode
+	}
+
+	control = LOAD_VEL | LOAD_ACC | POS_SERVO | VEL_MODE | START_NOW;
+
+	if (vel < 0)
+	{
+		vel = -vel;
+		control |= VEL_REV;
+	}
+
+	command_string[0] = LOAD_TRAJ;
+	command_string[1] = control;
+	p = (char *)&vel;                  //send velocity
+	command_string[2] = p[0];
+	command_string[3] = p[1];
+	command_string[4] = p[2];
+	command_string[5] = p[3];
+	p = (char *)&acc;                  //send acceleration
+	command_string[6] = p[0];
+	command_string[7] = p[1];
+	command_string[8] = p[2];
+	command_string[9] = p[3];
+	/*
+	pos = (long)MAXDIST;
+	if (vel<0L)
+		pos *= -1;
+	if (addr == ROLLER_MOTOR)
+	{
+	   myRoller.TargetPos = pos;
+	   myRoller.bMoving = TRUE;
+	   myRoller.bMoveMode = 0;        //speed mode
+	}
+	else
+	{
+	   myCamera.TargetPos = pos;
+	   myCamera.bMoving = TRUE;
+	   myCamera.bMoveMode = 0;        //speed mode
+	}
+	*/
+	return ( NmcSendCommand(addr, 9, wait_for_reply) );
 }
 
 
@@ -1901,29 +1951,31 @@ SYNTAX: int ServoSetPwm(char addr, int pwm, int wait_for_reply);
 DESCRIPTION: Immediately sets the raw PWM output of a PIC-SERVO
 	module.
 
-	          addr = module address
-	           pwm = pwm value (0 - 255)
+			  addr = module address
+			   pwm = pwm value (0 - 255)
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoSetPwm(char addr, int pwm, int wait_for_reply)
 {
-char control;
+	char control;
 
-control = LOAD_PWM | START_NOW;
-if (pwm<0)
-  {
-  pwm = -pwm;
-  control |= VEL_REV;
-  }
-if (pwm > 255) pwm = 255;
+	control = LOAD_PWM | START_NOW;
 
-command_string[0] = LOAD_TRAJ;
-command_string[1] = control;
-command_string[2] = (char)pwm;
+	if (pwm < 0)
+	{
+		pwm = -pwm;
+		control |= VEL_REV;
+	}
 
-return( NmcSendCommand(addr,2,wait_for_reply) );
+	if (pwm > 255) pwm = 255;
+
+	command_string[0] = LOAD_TRAJ;
+	command_string[1] = control;
+	command_string[2] = (char)pwm;
+
+	return ( NmcSendCommand(addr, 2, wait_for_reply) );
 }
 
 
@@ -1934,7 +1986,7 @@ SYNTAX: char ServoResetCount(char addr, int wait_for_reply);
 
 DESCRIPTION: Resets the position counter of a PIC-SERVO module to 0.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
@@ -1944,9 +1996,9 @@ xmem char ServoResetCount(char addr, int wait_for_reply)
 //executed while the motor is moving.
 //wait_for_reply is set to 0 for group commands, otherwise, set to 1.
 {
-command_string[0] = RESET_COUNT;
+	command_string[0] = RESET_COUNT;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 
 
@@ -1958,16 +2010,16 @@ SYNTAX: char ServoClearBits(char addr, int wait_for_reply);
 DESCRIPTION: Clears the sticky status bits in the status and
 	aux_status bytes.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoClearBits(char addr, int wait_for_reply)
 {
-command_string[0] = CLEAR_BITS;
+	command_string[0] = CLEAR_BITS;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 
 
@@ -1980,16 +2032,16 @@ DESCRIPTION: Saves the current motor position of a PIC-SERVO module
 	in the home_position register.  Typically used as a group command
 	for synchronously storing the position of several motors.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoSavePos(char addr, int wait_for_reply)
 {
-command_string[0] = SAVE_AS_HOME;
+	command_string[0] = SAVE_AS_HOME;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 
 
@@ -2000,19 +2052,21 @@ SYNTAX: int ServoStopMotor(char addr, char control, int wait_for_reply);
 
 DESCRIPTION: Stops a PIC-SERVO motor in the manner specified by control.
 
-	          addr = module address
-	       control = MOTOR_OFF, STOP_SMOOTH or STOP_ABRUPT
+			  addr = module address
+		   control = MOTOR_OFF, STOP_SMOOTH or STOP_ABRUPT
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoStopMotor(char addr, char control, int wait_for_reply)
 {
-command_string[0] = STOP_MOTOR;
-command_string[1] = control;
-        if (addr == ROLLER_MOTOR)
-            myRoller.bMoving = FALSE;
-return( NmcSendCommand(addr,1,wait_for_reply) );
+	command_string[0] = STOP_MOTOR;
+	command_string[1] = control;
+
+	if (addr == ROLLER_MOTOR)
+		myRoller.bMoving = FALSE;
+
+	return ( NmcSendCommand(addr, 1, wait_for_reply) );
 }
 
 
@@ -2029,20 +2083,20 @@ DESCRIPTION: Sets the homing mode for a PIC-SERVO module.  Homing
 	A separate motion command must be used to make the motor actually
 	start moving.	(Note: no stop mode has to be selected)
 
-	          addr = module address
-	       control = logical OR of ON_LIMIT1, ON_LIMIT2, ON_INDEX,
-	       				ON_POS_ERR, ON_CUR_LIM and of HOME_STOP_SMOOTH,
-	       				HOME_STOP_ABRUPT or HOME_STOP_OFF
+			  addr = module address
+		   control = logical OR of ON_LIMIT1, ON_LIMIT2, ON_INDEX,
+						ON_POS_ERR, ON_CUR_LIM and of HOME_STOP_SMOOTH,
+						HOME_STOP_ABRUPT or HOME_STOP_OFF
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoSetHomeMode(char addr, char control, int wait_for_reply)
 {
-command_string[0] = SET_HOME;
-command_string[1] = control;
+	command_string[0] = SET_HOME;
+	command_string[1] = control;
 
-return( NmcSendCommand(addr,1,wait_for_reply) );
+	return ( NmcSendCommand(addr, 1, wait_for_reply) );
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2055,19 +2109,19 @@ DESCRIPTION: Sets the IO mode for a PIC-SERVO module's general purpose
 	can be defined as an input or an output, and as an output, it can
 	be set or cleared.
 
-	          addr = module address
-	       control = logical OR of L1_OUTPUT, L1_INPUT, L2_OUTPUT,
-	                 L2_INPUT, SET_L1, CLR_L1, SET_L2 or CLR_L2
+			  addr = module address
+		   control = logical OR of L1_OUTPUT, L1_INPUT, L2_OUTPUT,
+					 L2_INPUT, SET_L1, CLR_L1, SET_L2 or CLR_L2
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoSetIOMode(char addr, char control, int wait_for_reply)
 {
-command_string[0] = IO_CONTROL;
-command_string[1] = control;
+	command_string[0] = IO_CONTROL;
+	command_string[1] = control;
 
-return( NmcSendCommand(addr,1,wait_for_reply) );
+	return ( NmcSendCommand(addr, 1, wait_for_reply) );
 }
 
 
@@ -2083,61 +2137,61 @@ SYNTAX: int ServoSetGain(char addr, unsigned int kp, unsigned int kd,
 DESCRIPTION: Sets the gains and other servo parameters for a
 	PIC-SERVOmodule.
 
-	          addr = module address
-	            kp = position gain
-	            kd = derivative gain
-	            ki = integral gain
-	            il = integration limit
-	            ol = output limit
-	            cl = current limit
-	            el = error limit
-	            sr = servo rate divisor
-	            dc = deadband compensation
+			  addr = module address
+				kp = position gain
+				kd = derivative gain
+				ki = integral gain
+				il = integration limit
+				ol = output limit
+				cl = current limit
+				el = error limit
+				sr = servo rate divisor
+				dc = deadband compensation
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoSetGain(char addr, unsigned int kp,
-			 unsigned int kd,
-			 unsigned int ki,
-			 unsigned int il,
-			 unsigned int ol,
-			 unsigned int cl,
-			 unsigned int el,
-			 unsigned int sr,
-			 unsigned int dc,
-			 int wait_for_reply)
+                       unsigned int kd,
+                       unsigned int ki,
+                       unsigned int il,
+                       unsigned int ol,
+                       unsigned int cl,
+                       unsigned int el,
+                       unsigned int sr,
+                       unsigned int dc,
+                       int wait_for_reply)
 {
-char *p;
+	char *p;
 
-command_string[0] = SET_GAIN;
-p = (char *)&kp;                  //send Kp
-command_string[1] = p[0];
-command_string[2] = p[1];
+	command_string[0] = SET_GAIN;
+	p = (char *)&kp;                  //send Kp
+	command_string[1] = p[0];
+	command_string[2] = p[1];
 
-p = (char *)&kd;                  //send Kd
-command_string[3] = p[0];
-command_string[4] = p[1];
+	p = (char *)&kd;                  //send Kd
+	command_string[3] = p[0];
+	command_string[4] = p[1];
 
-p = (char *)&ki;                  //send Ki
-command_string[5] = p[0];
-command_string[6] = p[1];
+	p = (char *)&ki;                  //send Ki
+	command_string[5] = p[0];
+	command_string[6] = p[1];
 
-p = (char *)&il;                  //send integration limit
-command_string[7] = p[0];
-command_string[8] = p[1];
+	p = (char *)&il;                  //send integration limit
+	command_string[7] = p[0];
+	command_string[8] = p[1];
 
-command_string[9] = ol;           //send output limit
-command_string[10] = cl;          //send current limit
+	command_string[9] = ol;           //send output limit
+	command_string[10] = cl;          //send current limit
 
-p = (char *)&el;                  //send position error limit
-command_string[11] = p[0];
-command_string[12] = p[1];
+	p = (char *)&el;                  //send position error limit
+	command_string[11] = p[0];
+	command_string[12] = p[1];
 
-command_string[13] = sr;          //send servo rate
-command_string[14] = dc;          //send deadband compensation
+	command_string[13] = sr;          //send servo rate
+	command_string[14] = dc;          //send deadband compensation
 
-return( NmcSendCommand(addr,14,wait_for_reply) );
+	return ( NmcSendCommand(addr, 14, wait_for_reply) );
 }
 
 
@@ -2149,51 +2203,51 @@ SYNTAX: int ServoSetSSPhasing(char addr, char adv, char offset);
 DESCRIPTION: Sets motor phasing parameters for a PIC-SERVO/SS-Drive
 	contoller.
 
-	          addr = module address
-	           adv = motor phase advance
-	        offset = motor phase offset
+			  addr = module address
+			   adv = motor phase advance
+			offset = motor phase offset
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem char ServoSetSSPhasing(char addr, char adv, char offset)
 {
-int i;
+	int i;
 
-ServoStopMotor(addr, 0, 1);			//disable SS-Drive amp
-ServoStopMotor(addr, AMP_ENABLE, 1);		//enable SS-Drive amp
+	ServoStopMotor(addr, 0, 1);			//disable SS-Drive amp
+	ServoStopMotor(addr, AMP_ENABLE, 1);		//enable SS-Drive amp
 
-command_string[0] = LOAD_TRAJ;			//command type
-command_string[2] = 0;				//PWM value
+	command_string[0] = LOAD_TRAJ;			//command type
+	command_string[2] = 0;				//PWM value
 
-for (i=0; i<adv; i++)  //Toggle dir bit adv times
-  {
-  command_string[1] = LOAD_PWM | START_NOW | VEL_REV; 	//dir = 1
-  NmcSendCommand(addr,2,INDIVIDUAL_ADDR);
-  command_string[1] = LOAD_PWM | START_NOW; 		//dir = 0
-  NmcSendCommand(addr,2,INDIVIDUAL_ADDR);
-  }
+	for (i = 0; i < adv; i++) //Toggle dir bit adv times
+	{
+		command_string[1] = LOAD_PWM | START_NOW | VEL_REV; 	//dir = 1
+		NmcSendCommand(addr, 2, INDIVIDUAL_ADDR);
+		command_string[1] = LOAD_PWM | START_NOW; 		//dir = 0
+		NmcSendCommand(addr, 2, INDIVIDUAL_ADDR);
+	}
 
-//Raise and lower PWM
-command_string[2] = 255;				//PWM=255
-NmcSendCommand(addr,2,INDIVIDUAL_ADDR);
-command_string[2] = 0;					//PWM=0
-NmcSendCommand(addr,2,INDIVIDUAL_ADDR);
+	//Raise and lower PWM
+	command_string[2] = 255;				//PWM=255
+	NmcSendCommand(addr, 2, INDIVIDUAL_ADDR);
+	command_string[2] = 0;					//PWM=0
+	NmcSendCommand(addr, 2, INDIVIDUAL_ADDR);
 
-for (i=0; i<offset; i++)	//Toggle dir bit offset times
-  {
-  command_string[1] = LOAD_PWM | START_NOW | VEL_REV; //dir = 1
-  NmcSendCommand(addr,2,INDIVIDUAL_ADDR);
-  command_string[1] = LOAD_PWM | START_NOW; //dir = 0
-  NmcSendCommand(addr,2,INDIVIDUAL_ADDR);
-  }
+	for (i = 0; i < offset; i++)	//Toggle dir bit offset times
+	{
+		command_string[1] = LOAD_PWM | START_NOW | VEL_REV; //dir = 1
+		NmcSendCommand(addr, 2, INDIVIDUAL_ADDR);
+		command_string[1] = LOAD_PWM | START_NOW; //dir = 0
+		NmcSendCommand(addr, 2, INDIVIDUAL_ADDR);
+	}
 
-//Raise PWM for 3/4 sec. then lower
-command_string[2] = 200;				//PWM=200
-NmcSendCommand(addr,2,INDIVIDUAL_ADDR);
-DelayMilliseconds(750);
-command_string[2] = 0;					//PWM=0
-return( NmcSendCommand(addr,2,INDIVIDUAL_ADDR) );
+	//Raise PWM for 3/4 sec. then lower
+	command_string[2] = 200;				//PWM=200
+	NmcSendCommand(addr, 2, INDIVIDUAL_ADDR);
+	DelayMilliseconds(750);
+	command_string[2] = 0;					//PWM=0
+	return ( NmcSendCommand(addr, 2, INDIVIDUAL_ADDR) );
 }
 #endif
 
@@ -2209,22 +2263,22 @@ SYNTAX: int IOSetOutputs(char addr, unsigned int outval, int wait_for_reply);
 DESCRIPTION: Sets the output bit values for a PIC-I/O module.  Only
 	bits defined as outputs will be affected.
 
-	          addr = module address
-	        outval = lower 12 bits correspond to bits 1 - 12
+			  addr = module address
+			outval = lower 12 bits correspond to bits 1 - 12
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int IOSetOutputs(char addr, unsigned int outval, int wait_for_reply)
 {
-char *p;
+	char *p;
 
-command_string[0] = SET_OUTPUT;
-p = (char *)&outval;
-command_string[1] = p[0];
-command_string[2] = p[1];
+	command_string[0] = SET_OUTPUT;
+	p = (char *)&outval;
+	command_string[1] = p[0];
+	command_string[2] = p[1];
 
-return NmcSendCommand(addr,  2, wait_for_reply);
+	return NmcSendCommand(addr,  2, wait_for_reply);
 }
 
 
@@ -2236,23 +2290,23 @@ SYNTAX: int IOSetBitDir(char addr, unsigned int bitdir, int wait_for_reply);
 DESCRIPTION: Sets the I/O bit directions for a PIC-I/O module to be
 	inputs or outputs.
 
-	          addr = module address
-	        bitdir = lower 12 bits correspond to bits 1 - 12
-	        			  bit = 1 -> input; bit = 0 -> output
+			  addr = module address
+			bitdir = lower 12 bits correspond to bits 1 - 12
+						  bit = 1 -> input; bit = 0 -> output
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int IOSetBitDir(char addr, unsigned int bitdir, int wait_for_reply)
 {
-char *p;
+	char *p;
 
-command_string[0] = SET_IO_DIR;
-p = (char *)&bitdir;
-command_string[1] = p[0];
-command_string[2] = p[1];
+	command_string[0] = SET_IO_DIR;
+	p = (char *)&bitdir;
+	command_string[1] = p[0];
+	command_string[2] = p[1];
 
-return NmcSendCommand(addr,  2, wait_for_reply);
+	return NmcSendCommand(addr,  2, wait_for_reply);
 }
 
 
@@ -2263,20 +2317,20 @@ SYNTAX: int IOSetPwms(char addr, char pwm1, char pwm2, int wait_for_reply);
 
 DESCRIPTION: Sets the PWM values for a PIC-I/O module.
 
-	          addr = module address
-	          pwm1 = channel 1 PWM value (0 - 255)
-	          pwm2 = channel 2 PWM value (0 - 255)
+			  addr = module address
+			  pwm1 = channel 1 PWM value (0 - 255)
+			  pwm2 = channel 2 PWM value (0 - 255)
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int IOSetPwms(char addr, char pwm1, char pwm2, int wait_for_reply)
 {
-command_string[0] = SET_PWM;
-command_string[1] = pwm1;
-command_string[2] = pwm2;
+	command_string[0] = SET_PWM;
+	command_string[1] = pwm1;
+	command_string[2] = pwm2;
 
-return( NmcSendCommand(addr, 2, wait_for_reply) );
+	return ( NmcSendCommand(addr, 2, wait_for_reply) );
 }
 
 
@@ -2289,19 +2343,19 @@ DESCRIPTION: Sets mode and counting resolution for the PIC-I/O
 	counter/timer.  Resolution can be set to count every event,
 	every second, every fourth or every eighth event.
 
-	          addr = module address
-	          mode = logical OR of [OFFMODE, COUNTERMODE or TIMERMODE]
-	          		  with [RESx1, RESx2, RESx4 or RESx8]
+			  addr = module address
+			  mode = logical OR of [OFFMODE, COUNTERMODE or TIMERMODE]
+					  with [RESx1, RESx2, RESx4 or RESx8]
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int IOSetTimerMode(char addr, char mode, int wait_for_reply)
 {
-command_string[0] = SET_IO_DIR;
-command_string[1] = mode;
+	command_string[0] = SET_IO_DIR;
+	command_string[1] = mode;
 
-return( NmcSendCommand(addr, 1, wait_for_reply) );
+	return ( NmcSendCommand(addr, 1, wait_for_reply) );
 }
 
 
@@ -2314,27 +2368,27 @@ SYNTAX: int IOLoadSyncOutputs(char addr, unsigned int outval,
 DESCRIPTION: Preloads a PIC-I/O with output bit values and PWM values
 	which can be output synchronously with the function IOSyncOutput().
 
-	          addr = module address
-	        outval = lower 12 bits = output bit values
-	          pwm1 = channel 1 PWM value
-	          pwm2 = channel 2 PWM value
+			  addr = module address
+			outval = lower 12 bits = output bit values
+			  pwm1 = channel 1 PWM value
+			  pwm2 = channel 2 PWM value
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int IOLoadSyncOutputs(char addr, unsigned int outval, char pwm1, char pwm2, int wait_for_reply)
 {
-char *p;
+	char *p;
 
-command_string[0] = SET_SYNC_OUT;
+	command_string[0] = SET_SYNC_OUT;
 
-p = (char *)&outval;  			//Point to the IO data structure
-command_string[1] = p[0];
-command_string[2] = p[1];
-command_string[3] = pwm1;
-command_string[4] = pwm2;
+	p = (char *)&outval;  			//Point to the IO data structure
+	command_string[1] = p[0];
+	command_string[2] = p[1];
+	command_string[3] = pwm1;
+	command_string[4] = pwm2;
 
-return( NmcSendCommand(addr, 4, wait_for_reply) );
+	return ( NmcSendCommand(addr, 4, wait_for_reply) );
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2346,16 +2400,16 @@ DESCRIPTION: Causes output values preloaded into a PIC-I/O module
 	to be synchronously output.  Typically used as a group command
 	with several PIC-I/O modules.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int IOSyncOutput(char addr, int wait_for_reply)
 {
-command_string[0] = SYNC_OUT;
+	command_string[0] = SYNC_OUT;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 #endif
 
@@ -2367,35 +2421,35 @@ return( NmcSendCommand(addr,0,wait_for_reply) );
 StepLoadTraj                 <nmc.lib>
 
 SYNTAX: int StepLoadTraj(char addr,
-               long pos, char nmc_speed, char acc, int wait_for_reply);
+			   long pos, char nmc_speed, char acc, int wait_for_reply);
 
 DESCRIPTION: Loads a PIC-STEP module with a goal position, speed
 	and acceleration for a trapeziodal profile move.  The motion must
 	be started using the function StepStartMove().
 
-	          addr = module address
-	           pos = goal position
-	         speed = maximum speed (1 - 250)
-	           acc = maximum acceleration (1-255)
+			  addr = module address
+			   pos = goal position
+			 speed = maximum speed (1 - 250)
+			   acc = maximum acceleration (1-255)
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepLoadTraj(char addr, long pos, char nmc_speed, char acc, int wait_for_reply)
 {
-char *p;
+	char *p;
 
-command_string[0] = LOAD_TRAJ;
-command_string[1] = LOAD_POS | LOAD_SPEED | LOAD_ACC;
-p = (char *)&pos;                  //send position
-command_string[2] = p[0];
-command_string[3] = p[1];
-command_string[4] = p[2];
-command_string[5] = p[3];
-command_string[6] = nmc_speed;
-command_string[7] = acc;
+	command_string[0] = LOAD_TRAJ;
+	command_string[1] = LOAD_POS | LOAD_SPEED | LOAD_ACC;
+	p = (char *)&pos;                  //send position
+	command_string[2] = p[0];
+	command_string[3] = p[1];
+	command_string[4] = p[2];
+	command_string[5] = p[3];
+	command_string[6] = nmc_speed;
+	command_string[7] = acc;
 
-return( NmcSendCommand(addr,7,wait_for_reply) );
+	return ( NmcSendCommand(addr, 7, wait_for_reply) );
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2407,32 +2461,32 @@ DESCRIPTION: Loads a PIC-STEP module with a goal position, 16bit timer value
 	and nearest integer speed for a unprofiled move.  The motion can
 	be started using the function StepStartMove() or by setting the start_mo to 1
 
-	          addr = module address
-	           pos = goal position
-	     timer_cnt = 16bit timer value
-	      ni_speed = nearest int speed
-	      START_MO = start motion immediately
+			  addr = module address
+			   pos = goal position
+		 timer_cnt = 16bit timer value
+		  ni_speed = nearest int speed
+		  START_MO = start motion immediately
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
-xmem int StepUnProfPos(char addr, long pos, long timer_cnt, char ni_speed, int START_MO,int wait_for_reply)
+xmem int StepUnProfPos(char addr, long pos, long timer_cnt, char ni_speed, int START_MO, int wait_for_reply)
 {
-char *p;
+	char *p;
 
-command_string[0] = LOAD_TRAJ;
-command_string[1] = LOAD_POS | LOAD_ST | START_MO ;  //send POS, timer and start motion bits
-p = (char *)&pos;                  	//send position
-command_string[2] = p[0];
-command_string[3] = p[1];
-command_string[4] = p[2];
-command_string[5] = p[3];
-p = (char *)&timer_cnt;			//send 16bit timer value
-command_string[6] = p[0];
-command_string[7] = p[1];
-command_string[8] = ni_speed;		//send nearest int speed
+	command_string[0] = LOAD_TRAJ;
+	command_string[1] = LOAD_POS | LOAD_ST | START_MO ;  //send POS, timer and start motion bits
+	p = (char *)&pos;                  	//send position
+	command_string[2] = p[0];
+	command_string[3] = p[1];
+	command_string[4] = p[2];
+	command_string[5] = p[3];
+	p = (char *)&timer_cnt;			//send 16bit timer value
+	command_string[6] = p[0];
+	command_string[7] = p[1];
+	command_string[8] = ni_speed;		//send nearest int speed
 
-return( NmcSendCommand(addr,8,wait_for_reply) );
+	return ( NmcSendCommand(addr, 8, wait_for_reply) );
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2443,16 +2497,16 @@ SYNTAX: int StepStartMove(char addr, int wait_for_reply);
 DESCRIPTION: Starts the motion for a PIC-STEP module with a
 	previously loaded trajectory.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepStartMove(char addr, int wait_for_reply)
 {
-command_string[0] = START_MOVE;
+	command_string[0] = START_MOVE;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2466,30 +2520,31 @@ DESCRIPTION: Loads a PIC-STEP module with a goal speed and
 	Motor must be stopped before commanding a speed in the
 	opposite direction.
 
-	          addr = module address
-	         speed = goal speed (1 to 250, -1 to -250 )
-	           acc = maximum acceleration (1-255)
+			  addr = module address
+			 speed = goal speed (1 to 250, -1 to -250 )
+			   acc = maximum acceleration (1-255)
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepSetSpeed(char addr, char nmc_speed, char acc, int wait_for_reply)
 {
-char control;
+	char control;
 
-control = LOAD_SPEED | LOAD_ACC | START_NOW;
-if (nmc_speed<0)
-  {
-  nmc_speed = -nmc_speed;
-  control |= SPEED_REV;
-  }
+	control = LOAD_SPEED | LOAD_ACC | START_NOW;
 
-command_string[0] = LOAD_TRAJ;
-command_string[1] = control;
-command_string[2] = nmc_speed;
-command_string[3] = acc;
+	if (nmc_speed < 0)
+	{
+		nmc_speed = -nmc_speed;
+		control |= SPEED_REV;
+	}
 
-return( NmcSendCommand(addr,3,wait_for_reply) );
+	command_string[0] = LOAD_TRAJ;
+	command_string[1] = control;
+	command_string[2] = nmc_speed;
+	command_string[3] = acc;
+
+	return ( NmcSendCommand(addr, 3, wait_for_reply) );
 }
 
 
@@ -2501,7 +2556,7 @@ SYNTAX: int StepResetCount(char addr, int wait_for_reply);
 DESCRIPTION: Resets the position counter of a PIC-STEP module to 0.
 	Do not execute while motor is moving.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
@@ -2511,9 +2566,9 @@ xmem int StepResetCount(char addr, int wait_for_reply)
 //executed while the motor is moving.
 //wait_for_reply is set to 0 for group commands, otherwise, set to 1.
 {
-command_string[0] = RESET_COUNT;
+	command_string[0] = RESET_COUNT;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 
 
@@ -2526,16 +2581,16 @@ DESCRIPTION: Saves the current motor position of a PIC-STEP module
 	in the home_position register.  Typically used as a group command
 	for synchronously storing the position of several motors.
 
-	          addr = module address
+			  addr = module address
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepSavePos(char addr, int wait_for_reply)
 {
-command_string[0] = SAVE_AS_HOME;
+	command_string[0] = SAVE_AS_HOME;
 
-return( NmcSendCommand(addr,0,wait_for_reply) );
+	return ( NmcSendCommand(addr, 0, wait_for_reply) );
 }
 
 
@@ -2546,19 +2601,19 @@ SYNTAX: int StepStopMotor(char addr, char control, int wait_for_reply);
 
 DESCRIPTION: Stops a PIC-STEP motor in the manner specified by control.
 
-	          addr = module address
-	       control = STOP_SMOOTH or STOP_ABRUPT, or'd with
-	       			  AMP_ENABLE
+			  addr = module address
+		   control = STOP_SMOOTH or STOP_ABRUPT, or'd with
+					  AMP_ENABLE
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepStopMotor(char addr, char control, int wait_for_reply)
 {
-command_string[0] = STOP_MOTOR;
-command_string[1] = control;
+	command_string[0] = STOP_MOTOR;
+	command_string[1] = control;
 
-return( NmcSendCommand(addr,1,wait_for_reply) );
+	return ( NmcSendCommand(addr, 1, wait_for_reply) );
 }
 
 
@@ -2575,20 +2630,20 @@ DESCRIPTION: Sets the homing mode for a PIC-STEP module.  Homing
 	A separate motion command must be used to make the motor actually
 	start moving.	(Note: no stop mode has to be selected)
 
-	          addr = module address
-	       control = logical OR of ON_LIMIT1, ON_LIMIT2, ON_INDEX,
-	       				and of HOME_STOP_SMOOTH, HOME_STOP_ABRUPT
-	       				or HOME_STOP_OFF
+			  addr = module address
+		   control = logical OR of ON_LIMIT1, ON_LIMIT2, ON_INDEX,
+						and of HOME_STOP_SMOOTH, HOME_STOP_ABRUPT
+						or HOME_STOP_OFF
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepSetHomeMode(char addr, char control, int wait_for_reply)
 {
-command_string[0] = SET_HOME;
-command_string[1] = control;
+	command_string[0] = SET_HOME;
+	command_string[1] = control;
 
-return( NmcSendCommand(addr,1,wait_for_reply) );
+	return ( NmcSendCommand(addr, 1, wait_for_reply) );
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2599,19 +2654,19 @@ SYNTAX: int StepSetOutputs(char addr, char outbyte, int wait_for_reply);
 DESCRIPTION: Sets the output levels for a PIC-STEP module's general purpose
 	output bits.
 
-	          addr = module address
-	       outbyte = logical OR of OUTPUT1, OUTPUT2, OUTPUT3,
-	                 OUTPUT4, or OUTPUT5
+			  addr = module address
+		   outbyte = logical OR of OUTPUT1, OUTPUT2, OUTPUT3,
+					 OUTPUT4, or OUTPUT5
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepSetOutputs(char addr, char outbyte, int wait_for_reply)
 {
-command_string[0] = IO_CONTROL;
-command_string[1] = outbyte;
+	command_string[0] = IO_CONTROL;
+	command_string[1] = outbyte;
 
-return( NmcSendCommand(addr,1,wait_for_reply) );
+	return ( NmcSendCommand(addr, 1, wait_for_reply) );
 }
 
 
@@ -2624,31 +2679,31 @@ SYNTAX: int StepSetParam(char addr, char ctrlmode, char minspeed,
 
 DESCRIPTION: Sets operating parameters for a PIC-STEP module.
 
-	          addr = module address
-	      ctrlmode = logical OR of <SPEED_1X or SPEED_2X or SPEED_4X
-	      				or SPEED_8X>, IGNORE_LIMITS, IGNORE_ESTOP and
-	      				ESTOP_OFF
-	      minspeed = minimum operating speed (1-250)
+			  addr = module address
+		  ctrlmode = logical OR of <SPEED_1X or SPEED_2X or SPEED_4X
+						or SPEED_8X>, IGNORE_LIMITS, IGNORE_ESTOP and
+						ESTOP_OFF
+		  minspeed = minimum operating speed (1-250)
 	   run_current = running motor current (0-255)
 	  hold_current = holding motor current (0-255)
-	      thermlim = thermal limit (0-255)
-	      			  (0 disables thermal limiting)
+		  thermlim = thermal limit (0-255)
+					  (0 disables thermal limiting)
 	wait_for_reply = 1 for individual address, 0 for group address
 
 RETURN VALUE: TRUE on success, FALSE on failure.
 END DESCRIPTION **********************************************************/
 xmem int StepSetParam(char addr, char ctrlmode, char minspeed,
-			 char run_current, char hold_current, char thermlim,
-			 int wait_for_reply)
+                      char run_current, char hold_current, char thermlim,
+                      int wait_for_reply)
 {
-command_string[0] = SET_PARAM;
-command_string[1] = ctrlmode;
-command_string[2] = minspeed;
-command_string[3] = run_current;
-command_string[4] = hold_current;
-command_string[5] = thermlim;
+	command_string[0] = SET_PARAM;
+	command_string[1] = ctrlmode;
+	command_string[2] = minspeed;
+	command_string[3] = run_current;
+	command_string[4] = hold_current;
+	command_string[5] = thermlim;
 
-return( NmcSendCommand(addr,5,wait_for_reply) );
+	return ( NmcSendCommand(addr, 5, wait_for_reply) );
 }
 
 
@@ -2659,18 +2714,17 @@ SYNTAX: long StepGetPos(char addr);
 
 DESCRIPTION: Returns the current Position
 
-	   	 addr  = Address of NMC Module
+		 addr  = Address of NMC Module
 
 RETURN VALUE: Current Position, -1 on Error
 END DESCRIPTION **********************************************************/
 
 xmem long StepGetPos(char addr)
 {
-  if ( NmcReadStat((char)addr, SEND_POS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Position
-  	{
-  	 return(mod[addr].md.step.pos);
-  	}
-  return(-1);
+	if ( NmcReadStat((char)addr, SEND_POS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Position
+		return (mod[addr].md.step.pos);
+
+	return (-1);
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2680,18 +2734,17 @@ SYNTAX: char StepGetAD(char addr);
 
 DESCRIPTION: Returns the current A/D value
 
-	   	 addr  = Address of NMC Module
+		 addr  = Address of NMC Module
 
 RETURN VALUE: Current A/D Value, -1 on Error
 END DESCRIPTION **********************************************************/
 
 xmem char StepGetAD(char addr)
 {
-  if ( NmcReadStat((char)addr, SEND_AD, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request A/D Value
-  	{
-  	 return(mod[addr].md.step.ad);
-  	}
-  return(-1);
+	if ( NmcReadStat((char)addr, SEND_AD, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request A/D Value
+		return (mod[addr].md.step.ad);
+
+	return (-1);
 }
 
 
@@ -2702,18 +2755,17 @@ SYNTAX: char StepGetInByte(char addr);
 
 DESCRIPTION: Returns the current Input Byte
 
-	   	 addr  = Address of NMC Module
+		 addr  = Address of NMC Module
 
 RETURN VALUE: Current Input Value, -1 on Error
 END DESCRIPTION **********************************************************/
 
 xmem char StepGetInByte(char addr)
 {
-  if ( NmcReadStat((char)addr, SEND_INBITS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Input Bits
-  	{
-  	 return(mod[addr].md.step.inputs);
-  	}
-  return(-1);
+	if ( NmcReadStat((char)addr, SEND_INBITS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Input Bits
+		return (mod[addr].md.step.inputs);
+
+	return (-1);
 }
 
 
@@ -2724,18 +2776,17 @@ SYNTAX: long StepGetHome(char addr);
 
 DESCRIPTION: Returns the current home position
 
-	   	 addr  = Address of NMC Module
+		 addr  = Address of NMC Module
 
 RETURN VALUE: Current home position, -1 on Error
 END DESCRIPTION **********************************************************/
 
 xmem long StepGetHome(char addr)
 {
-if ( NmcReadStat((char)addr, SEND_HOME_POS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Home Position
-     {
-      return(mod[addr].md.step.home);
-     }
-  return(-1);
+	if ( NmcReadStat((char)addr, SEND_HOME_POS, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Home Position
+		return (mod[addr].md.step.home);
+
+	return (-1);
 }
 
 /* START FUNCTION DESCRIPTION ********************************************
@@ -2745,18 +2796,17 @@ SYNTAX: long StepGetStepTime(char addr);
 
 DESCRIPTION: Returns the current home position
 
-	   	 addr  = Address of NMC Module
+		 addr  = Address of NMC Module
 
 RETURN VALUE: Current 16bit Step Time, -1 on Error
 END DESCRIPTION **********************************************************/
 
 xmem long StepGetStepTime(char addr)
 {
-if ( NmcReadStat((char)addr, SEND_ST, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Step Time
-     {
-      return(mod[addr].md.step.st);
-     }
-  return(-1);
+	if ( NmcReadStat((char)addr, SEND_ST, READ_ONE_TIME, INDIVIDUAL_ADDR) )   //Request Step Time
+		return (mod[addr].md.step.st);
+
+	return (-1);
 }
 
 
@@ -2767,32 +2817,38 @@ SYNTAX: long Calc16bitTimer(int Speed_Mode, long sps);
 
 DESCRIPTION: Calulates the 16bit Timer value for UnProfiled Mode
 
-	    Speed_Mode = SPEED_1X or SPEED_2X or SPEED_4X or SPEED_8X
-	           sps = Desired Steps per Second
+		Speed_Mode = SPEED_1X or SPEED_2X or SPEED_4X or SPEED_8X
+			   sps = Desired Steps per Second
 
 RETURN VALUE: 16bit Value, -1 on Invalid Step Rate for Speed
 END DESCRIPTION **********************************************************/
 
 xmem long Calc16bitTimer(int Speed_Mode, long sps)
 {
-long timer;
+	long timer;
 
-switch(Speed_Mode) {
-	case SPEED_1X:
-		timer=( (65536-(625000/sps)) + 2);
-		break;
-	case SPEED_2X:
-		timer=( (65536-(1250000/sps)) + 4);
-		break;
-	case SPEED_4X:
-		timer=( (65536-(2500000/sps)) + 8);
-		break;
-	case SPEED_8X:
-		timer=( (65536-(5000000/sps)) + 16);
-		break;
+	switch (Speed_Mode)
+	{
+		case SPEED_1X:
+			timer = ( (65536 - (625000 / sps)) + 2);
+			break;
+
+		case SPEED_2X:
+			timer = ( (65536 - (1250000 / sps)) + 4);
+			break;
+
+		case SPEED_4X:
+			timer = ( (65536 - (2500000 / sps)) + 8);
+			break;
+
+		case SPEED_8X:
+			timer = ( (65536 - (5000000 / sps)) + 16);
+			break;
 	}
- if (timer < TIMER_MIN || timer > TIMER_MAX) return (-1);
-  return (timer);
+
+	if (timer < TIMER_MIN || timer > TIMER_MAX) return (-1);
+
+	return (timer);
 }
 #endif
 

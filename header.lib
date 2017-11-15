@@ -25,11 +25,53 @@
 #define PCPORTOUTBUFSIZE    EINBUFSIZE
 
 /*==============================================================================
+ *             Command from host computer
+ *============================================================================*/
+#define CMD_SENSOR_STATUS		1
+#define CMD_INITIAL_DATA		2
+#define CMD_INITIALIZE			3
+#define CMD_IO					4  //=0, means idle and ready for op, turn on green light
+
+#define CMD_NOTCH_FIND			5
+#define CMD_NF_SUPPORT_UP		6
+#define CMD_NF_SUPPORT_DOWN 	7
+
+#define CMD_ABORT               8
+#define CMD_ALARM               9
+#define CMD_LIGHT               10
+
+/*=============================================================================
+			   message sent to host
+ *============================================================================*/
+#define MSG_NONE				0
+#define MSG_SB_ASK_READY		1
+#define MSG_SENSOR_STATUS		2
+#define MSG_INITIALIZED_OK		3
+#define MSG_NOTCH_FIND			4
+#define MSG_START_OPERATION		5	// [2] = 12 (NF UP) OR 6 (NF DOWN)
+#define MSG_OPERATION_DONE		6 	// MAP: Byte 2, 3, 4, 5; [6] = 47 or 57
+#define MSG_IO_DONE           	7
+
+#define MSG_ERROR				10
+
+/*==============================================================================
  *            error code
  *============================================================================*/
-#define		ERR_FLAT_FIND_FAIL				1
+#define ERR_INITIALIZE_FAILED	1
+#define	ERR_CASSETTE_PRESENT	2
+#define ERR_NF_FAILED			3
+#define ERR_NF_SUPPORT_HOME		4	// is not home when platform moving
+#define ERR_NF_SUPPORT_MOVING	5	// failed to reach position
 
-#define		MAX_ERROR_NO				      1
+#define	MAX_ERROR_NO			5
+
+/*==============================================================================
+ *                 communication protocol symbols
+ *============================================================================*/
+#define ENQ 0x05
+#define EOT 0x04
+#define ACK 0x06
+#define NAK 0x15
 
 /*==============================================================================
  *                Constants and defines
@@ -45,38 +87,106 @@
 #define DOWN	2
 #define LEFT	3
 #define RIGHT	4
+
 /*=============================================================================
  *            digital I/O assignment
  *============================================================================*/
 /* 4 high current outputs */
-#define     ALARM_TRIG        0   	  // Hout0
-#define     MOVE_UP_TRIG      1       // Hout1
-//#define                     2
-//#define                     3       // Hout3
+/* J16-3, 6, 9, 12*/
+#define ALARM_TRIG				0	// Hout0 J16-3
+#define MOVE_UP_TRIG			1	// Hout1 J16-6
+//#define MOVE_DOWN_TRIG			2	// Hout2 J16-9
+#define LIGHT_GREEN_TRIG   		2	// Hout2 J16-9
+#define LIGHT_RED_TRIG      	3	// Hout3 J16-12
 
 /* 16 configurable I/O outputs (15-0) (J1-3 to J1-18) */
-//#define     MOVE_UP_TRIG                15
-#define     MOVE_DOWN_TRIG              14
+/* J1-18 */
+//#define LIGHT_GREEN_TRIG   		0	// J1-18
 
-/* 16 digital inputs (16-31) (J2-19 to J2-12 and J2-9 to J2-2) */
-#define     FLAT_FIND_UP_SEN            16
-#define     FLAT_FIND_DOWN_SEN	       17
-#define     BOAT_PRESENT_SEN			    18
-#define     FLAT_UP_DOWN_SEN		 		 19
+/* J1-18 ~ J1-10 */
+#define WAFER_IN_SLOT_SEN_25	1	// J1-17
+#define WAFER_IN_SLOT_SEN_24	2	// 16
+#define WAFER_IN_SLOT_SEN_23	3	// 15
+#define WAFER_IN_SLOT_SEN_22	4	// 14
+#define WAFER_IN_SLOT_SEN_21	5	// 13
+#define WAFER_IN_SLOT_SEN_20	6	// 12
+#define WAFER_IN_SLOT_SEN_19	7	// 11
+#define WAFER_IN_SLOT_SEN_18	8	// 10
 
-#define 		NEEDRESUME						 0
-#define     NEEDABORT                   200
+#define WAFER_IN_SLOT_SEN_17	9	// J1-9
+#define WAFER_IN_SLOT_SEN_16	10	// 8
+#define WAFER_IN_SLOT_SEN_15	11	// 7
+#define WAFER_IN_SLOT_SEN_14	12	// 6
+#define WAFER_IN_SLOT_SEN_13	13	// 5
+#define WAFER_IN_SLOT_SEN_12	14	// 4
+#define WAFER_IN_SLOT_SEN_11	15	// 3
 
-#define CALIB_1200		0
-#define CALIB_0600		1
-#define CALIB_0100		2
+/* J2-19 ~ J2-12 */
+#define WAFER_IN_SLOT_SEN_10	16	// J2-19
+#define WAFER_IN_SLOT_SEN_9		17	// 18
+#define WAFER_IN_SLOT_SEN_8		18	// 17
+#define WAFER_IN_SLOT_SEN_7		19	// 16
+#define WAFER_IN_SLOT_SEN_6		20	// 15
+#define WAFER_IN_SLOT_SEN_5		21	// 14
+#define WAFER_IN_SLOT_SEN_4		22	// 13
+#define WAFER_IN_SLOT_SEN_3		23	// 12
+
+/* J2-9 ~ J2-8 */
+#define WAFER_IN_SLOT_SEN_2		24	// 9
+#define WAFER_IN_SLOT_SEN_1		25	// 8
+
+/* J2-7 ~ J2-4 */
+#define FLAT_FIND_UP_SEN    	26	// 7
+#define FLAT_FIND_DOWN_SEN  	27	// 6
+#define BOAT_PRESENT_SEN  		28	// 5
+#define FLAT_UP_DOWN_SEN  		29	// 4
+
+//****************************************************//
+//  constant definitions                              //
+//****************************************************//
+#define NEEDRESUME			0
+#define NEEDABORT           200
+
+#define CALIB_1200			0
+#define CALIB_0600			1
+#define CALIB_0100			2
+
+#define NOT_READY			0
+#define READY 				1
+#define IN_IO 				2
+#define IN_OP				3
+#define IN_ERROR			4
+
+#define CMD_IDX             0       /* MSG command ID byte */
+#define DATA_IDX            1       /* MSG data bytes starting index */
+
+#define FLAT_UP 			12
+#define FLAT_DOWN 			6
+
+#define SM_WAFER			47
+#define BG_WAFER			57
+#define MIXED				99
+
+#define STEP_FOR_FLAT_TYPE	3000
+#define STEP_FOR_WAFER_MAP 9000
+#define FLAT_UP_STEP_BG		83000
+#define FLAT_UP_STEP_SM		80000
+#define FLAT_DOWN_STEP_BG	11000
+#define FLAT_DOWN_STEP_SM	14000
+
+/* Light color */
+#define RED_LIGHT          	1
+#define GREEN_LIGHT        	2
+#define YELLOW_LIGHT       	3
+#define YELLOW_GREEN_LIGHT 	4
 
 const long BAUD115200 = 115200L;     //baud rate
 const long BAUD19200 = 19200L;
 
 const unsigned long TIMEOUT = 3000L;       /* time out value */
-const unsigned long  TIMEOUT_UPDOWN = 10000L;   // 10 sec
-const unsigned long  TIMEOUT_ROLLER = 10000L;   // 10 sec
-const unsigned long  TIMEOUT_CAMERA = 15000L;  // 15 sec
+const unsigned long TIMEOUT_UPDOWN = 10000L;   // 10 sec
+const unsigned long TIMEOUT_ROLLER = 10000L;   // 10 sec
+const unsigned long TIMEOUT_CAMERA = 15000L;  // 15 sec
 const unsigned long TIMEOUT_MSG = 1000L;    //for receiving and sending msg
+const unsigned long TIMEOUT_PC_CONNECT = 10000L;    //for waiting for pc to connect after powering up
 /*** EndHeader */

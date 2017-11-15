@@ -1,0 +1,73 @@
+/*******************************************************************************
+ *              Copyright(c) 2016, Mactronix Inc.
+ *              All rights reserved
+ *
+ *              File:        sensors.lib
+ *              Description: functions to handle sensor input
+ ******************************************************************************/
+
+/*** Function list ***/
+// int IsWaferInSlot(int slotNum)
+
+/*** BeginHeader IsWaferInSlot */
+int IsWaferInSlot(int slotNum);
+/*** EndHeader */
+int IsWaferInSlot(int slotNum)
+{
+	if (!myinp(25 - slotNum + 1))
+	{
+		//printf("slot %d: 1\n", slotNum);
+		return TRUE;
+	}
+	else
+	{
+		//printf("slot %d: 0\n", slotNum);
+		return FALSE;
+	}
+
+	//return myinp(25 - slotNum + 1);
+}
+
+/*** BeginHeader IsBlockUp */
+int IsBlockUp();
+/*** EndHeader */
+int IsBlockUp()
+{
+	if (!myinp(FLAT_FIND_UP_SEN))
+		return TRUE;
+
+	return FALSE;
+}
+
+/*** BeginHeader IsBlockDown */
+int IsBlockDown();
+/*** EndHeader */
+int IsBlockDown()
+{
+	if (!myinp(FLAT_FIND_DOWN_SEN))
+		return TRUE;
+
+	return FALSE;
+}
+
+/*** BeginHeader IsBoatPresent */
+int IsBoatPresent();
+/*** EndHeader */
+int IsBoatPresent()
+{
+	if (!myinp(BOAT_PRESENT_SEN))
+		return TRUE;
+
+	return FALSE;
+}
+
+/*** BeginHeader IsFlatToUp */
+int IsFlatToUp();
+/*** EndHeader */
+int IsFlatToUp()
+{
+	if (!myinp(FLAT_UP_DOWN_SEN))
+		return TRUE;
+
+	return FALSE;
+}
