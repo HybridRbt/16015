@@ -99,31 +99,43 @@ xmem int SendPcOpStarted()
 }
 
 /*** BeginHeader GetWaferMap */
-xmem int GetWaferMap();
+xmem int GetWaferMap(int flatCount);
 /*** EndHeader */
 /*==============================================================================
  *              GetWaferMap
  *============================================================================*/
-xmem int GetWaferMap()
+xmem int GetWaferMap(int flatCount)
 {
 	/** generate wafer map based on the sensor map */
 	int slotnum;
 	int fullBoat;
+   int waferCount;
 
 	fullBoat = TRUE;
+   waferCount = 0;
 
 	for (slotnum = 1; slotnum <= 25; slotnum++)
 	{
 		if (IsWaferInSlot(slotnum))
-			g_waferMap[slotnum - 1] = 1;
-		else
+		{
+      	g_waferMap[slotnum - 1] = 1;
+      	waferCount++;
+      }
+      else
 		{
 			g_waferMap[slotnum - 1] = 0;
 			fullBoat = FALSE;
 		}
 	}
 
-	return fullBoat;
+   if (flatCount == 0)  // all are 57
+   	g_flatType = BG_WAFER;
+   else if (flatCount < waferCount)  //47 57 mixed
+   	g_flatType = MIXED;
+   else if (flatCount == waferCount) // all are 47
+   	g_flatType = SM_WAFER;
+
+   return fullBoat;
 }
 
 /*** BeginHeader SendPcOpDone */
