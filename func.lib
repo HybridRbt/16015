@@ -507,145 +507,95 @@ xmem int handleMsg()
 
 
 /*** BeginHeader GetDataFromHost */
-//xmem void GetDataFromHost();
+xmem void GetDataFromHost();
 /*** EndHeader */
 /*==============================================================================
  *               setData
  *============================================================================*/
-/*
 xmem void GetDataFromHost()
 {
-	long beamShadowBottom_6, beamShadowTop_6, beamShadowBottom_8, beamShadowTop_8;
+	long up_pos_47, up_pos_57, down_pos_47, down_pos_57;
+   long mapping_pos, flat_type_pos;
 
-	g_posTrayIn_6 = (g_msgbuf[DATA_IDX] << 8);
-	g_posTrayIn_6 |= g_msgbuf[DATA_IDX + 1];
+	up_pos_57 = ((long)(g_msgbuf[DATA_IDX]) << 24);
+	up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 1]) << 16);
+   up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 2]) << 8);
+   up_pos_57 |= ((long)g_msgbuf[DATA_IDX + 3]);
 
-	g_posTrayOut_6 = (g_msgbuf[DATA_IDX + 2] << 8);
-	g_posTrayOut_6 |= g_msgbuf[DATA_IDX + 3];
+   up_pos_47 = ((long)(g_msgbuf[DATA_IDX + 4]) << 24);
+	up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 5]) << 16);
+   up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 6]) << 8);
+   up_pos_47 |= ((long)g_msgbuf[DATA_IDX + 7]);
 
-	g_elevDownStepsForPick_6 = (g_msgbuf[DATA_IDX + 4] << 8);
-	g_elevDownStepsForPick_6 |= g_msgbuf[DATA_IDX + 5];
+   down_pos_57 = ((long)(g_msgbuf[DATA_IDX + 8]) << 24);
+	down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 9]) << 16);
+   down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 10]) << 8);
+   down_pos_57 |= ((long)g_msgbuf[DATA_IDX + 11]);
 
-	g_slot1Offset_6 = ((long)g_msgbuf[DATA_IDX + 6] << 8);
-	g_slot1Offset_6 |= (long)g_msgbuf[DATA_IDX + 7];
+   down_pos_47 = ((long)(g_msgbuf[DATA_IDX + 12]) << 24);
+	down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 13]) << 16);
+   down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 14]) << 8);
+   down_pos_47 |= ((long)g_msgbuf[DATA_IDX + 15]);
 
-	g_slot26Offset_6 = ((long)g_msgbuf[DATA_IDX + 8] << 24);
-	g_slot26Offset_6 |= ((long)g_msgbuf[DATA_IDX + 9] << 16);
-	g_slot26Offset_6 |= ((long)g_msgbuf[DATA_IDX + 10] << 8);
-	g_slot26Offset_6 |= (long)g_msgbuf[DATA_IDX + 11];
+   flat_type_pos = ((long)(g_msgbuf[DATA_IDX + 16]) << 24);
+	flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 17]) << 16);
+   flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 18]) << 8);
+   flat_type_pos |= ((long)g_msgbuf[DATA_IDX + 19]);
 
-	g_sensorOffset_6 = ((long)g_msgbuf[DATA_IDX + 12] << 8);
-	g_sensorOffset_6 |= (long)g_msgbuf[DATA_IDX + 13];
+   mapping_pos = ((long)(g_msgbuf[DATA_IDX + 20]) << 24);
+	mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 21]) << 16);
+   mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 22]) << 8);
+   mapping_pos |= ((long)g_msgbuf[DATA_IDX + 23]);
 
-	beamShadowBottom_6 = (g_msgbuf[DATA_IDX + 14] << 8);
-	beamShadowBottom_6 |= g_msgbuf[DATA_IDX + 15];
+   g_flatUpStep_47 = up_pos_47;
+   g_flatUpStep_57 = up_pos_57;
 
-	beamShadowTop_6 = (g_msgbuf[DATA_IDX + 16] << 8);
-	beamShadowTop_6 |= g_msgbuf[DATA_IDX + 17];
+   g_flatDownStep_57 = down_pos_57;
+   g_flatDownStep_47 = down_pos_47;
 
-	g_FFupOffset = g_msgbuf[DATA_IDX + 18];
-	g_FFdownOffset = g_msgbuf[DATA_IDX + 19];
-	g_FFleftOffset = g_msgbuf[DATA_IDX + 20];
-	g_FFrightOffset = g_msgbuf[DATA_IDX + 21];
-	g_NFupOffset6 = g_msgbuf[DATA_IDX + 22];
-	g_NFdownOffset6 = g_msgbuf[DATA_IDX + 23];
-	g_NFleftOffset6 = g_msgbuf[DATA_IDX + 24];
-	g_NFrightOffset6 = g_msgbuf[DATA_IDX + 25];
+   g_mappingStep = mapping_pos;
+   g_checkFlatTypeStep = flat_type_pos;
 
-	g_slot1Offset_8 = ((long)g_msgbuf[DATA_IDX + 26] << 8);
-	g_slot1Offset_8 |= (long)g_msgbuf[DATA_IDX + 27];
+   g_bGotData = TRUE;
 
-	g_slot26Offset_8 = ((long)g_msgbuf[DATA_IDX + 28] << 24);
-	g_slot26Offset_8 |= ((long)g_msgbuf[DATA_IDX + 29] << 16);
-	g_slot26Offset_8 |= ((long)g_msgbuf[DATA_IDX + 30] << 8);
-	g_slot26Offset_8 |= (long)g_msgbuf[DATA_IDX + 31];
+   //DelayMilliseconds(1000);
+   printf("up_pos_57 = %ld \n", up_pos_57);
+   printf("up_pos_47 = %ld \n\n", up_pos_47);
+   printf("down_pos_57 = %ld \n", down_pos_57);
+   printf("down_pos_47 = %ld \n\n", down_pos_47);
 
-	g_sensorOffset_8 = ((long)g_msgbuf[DATA_IDX + 32] << 8);
-	g_sensorOffset_8 |= (long)g_msgbuf[DATA_IDX + 33];
+   printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
+   printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
+   printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
+   printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
 
-	beamShadowBottom_8 = (g_msgbuf[DATA_IDX + 34] << 8);
-	beamShadowBottom_8 |= g_msgbuf[DATA_IDX + 35];
+   printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
+   printf("g_mappingStep = %ld \n", g_mappingStep);
+}
 
-	beamShadowTop_8 = (g_msgbuf[DATA_IDX + 36] << 8);
-	beamShadowTop_8 |= g_msgbuf[DATA_IDX + 37];
+/*** BeginHeader LoadDefaultValueForSteps */
+xmem void LoadDefaultValueForSteps();
+/*** EndHeader */
+xmem void LoadDefaultValueForSteps()
+{
+   g_flatUpStep_47 = FLAT_UP_STEP_SM;
+   g_flatUpStep_57 = FLAT_UP_STEP_BG;
 
-	g_NFupOffset8 = g_msgbuf[DATA_IDX + 38];
-	g_NFdownOffset8 = g_msgbuf[DATA_IDX + 39];
-	g_NFleftOffset8 = g_msgbuf[DATA_IDX + 40];
-	g_NFrightOffset8 = g_msgbuf[DATA_IDX + 41];
+   g_flatDownStep_57 = FLAT_DOWN_STEP_BG;
+   g_flatDownStep_47 = FLAT_DOWN_STEP_SM;
 
-	g_posTrayIn_8 = (g_msgbuf[DATA_IDX + 42] << 8);
-	g_posTrayIn_8 |= g_msgbuf[DATA_IDX + 43];
+   g_mappingStep = STEP_FOR_WAFER_MAP;
+   g_checkFlatTypeStep = STEP_FOR_FLAT_TYPE;
 
-	g_posTrayOut_8 = (g_msgbuf[DATA_IDX + 44] << 8);
-	g_posTrayOut_8 |= g_msgbuf[DATA_IDX + 45];
+   printf("no connection, loading default... \n");
+   printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
+   printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
+   printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
+   printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
 
-	g_pickWaferOffset6 = (g_msgbuf[DATA_IDX + 46] << 8);
-	g_pickWaferOffset6 |= g_msgbuf[DATA_IDX + 47];
-
-	g_pickWaferOffset8 = (g_msgbuf[DATA_IDX + 48] << 8);
-	g_pickWaferOffset8 |= g_msgbuf[DATA_IDX + 49];
-
-	g_trayPickWaferOffset_6 = (g_msgbuf[DATA_IDX + 50] << 8);
-	g_trayPickWaferOffset_6 |= g_msgbuf[DATA_IDX + 51];
-
-	g_trayPickWaferOffset_8 = (g_msgbuf[DATA_IDX + 52] << 8);
-	g_trayPickWaferOffset_8 |= g_msgbuf[DATA_IDX + 53];
-
-	//7/16/2015 3:19:12 PM @Jered add a global parameter for 8" wafer
-	g_elevDownStepsForPick_8 = (g_msgbuf[DATA_IDX + 54] << 8);
-	g_elevDownStepsForPick_8 |= g_msgbuf[DATA_IDX + 55];
-
-	//@Jered add a global parameter for platform tilt
-	// g_elevDwForPlatfromTilt = (g_msgbuf[DATA_IDX + 56] << 8);
-	// g_elevDwForPlatfromTilt |= (g_msgbuf[DATA_IDX + 57]);
-
-	// cross slot ratio per centage, 02-12-2016 dliu
-	g_crossRatio_6 = g_msgbuf[DATA_IDX + 56];
-	g_crossRatio_8 = g_msgbuf[DATA_IDX + 57];
-
-	g_beamShadow_6 = (beamShadowBottom_6 + beamShadowTop_6) / 2;
-	g_beamShadow_8 = (beamShadowBottom_8 + beamShadowTop_8) / 2;
-
-	//DelayMilliseconds(1000);
-	/*
-		printf("g_posTrayIn= %d \n", g_posTrayIn_6);
-		printf("g_posTrayOut= %d\n", g_posTrayOut_6);
-		printf("g_posTrayIn_8= %d \n", g_posTrayIn_8);
-		printf("g_posTrayOut_8= %d\n", g_posTrayOut_8);
-		printf("g_elevDownStepsForPick_6= %d \n", g_elevDownStepsForPick_6);
-		printf("g_elevDownStepsForPick_8= %d \n", g_elevDownStepsForPick_8);
-		printf("slot1_6 offset = %ld\n", g_slot1Offset_6);
-		printf("slot26_6 offset = %ld\n", g_slot26Offset_6);
-		printf("6 Scan start at %ld\n", g_sensorOffset_6);
-		printf("beamShadowBottom_6 = %ld\n", beamShadowBottom_6);
-		printf("beamShadowTop_6 = %ld\n", beamShadowTop_6);
-		printf("g_FFupOffset for 6= %d\n", g_FFupOffset);
-		printf("g_FFdownOffset for 6= %d\n", g_FFdownOffset);
-		printf("g_FFleftOffset for 6= %d\n", g_FFleftOffset);
-		printf("g_FFrightOffset for 6= %d\n", g_FFrightOffset);
-		printf("g_NFupOffset6= %d\n", g_NFupOffset6);
-		printf("g_NFdownOffset6= %d\n", g_NFdownOffset6);
-		printf("g_NFleftOffset6= %d\n", g_NFleftOffset6);
-		printf("g_NFrightOffset6= %d\n", g_NFrightOffset6);
-		printf("slot1_8 offset = %ld\n", g_slot1Offset_8);
-		printf("slot26_8 offset = %ld\n", g_slot26Offset_8);
-		printf("8 Scan start at %ld\n", g_sensorOffset_8);
-		printf("beamShadowBottom_8 = %ld\n", beamShadowBottom_8);
-		printf("beamShadowTop_8 = %ld\n", beamShadowTop_8);
-		printf("g_NFupOffset8= %d\n", g_NFupOffset8);
-		printf("g_NFdownOffset8= %d\n", g_NFdownOffset8);
-		printf("g_NFleftOffset8= %d\n", g_NFleftOffset8);
-		printf("g_NFrightOffset8= %d\n", g_NFrightOffset8);
-		printf("g_pickWaferOffset6= %d\n", g_pickWaferOffset6);
-		printf("g_pickWaferOffset8= %d\n", g_pickWaferOffset8);
-		printf("g_trayPickWaferOffset_6= %d\n", g_trayPickWaferOffset_6);
-		printf("g_trayPickWaferOffset_8= %d\n", g_trayPickWaferOffset_8);
-		printf("g_elevDwForPlatfromTilt = %d \n", g_elevDwForPlatfromTilt);
-		printf("g_crossRatio_6 = %d\n", g_crossRatio_6);
-		printf("g_crossRatio_8 = %d\n", g_crossRatio_8);
-	*/
-//}
+   printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
+   printf("g_mappingStep = %ld \n", g_mappingStep);
+}
 
 /*** BeginHeader recvAlarmMsg */
 xmem void recvAlarmMsg();
