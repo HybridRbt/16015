@@ -778,16 +778,12 @@ xmem void SetLightLocal(int color)
 	}
 }
 
-/*** BeginHeader GetFlatType */
-xmem int GetFlatType();
+/*** BeginHeader GetFlatCount */
+xmem int GetFlatCount();
 /*** EndHeader */
-/*==============================================================================
- *               GetFlatType
- *============================================================================*/
-xmem int GetFlatType()
+xmem int GetFlatCount()
 {
 	int slotnum;
-	int flatType;
 	int blockCounter;
 
 	blockCounter = 0;
@@ -795,20 +791,10 @@ xmem int GetFlatType()
 	for (slotnum = 1; slotnum <= 25; slotnum++)
 	{
 		if (IsWaferInSlot(slotnum))
-			blockCounter++;  // if it's blocked, it's a sm
-		else
-			blockCounter--;  // if it's not blocked, it's a bg
+			blockCounter++;
 	}
 
-	if (blockCounter == 0) // all wafers are not blocked, all are bg
-		flatType = BG_WAFER;
-	else if (blockCounter == 25)  // all wafers are blocked, all are sm
-		flatType = SM_WAFER;
-	else
-		// report mixed
-		flatType = MIXED;
-	
-	return flatType;
+	return blockCounter;
 }
 
 
