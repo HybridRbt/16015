@@ -80,7 +80,10 @@ xmem int SendPcOpStarted()
 	int slotnum;
 
 	if (!g_bConnected) // no connection, don't send
+	{
+		g_bOpMayStart = TRUE;
 		return NO_ERROR;
+	}	
 
 	msgbuf[0] = 2;
 	msgbuf[1] = MSG_START_OPERATION;
