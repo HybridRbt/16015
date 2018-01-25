@@ -514,6 +514,11 @@ xmem int handleMsg()
 			SetLight();
 			break;
 
+		case CMD_MAY_START_OP: // 11
+			g_bOpMayStart = g_msgbuf[DATA_IDX];
+			g_bGotConfirmOnOp = TRUE;
+			break;		
+
 		default:
 			break;
 	}
