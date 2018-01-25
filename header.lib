@@ -39,6 +39,7 @@
 #define CMD_ABORT               8
 #define CMD_ALARM               9
 #define CMD_LIGHT               10
+#define CMD_MAY_START_OP        11 //=1 can start; =0 cannot start
 
 /*=============================================================================
 			   message sent to host
