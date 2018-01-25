@@ -98,6 +98,19 @@ xmem int SendPcOpStarted()
 	if ((re = sendMsg(msgbuf)) != NO_ERROR)
 		return re;
 
+	end = MS_TIMER + TIMEOUT_PC_CONNECT / 3;  // wait for 3 secs
+
+	g_bGotConfirmOnOp = FALSE;
+	
+	while (MS_TIMER < end)
+	{
+		printf("entering handleMsg()...\n");
+		handleMsg();
+
+		if (g_bGotConfirmOnOp)
+			break;
+	}
+
 	return NO_ERROR;
 }
 
