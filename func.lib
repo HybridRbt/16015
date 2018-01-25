@@ -501,6 +501,9 @@ xmem int handleMsg()
 		case CMD_ABORT:
 			//ResetPausedSignalToHost();
 			//re = InitWhole();
+			if (!g_bConnected)  // connected with host pc
+				g_bConnected = TRUE;
+
 			break;
 
 		case CMD_ALARM: // 21
