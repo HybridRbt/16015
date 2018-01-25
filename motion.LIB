@@ -82,6 +82,36 @@ void RollerMoveRelative(long nstep, long vel, long acc)
 	ServoPosMove(ROLLER_MOTOR, pos, vel, acc);
 }
 
+/*** BeginHeader PrerunWaferToAvoidDeadZone */
+int PrerunWaferToAvoidDeadZone();
+/*** EndHeader */
+int PrerunWaferToAvoidDeadZone()
+{
+	unsigned long end;
+	long vel, acc, pos;
+	int re;
+
+	if ((re = MoveBlockDown()) != NO_ERROR)
+		return re;
+
+	vel = VEL_ROLLER[MED];
+	acc = ACC_ROLLER[MED];
+	pos = STEP_TO_AVOID_DEADZONE;
+	RollerMoveRelative(pos, vel, acc);
+	end = MS_TIMER + TIMEOUT_ROLLER;
+	DelayMilliseconds(10);
+
+	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+	{
+		if ((re = boatCheck()) != NO_ERROR)
+			return re;
+	}
+
+	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+
+	return NO_ERROR;
+}
+
 /*** BeginHeader PreworkForFlatFind */
 int PreworkForFlatFind();
 /*** EndHeader */
@@ -90,6 +120,9 @@ int PreworkForFlatFind()
 	unsigned long end;
 	long vel, acc, pos;
 	int re;
+
+	if ((re = PrerunWaferToAvoidDeadZone()) != NO_ERROR)  // 1/25/2018 4:28:55 PM @ Jered add this to avoid dead zone
+		return re;
 
 	if ((re = MoveBlockUp()) != NO_ERROR)
 		//	if ((re=MoveBlockDown())!=NO_ERROR)
