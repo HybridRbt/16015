@@ -67,6 +67,9 @@ long g_flatDownStep_47;
 long g_mappingStep;
 long g_checkFlatTypeStep;
 
+int g_bOpMayStart;
+int g_bGotConfirmOnOp;
+
 /*==============================================================================
  *                  main
  *============================================================================*/
