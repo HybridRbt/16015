@@ -175,7 +175,7 @@
 #define FLAT_DOWN_STEP_BG	11000
 #define FLAT_DOWN_STEP_SM	14000
 
-#define STEP_TO_AVOID_DEADZONE	FLAT_UP_STEP_SM / 4
+#define STEP_TO_AVOID_DEADZONE	FLAT_UP_STEP_SM * 2
 
 /* Light color */
 #define RED_LIGHT          	1

@@ -91,6 +91,7 @@ int PrerunWaferToAvoidDeadZone()
 	long vel, acc, pos;
 	int re;
 
+	// block down, 360 degree
 	if ((re = MoveBlockDown()) != NO_ERROR)
 		return re;
 
@@ -130,7 +131,7 @@ int PreworkForFlatFind()
 
 	vel = VEL_ROLLER[MED];
 	acc = ACC_ROLLER[MED];
-	pos = 10000;
+	pos = FLAT_UP_STEP_SM / 2;
 	pos = -pos;
 	RollerMoveRelative(pos, vel, acc);
 	end = MS_TIMER + TIMEOUT_ROLLER;
