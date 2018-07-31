@@ -82,9 +82,9 @@ xmem int SendPcOpStarted()
 
 	if (!g_bConnected) // no connection, don't send
 	{
-		g_bOpMayStart = TRUE;
+		g_bOpMayStart = TRUE; 
 		return NO_ERROR;
-	}	
+	}
 
 	msgbuf[0] = 2;
 	msgbuf[1] = MSG_START_OPERATION;
@@ -102,7 +102,7 @@ xmem int SendPcOpStarted()
 	end = MS_TIMER + TIMEOUT_PC_CONNECT / 3;  // wait for 3 secs
 
 	g_bGotConfirmOnOp = FALSE;
-	
+
 	while (MS_TIMER < end)
 	{
 		printf("entering handleMsg()...\n");
@@ -518,7 +518,7 @@ xmem int handleMsg()
 		case CMD_MAY_START_OP: // 11
 			g_bOpMayStart = g_msgbuf[DATA_IDX];
 			g_bGotConfirmOnOp = TRUE;
-			break;		
+			break;
 
 		default:
 			break;
