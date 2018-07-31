@@ -82,7 +82,7 @@ xmem int SendPcOpStarted()
 
 	if (!g_bConnected) // no connection, don't send
 	{
-		g_bOpMayStart = TRUE; 
+		g_bOpMayStart = TRUE;
 		return NO_ERROR;
 	}
 
@@ -596,6 +596,14 @@ xmem void GetDataFromHost()
 
 	printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
 	printf("g_mappingStep = %ld \n", g_mappingStep);
+
+	msgbuf[0] = 9;
+	msgbuf[1] = MSG_VERSION;
+
+	memcpy(msgbuf + 2, VERSION, 8);
+
+	msgbuf[msgbuf[0] + 1] = '\0';
+	sendMsg(msgbuf);
 }
 
 /*** BeginHeader LoadDefaultValueForSteps */

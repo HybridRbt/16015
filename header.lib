@@ -54,7 +54,7 @@
 #define MSG_IO_DONE           	7
 
 #define MSG_ERROR				10
-
+#define MSG_VERSION			    99
 /*==============================================================================
  *            error code
  *============================================================================*/
@@ -182,6 +182,8 @@
 #define GREEN_LIGHT        	2
 #define YELLOW_LIGHT       	3
 #define YELLOW_GREEN_LIGHT 	4
+
+#define VERSION "07312018"
 
 const long BAUD115200 = 115200L;     //baud rate
 const long BAUD19200 = 19200L;
