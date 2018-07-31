@@ -156,12 +156,12 @@ xmem int GetWaferMap(int flatCount)
 }
 
 /*** BeginHeader SendPcOpDone */
-xmem void SendPcOpDone();
+xmem int SendPcOpDone();
 /*** EndHeader */
 /*==============================================================================
  *              SendPcOpDone
  *============================================================================*/
-xmem void SendPcOpDone()
+xmem int SendPcOpDone()
 {
 	/** generate wafer map based on the sensor map */
 	void *p2, *p3, *p4, *p5, *p6;

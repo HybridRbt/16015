@@ -213,9 +213,9 @@ int PrepareForGetWaferMap()
 }
 
 /*** BeginHeader RollWafersBySteps */
-int RollWafersBySteps(int steps);
+int RollWafersBySteps(long steps);
 /*** EndHeader */
-int RollWafersBySteps(int steps)
+int RollWafersBySteps(long steps)
 {
 	int re;
 
@@ -233,9 +233,9 @@ int RollWafersBySteps(int steps)
 }
 
 /*** BeginHeader RollerMoveBySteps */
-int RollerMoveBySteps(int steps);
+int RollerMoveBySteps(long steps);
 /*** EndHeader */
-int RollerMoveBySteps(int steps)
+int RollerMoveBySteps(long steps)
 {
 	unsigned long end;
 	long vel, acc, pos;
