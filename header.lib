@@ -39,6 +39,7 @@
 #define CMD_ABORT               8
 #define CMD_ALARM               9
 #define CMD_LIGHT               10
+#define CMD_MAY_START_OP        11 //=1 can start; =0 cannot start
 
 /*=============================================================================
 			   message sent to host
@@ -53,7 +54,7 @@
 #define MSG_IO_DONE           	7
 
 #define MSG_ERROR				10
-
+#define MSG_VERSION			    99
 /*==============================================================================
  *            error code
  *============================================================================*/
@@ -174,11 +175,15 @@
 #define FLAT_DOWN_STEP_BG	11000
 #define FLAT_DOWN_STEP_SM	14000
 
+#define STEP_TO_AVOID_DEADZONE	FLAT_UP_STEP_SM * 2
+
 /* Light color */
 #define RED_LIGHT          	1
 #define GREEN_LIGHT        	2
 #define YELLOW_LIGHT       	3
 #define YELLOW_GREEN_LIGHT 	4
+
+#define VERSION "07312018"
 
 const long BAUD115200 = 115200L;     //baud rate
 const long BAUD19200 = 19200L;

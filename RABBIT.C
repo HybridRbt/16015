@@ -67,6 +67,9 @@ long g_flatDownStep_47;
 long g_mappingStep;
 long g_checkFlatTypeStep;
 
+int g_bOpMayStart;
+int g_bGotConfirmOnOp;
+
 /*==============================================================================
  *                  main
  *============================================================================*/
@@ -144,7 +147,7 @@ void main(void)
 			if (g_bBoatRemoved && IsBoatPresent())
 			{
 				setOperationLight();
-				g_stage = IN_OP;
+				g_stage = IN_OP; 
 			}
 		}
 		else if (g_stage == IN_IO)
@@ -178,7 +181,15 @@ void main(void)
 			if (g_bBoatRemoved && IsBoatPresent())
 			{
 				g_bBoatRemoved = FALSE;
-				SendPcOpStarted();
+				g_bOpMayStart = FALSE;
+				SendPcOpStarted();  // will get confirmation on whether or not op can start here
+
+				if (!g_bOpMayStart)  // op cannot start, return to ready stage
+				{
+					setIdleLight();
+					g_stage = READY;
+					continue;  
+				}
 
 				if ((re = FindFlat()) != NO_ERROR)
 				{

@@ -57,11 +57,12 @@ xmem int SendPcReady()
 	msgbuf[1] = MSG_SB_ASK_READY;
 	msgbuf[msgbuf[0] + 1] = '\0';
 
-   printf("sending ask for ready msg...\n");
+	printf("sending ask for ready msg...\n");
+
 	if ((re = sendMsg(msgbuf)) != NO_ERROR)
 		return re;
 
-   printf("msg sent.\n");
+	printf("msg sent.\n");
 	return NO_ERROR;
 }
 
@@ -76,11 +77,14 @@ xmem int SendPcOpStarted()
 	/** send ready signal to host computer */
 	int re;
 	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
-
+	unsigned long end;
 	int slotnum;
 
 	if (!g_bConnected) // no connection, don't send
+	{
+		g_bOpMayStart = TRUE;
 		return NO_ERROR;
+	}
 
 	msgbuf[0] = 2;
 	msgbuf[1] = MSG_START_OPERATION;
@@ -94,6 +98,19 @@ xmem int SendPcOpStarted()
 
 	if ((re = sendMsg(msgbuf)) != NO_ERROR)
 		return re;
+
+	end = MS_TIMER + TIMEOUT_PC_CONNECT / 3;  // wait for 3 secs
+
+	g_bGotConfirmOnOp = FALSE;
+
+	while (MS_TIMER < end)
+	{
+		printf("entering handleMsg()...\n");
+		handleMsg();
+
+		if (g_bGotConfirmOnOp)
+			break;
+	}
 
 	return NO_ERROR;
 }
@@ -109,42 +126,42 @@ xmem int GetWaferMap(int flatCount)
 	/** generate wafer map based on the sensor map */
 	int slotnum;
 	int fullBoat;
-   int waferCount;
+	int waferCount;
 
 	fullBoat = TRUE;
-   waferCount = 0;
+	waferCount = 0;
 
 	for (slotnum = 1; slotnum <= 25; slotnum++)
 	{
 		if (IsWaferInSlot(slotnum))
 		{
-      	g_waferMap[slotnum - 1] = 1;
-      	waferCount++;
-      }
-      else
+			g_waferMap[slotnum - 1] = 1;
+			waferCount++;
+		}
+		else
 		{
 			g_waferMap[slotnum - 1] = 0;
 			fullBoat = FALSE;
 		}
 	}
 
-   if (flatCount == 0)  // all are 57
-   	g_flatType = BG_WAFER;
-   else if (flatCount < waferCount)  //47 57 mixed
-   	g_flatType = MIXED;
-   else if (flatCount == waferCount) // all are 47
-   	g_flatType = SM_WAFER;
+	if (flatCount == 0)  // all are 57
+		g_flatType = BG_WAFER;
+	else if (flatCount < waferCount)  //47 57 mixed
+		g_flatType = MIXED;
+	else if (flatCount == waferCount) // all are 47
+		g_flatType = SM_WAFER;
 
-   return fullBoat;
+	return fullBoat;
 }
 
 /*** BeginHeader SendPcOpDone */
-xmem void SendPcOpDone();
+xmem int SendPcOpDone();
 /*** EndHeader */
 /*==============================================================================
  *              SendPcOpDone
  *============================================================================*/
-xmem void SendPcOpDone()
+xmem int SendPcOpDone()
 {
 	/** generate wafer map based on the sensor map */
 	void *p2, *p3, *p4, *p5, *p6;
@@ -485,14 +502,22 @@ xmem int handleMsg()
 		case CMD_ABORT:
 			//ResetPausedSignalToHost();
 			//re = InitWhole();
+			if (!g_bConnected)  // connected with host pc
+				g_bConnected = TRUE;
+
 			break;
 
-		case CMD_ALARM: // 21
+		case CMD_ALARM: // 9
 			recvAlarmMsg();
 			break;
 
-		case CMD_LIGHT: // 23
+		case CMD_LIGHT: // 10
 			SetLight();
+			break;
+
+		case CMD_MAY_START_OP: // 11
+			g_bOpMayStart = g_msgbuf[DATA_IDX];
+			g_bGotConfirmOnOp = TRUE;
 			break;
 
 		default:
@@ -515,62 +540,70 @@ xmem void GetDataFromHost();
 xmem void GetDataFromHost()
 {
 	long up_pos_47, up_pos_57, down_pos_47, down_pos_57;
-   long mapping_pos, flat_type_pos;
+	long mapping_pos, flat_type_pos;
 
 	up_pos_57 = ((long)(g_msgbuf[DATA_IDX]) << 24);
 	up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 1]) << 16);
-   up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 2]) << 8);
-   up_pos_57 |= ((long)g_msgbuf[DATA_IDX + 3]);
+	up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 2]) << 8);
+	up_pos_57 |= ((long)g_msgbuf[DATA_IDX + 3]);
 
-   up_pos_47 = ((long)(g_msgbuf[DATA_IDX + 4]) << 24);
+	up_pos_47 = ((long)(g_msgbuf[DATA_IDX + 4]) << 24);
 	up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 5]) << 16);
-   up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 6]) << 8);
-   up_pos_47 |= ((long)g_msgbuf[DATA_IDX + 7]);
+	up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 6]) << 8);
+	up_pos_47 |= ((long)g_msgbuf[DATA_IDX + 7]);
 
-   down_pos_57 = ((long)(g_msgbuf[DATA_IDX + 8]) << 24);
+	down_pos_57 = ((long)(g_msgbuf[DATA_IDX + 8]) << 24);
 	down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 9]) << 16);
-   down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 10]) << 8);
-   down_pos_57 |= ((long)g_msgbuf[DATA_IDX + 11]);
+	down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 10]) << 8);
+	down_pos_57 |= ((long)g_msgbuf[DATA_IDX + 11]);
 
-   down_pos_47 = ((long)(g_msgbuf[DATA_IDX + 12]) << 24);
+	down_pos_47 = ((long)(g_msgbuf[DATA_IDX + 12]) << 24);
 	down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 13]) << 16);
-   down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 14]) << 8);
-   down_pos_47 |= ((long)g_msgbuf[DATA_IDX + 15]);
+	down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 14]) << 8);
+	down_pos_47 |= ((long)g_msgbuf[DATA_IDX + 15]);
 
-   flat_type_pos = ((long)(g_msgbuf[DATA_IDX + 16]) << 24);
+	flat_type_pos = ((long)(g_msgbuf[DATA_IDX + 16]) << 24);
 	flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 17]) << 16);
-   flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 18]) << 8);
-   flat_type_pos |= ((long)g_msgbuf[DATA_IDX + 19]);
+	flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 18]) << 8);
+	flat_type_pos |= ((long)g_msgbuf[DATA_IDX + 19]);
 
-   mapping_pos = ((long)(g_msgbuf[DATA_IDX + 20]) << 24);
+	mapping_pos = ((long)(g_msgbuf[DATA_IDX + 20]) << 24);
 	mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 21]) << 16);
-   mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 22]) << 8);
-   mapping_pos |= ((long)g_msgbuf[DATA_IDX + 23]);
+	mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 22]) << 8);
+	mapping_pos |= ((long)g_msgbuf[DATA_IDX + 23]);
 
-   g_flatUpStep_47 = up_pos_47;
-   g_flatUpStep_57 = up_pos_57;
+	g_flatUpStep_47 = up_pos_47;
+	g_flatUpStep_57 = up_pos_57;
 
-   g_flatDownStep_57 = down_pos_57;
-   g_flatDownStep_47 = down_pos_47;
+	g_flatDownStep_57 = down_pos_57;
+	g_flatDownStep_47 = down_pos_47;
 
-   g_mappingStep = mapping_pos;
-   g_checkFlatTypeStep = flat_type_pos;
+	g_mappingStep = mapping_pos;
+	g_checkFlatTypeStep = flat_type_pos;
 
-   g_bGotData = TRUE;
+	g_bGotData = TRUE;
 
-   //DelayMilliseconds(1000);
-   printf("up_pos_57 = %ld \n", up_pos_57);
-   printf("up_pos_47 = %ld \n\n", up_pos_47);
-   printf("down_pos_57 = %ld \n", down_pos_57);
-   printf("down_pos_47 = %ld \n\n", down_pos_47);
+	//DelayMilliseconds(1000);
+	printf("up_pos_57 = %ld \n", up_pos_57);
+	printf("up_pos_47 = %ld \n\n", up_pos_47);
+	printf("down_pos_57 = %ld \n", down_pos_57);
+	printf("down_pos_47 = %ld \n\n", down_pos_47);
 
-   printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
-   printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
-   printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
-   printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
+	printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
+	printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
+	printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
+	printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
 
-   printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
-   printf("g_mappingStep = %ld \n", g_mappingStep);
+	printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
+	printf("g_mappingStep = %ld \n", g_mappingStep);
+
+	msgbuf[0] = 9;
+	msgbuf[1] = MSG_VERSION;
+
+	memcpy(msgbuf + 2, VERSION, 8);
+
+	msgbuf[msgbuf[0] + 1] = '\0';
+	sendMsg(msgbuf);
 }
 
 /*** BeginHeader LoadDefaultValueForSteps */
@@ -578,23 +611,23 @@ xmem void LoadDefaultValueForSteps();
 /*** EndHeader */
 xmem void LoadDefaultValueForSteps()
 {
-   g_flatUpStep_47 = FLAT_UP_STEP_SM;
-   g_flatUpStep_57 = FLAT_UP_STEP_BG;
+	g_flatUpStep_47 = FLAT_UP_STEP_SM;
+	g_flatUpStep_57 = FLAT_UP_STEP_BG;
 
-   g_flatDownStep_57 = FLAT_DOWN_STEP_BG;
-   g_flatDownStep_47 = FLAT_DOWN_STEP_SM;
+	g_flatDownStep_57 = FLAT_DOWN_STEP_BG;
+	g_flatDownStep_47 = FLAT_DOWN_STEP_SM;
 
-   g_mappingStep = STEP_FOR_WAFER_MAP;
-   g_checkFlatTypeStep = STEP_FOR_FLAT_TYPE;
+	g_mappingStep = STEP_FOR_WAFER_MAP;
+	g_checkFlatTypeStep = STEP_FOR_FLAT_TYPE;
 
-   printf("no connection, loading default... \n");
-   printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
-   printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
-   printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
-   printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
+	printf("no connection, loading default... \n");
+	printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
+	printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
+	printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
+	printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
 
-   printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
-   printf("g_mappingStep = %ld \n", g_mappingStep);
+	printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
+	printf("g_mappingStep = %ld \n", g_mappingStep);
 }
 
 /*** BeginHeader recvAlarmMsg */
