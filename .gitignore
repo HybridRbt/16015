@@ -1,1 +1,7 @@
 *.org
+*.bin
+*.HX1
+*.MD1
+*.map
+*.brk
+*.rom
