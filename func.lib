@@ -216,6 +216,30 @@ xmem int SendPcOpDone()
 	return NO_ERROR;
 }
 
+/*** BeginHeader WriteSensorBit */
+xmem int WriteSensorBit(int (*func)(),
+                        void *addr,
+                        int   bit,
+                        int   reversed);
+/*** EndHeader */
+xmem int WriteSensorBit(int (*func)(), void *addr, int bit, int reversed)
+{
+    if (func())
+    {
+        if (!reversed)
+            set(addr, bit);
+        else
+            res(addr, bit);
+    }
+    else
+    {
+        if (!reversed)
+            res(addr, bit);
+        else
+            set(addr, bit);
+    }
+}
+
 /*** BeginHeader GetSensorStatus */
 xmem int GetSensorStatus();
 /*** EndHeader */
