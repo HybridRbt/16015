@@ -541,6 +541,7 @@ xmem void GetDataFromHost()
 {
 	long up_pos_47, up_pos_57, down_pos_47, down_pos_57;
 	long mapping_pos, flat_type_pos;
+	unsigned char msgbuf[PCPORTOUTBUFSIZE];/* buffer for RS232 message */
 
 	up_pos_57 = ((long)(g_msgbuf[DATA_IDX]) << 24);
 	up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 1]) << 16);
