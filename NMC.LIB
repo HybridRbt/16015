@@ -338,8 +338,8 @@ const unsigned int CL[4] = {0, 255, 255, 255};
 const unsigned int EL[4] = {0, 400, 400, 400};
 const unsigned int SR[4] = {0, 1, 1, 1};
 const unsigned int DC[4] = {0, 0, 0, 0};
-const long VEL[][4] = {{0, 500000 * GEARRATIO, 500000, 500000},
-	{0, 300000 * GEARRATIO, 300000, 300000}, {0, 100000 * GEARRATIO, 100000, 100000}
+const long VEL[][4] = {{0, (long)(500000 * GEARRATIO), 500000, 500000},
+	{0, (long)(300000 * GEARRATIO), 300000, 300000}, {0, (long)(100000 * GEARRATIO), 100000, 100000}
 };
 const long ACC[][4] = {{0, 1000, 1000, 1000}, {0, 500, 500, 500}, {0, 500, 500, 500}};
 
