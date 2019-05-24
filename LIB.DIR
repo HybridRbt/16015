@@ -1,9 +1,9 @@
-LIB\AFF-600C\com.lib
-LIB\AFF-600C\motion.lib
-LIB\AFF-600C\sensors.lib
-LIB\AFF-600C\func.lib
-LIB\AFF-600C\nmc.lib
-LIB\AFF-600C\header.lib
+LIB\AFF-600C-BL2600-2\com.lib
+LIB\AFF-600C-BL2600-2\motion.lib
+LIB\AFF-600C-BL2600-2\sensors.lib
+LIB\AFF-600C-BL2600-2\func.lib
+LIB\AFF-600C-BL2600-2\nmc.lib
+LIB\AFF-600C-BL2600-2\header.lib
 
 LIB\BOARDTYPES.LIB
 LIB\CARD_READER.LIB
