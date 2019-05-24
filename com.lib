@@ -183,7 +183,7 @@ xmem int getMsg()
 
     if (len > (PCPORTOUTBUFSIZE - 2))
     {
-        // printf("The length has been trimed within PCPORTOUTBUFSIZE\n");
+        // printf("The length has been trimmed within PCPORTOUTBUFSIZE\n");
         len = PCPORTOUTBUFSIZE - 3;
     }
 
@@ -371,7 +371,7 @@ const static char *const errmsg[] = { "",
                                       "pick",
                                       "area safety trigged",
                                       "tilt fail",
-                                      " elev moving",
+                                      "elev moving",
                                       "communication error",
                                       "time out in action",
                                       "boat not match",
