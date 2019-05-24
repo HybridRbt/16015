@@ -350,7 +350,7 @@ xmem int sendMsg(unsigned char *buf)
 }
 
 /// error message
-const static char *errmsg[] = {"",
+const static char * const errmsg[] = {"",
                                "power is off",
                                "vacuum: off",
                                "air: off",
