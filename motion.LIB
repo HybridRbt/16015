@@ -11,27 +11,27 @@ int InitRoller();
 /*** EndHeader */
 int InitRoller()
 {
-	int re;
+    int re;
 
-	NmcInit();
+    NmcInit();
 
-	re = ServoInit(ROLLER_MOTOR);
+    re = ServoInit(ROLLER_MOTOR);
 
-	if (re != NO_ERROR)
-	{
-		MessageDisplay(re);
-		return ERR_INITIALIZE_FAILED;
-	}
+    if (re != NO_ERROR)
+    {
+        MessageDisplay(re);
+        return ERR_INITIALIZE_FAILED;
+    }
 
-	re = ServoOn(ROLLER_MOTOR);
+    re = ServoOn(ROLLER_MOTOR);
 
-	if (re != NO_ERROR)
-	{
-		MessageDisplay(re);
-		return ERR_INITIALIZE_FAILED;
-	}
+    if (re != NO_ERROR)
+    {
+        MessageDisplay(re);
+        return ERR_INITIALIZE_FAILED;
+    }
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader RollerHome */
@@ -39,47 +39,49 @@ int RollerHome();
 /*** EndHeader */
 int RollerHome()
 {
-	/** Move Camera home */
-	unsigned long end;
-	long pos, vel, acc;
-	int re;
+    /** Move Camera home */
+    unsigned long end;
+    long pos, vel, acc;
+    int  re;
 
-	vel = VEL_ROLLER[MIN];
-	acc = ACC_ROLLER[MIN];
+    vel = VEL_ROLLER[MIN];
+    acc = ACC_ROLLER[MIN];
 
-	ServoPosMove(ROLLER_MOTOR, 30000, vel, acc);
+    ServoPosMove(ROLLER_MOTOR, 30000, vel, acc);
 
-	end = MS_TIMER + TIMEOUT_ROLLER;
-	DelayMilliseconds(10);
+    end = MS_TIMER + TIMEOUT_ROLLER;
+    DelayMilliseconds(10);
 
-	while (MS_TIMER < end)
-	{
-		if (ServoMoveDone(ROLLER_MOTOR))
-			break;
-	}
+    while (MS_TIMER < end)
+    {
+        if (ServoMoveDone(ROLLER_MOTOR))
+            break;
+    }
 
-	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+    ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH, 1);
 
-	if (!ServoMoveDone(ROLLER_MOTOR))
-		return ERR_INITIALIZE_FAILED;
+    if (!ServoMoveDone(ROLLER_MOTOR))
+        return ERR_INITIALIZE_FAILED;
 
-	ServoResetCount(ROLLER_MOTOR, 1);  //reset first
-	return NO_ERROR;
+    ServoResetCount(ROLLER_MOTOR, 1); // reset first
+    return NO_ERROR;
 }
 
 /*** BeginHeader RollerMoveRelative */
-void RollerMoveRelative(long nstep, long vel, long acc);
+void RollerMoveRelative(long nstep,
+                        long vel,
+                        long acc);
 /*** EndHeader */
 void RollerMoveRelative(long nstep, long vel, long acc)
 {
-	long pos;
+    long pos;
 
-	InitRoller();
+    InitRoller();
 
-	//make sure it is stoppped
-	ServoGetPos(ROLLER_MOTOR, &pos);
-	pos += nstep;
-	ServoPosMove(ROLLER_MOTOR, pos, vel, acc);
+    // make sure it is stoppped
+    ServoGetPos(ROLLER_MOTOR, &pos);
+    pos += nstep;
+    ServoPosMove(ROLLER_MOTOR, pos, vel, acc);
 }
 
 /*** BeginHeader PrerunWaferToAvoidDeadZone */
@@ -87,30 +89,30 @@ int PrerunWaferToAvoidDeadZone();
 /*** EndHeader */
 int PrerunWaferToAvoidDeadZone()
 {
-	unsigned long end;
-	long vel, acc, pos;
-	int re;
+    unsigned long end;
+    long vel, acc, pos;
+    int  re;
 
-	// block down, 360 degree
-	if ((re = MoveBlockDown()) != NO_ERROR)
-		return re;
+    // block down, 360 degree
+    if ((re = MoveBlockDown()) != NO_ERROR)
+        return re;
 
-	vel = VEL_ROLLER[MED];
-	acc = ACC_ROLLER[MED];
-	pos = STEP_TO_AVOID_DEADZONE;
-	RollerMoveRelative(pos, vel, acc);
-	end = MS_TIMER + TIMEOUT_ROLLER;
-	DelayMilliseconds(10);
+    vel = VEL_ROLLER[MED];
+    acc = ACC_ROLLER[MED];
+    pos = STEP_TO_AVOID_DEADZONE;
+    RollerMoveRelative(pos, vel, acc);
+    end = MS_TIMER + TIMEOUT_ROLLER;
+    DelayMilliseconds(10);
 
-	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
-	{
-		if ((re = boatCheck()) != NO_ERROR)
-			return re;
-	}
+    while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+    {
+        if ((re = boatCheck()) != NO_ERROR)
+            return re;
+    }
 
-	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+    ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH, 1);
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader PreworkForFlatFind */
@@ -118,37 +120,39 @@ int PreworkForFlatFind();
 /*** EndHeader */
 int PreworkForFlatFind()
 {
-	unsigned long end;
-	long vel, acc, pos;
-	int re;
+    unsigned long end;
+    long vel, acc, pos;
+    int  re;
 
-	if ((re = PrerunWaferToAvoidDeadZone()) != NO_ERROR)  // 1/25/2018 4:28:55 PM @ Jered add this to avoid dead zone
-		return re;
+    if ((re = PrerunWaferToAvoidDeadZone()) != NO_ERROR) // 1/25/2018 4:28:55 PM
+                                                         // @ Jered add this to
+                                                         // avoid dead zone
+        return re;
 
-	if ((re = MoveBlockUp()) != NO_ERROR)
-		//	if ((re=MoveBlockDown())!=NO_ERROR)
-		return re;
+    if ((re = MoveBlockUp()) != NO_ERROR)
+        //	if ((re=MoveBlockDown())!=NO_ERROR)
+        return re;
 
-	vel = VEL_ROLLER[MED];
-	acc = ACC_ROLLER[MED];
-	pos = FLAT_UP_STEP_SM / 2;
-	pos = -pos;
-	RollerMoveRelative(pos, vel, acc);
-	end = MS_TIMER + TIMEOUT_ROLLER;
-	DelayMilliseconds(10);
+    vel = VEL_ROLLER[MED];
+    acc = ACC_ROLLER[MED];
+    pos = FLAT_UP_STEP_SM / 2;
+    pos = -pos;
+    RollerMoveRelative(pos, vel, acc);
+    end = MS_TIMER + TIMEOUT_ROLLER;
+    DelayMilliseconds(10);
 
-	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
-	{
-		if ((re = boatCheck()) != NO_ERROR)
-			return re;
-	}
+    while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+    {
+        if ((re = boatCheck()) != NO_ERROR)
+            return re;
+    }
 
-	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+    ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH, 1);
 
-	if ((re = MoveBlockDown()) != NO_ERROR)
-		return re;
+    if ((re = MoveBlockDown()) != NO_ERROR)
+        return re;
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader FindFlat */
@@ -156,35 +160,37 @@ int FindFlat();
 /*** EndHeader */
 int FindFlat()
 {
-	unsigned long end;
-	long vel, acc, pos;
-	int re;
+    unsigned long end;
+    long vel, acc, pos;
+    int  re;
 
-	if ((re = PreworkForFlatFind()) != NO_ERROR)
-		return re;
+    if ((re = PreworkForFlatFind()) != NO_ERROR)
+        return re;
 
-	if ((re = MoveBlockDown()) != NO_ERROR)
-		return re;
+    if ((re = MoveBlockDown()) != NO_ERROR)
+        return re;
 
-	vel = VEL_ROLLER[MED];
-	acc = ACC_ROLLER[MED];
-	//servo on first if needed
-	//    ServoOn(ROLLER_MOTOR);
-	pos = 300000;
-	//pos = -pos;
-	RollerMoveRelative(pos, vel, acc);
-	end = MS_TIMER + TIMEOUT_ROLLER;
-	DelayMilliseconds(10);
+    vel = VEL_ROLLER[MED];
+    acc = ACC_ROLLER[MED];
 
-	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
-	{
-		if ((re = boatCheck()) != NO_ERROR)
-			return re;
-	}
+    // servo on first if needed
+    //    ServoOn(ROLLER_MOTOR);
+    pos = 300000;
 
-	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+    // pos = -pos;
+    RollerMoveRelative(pos, vel, acc);
+    end = MS_TIMER + TIMEOUT_ROLLER;
+    DelayMilliseconds(10);
 
-	return NO_ERROR;
+    while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+    {
+        if ((re = boatCheck()) != NO_ERROR)
+            return re;
+    }
+
+    ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH, 1);
+
+    return NO_ERROR;
 }
 
 /*** BeginHeader PrepareForGetFlatType */
@@ -192,12 +198,12 @@ int PrepareForGetFlatType();
 /*** EndHeader */
 int PrepareForGetFlatType()
 {
-	int re;
+    int re;
 
-	if ((re = RollWafersBySteps(g_checkFlatTypeStep)) != NO_ERROR)
-		return re;
+    if ((re = RollWafersBySteps(g_checkFlatTypeStep)) != NO_ERROR)
+        return re;
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader PrepareForGetWaferMap */
@@ -205,12 +211,12 @@ int PrepareForGetWaferMap();
 /*** EndHeader */
 int PrepareForGetWaferMap()
 {
-	int re;
+    int re;
 
-	if ((re = RollWafersBySteps(g_mappingStep)) != NO_ERROR)
-		return re;
+    if ((re = RollWafersBySteps(g_mappingStep)) != NO_ERROR)
+        return re;
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader RollWafersBySteps */
@@ -218,19 +224,19 @@ int RollWafersBySteps(long steps);
 /*** EndHeader */
 int RollWafersBySteps(long steps)
 {
-	int re;
+    int re;
 
-	//if ((re = MoveBlockDown()) != NO_ERROR)
-	if ((re = MoveBlockUp()) != NO_ERROR)
-		return re;
+    // if ((re = MoveBlockDown()) != NO_ERROR)
+    if ((re = MoveBlockUp()) != NO_ERROR)
+        return re;
 
-	RollerMoveBySteps(steps);
+    RollerMoveBySteps(steps);
 
-	if ((re = MoveBlockDown()) != NO_ERROR)
-		//if ((re=MoveBlockUp())!=NO_ERROR)
-		return re;
+    if ((re = MoveBlockDown()) != NO_ERROR)
+        // if ((re=MoveBlockUp())!=NO_ERROR)
+        return re;
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader RollerMoveBySteps */
@@ -238,28 +244,30 @@ int RollerMoveBySteps(long steps);
 /*** EndHeader */
 int RollerMoveBySteps(long steps)
 {
-	unsigned long end;
-	long vel, acc, pos;
-	int re;
+    unsigned long end;
+    long vel, acc, pos;
+    int  re;
 
-	vel = VEL_ROLLER[MED];
-	acc = ACC_ROLLER[MED];
-	//servo on first if needed
-	//    ServoOn(ROLLER_MOTOR);
-	pos = steps;
-	//pos = -pos;
-	RollerMoveRelative(pos, vel, acc);
-	end = MS_TIMER + TIMEOUT_ROLLER;
-	DelayMilliseconds(10);
+    vel = VEL_ROLLER[MED];
+    acc = ACC_ROLLER[MED];
 
-	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
-	{
-		if ((re = boatCheck()) != NO_ERROR)
-			return re;
-	}
+    // servo on first if needed
+    //    ServoOn(ROLLER_MOTOR);
+    pos = steps;
 
-	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
-	return NO_ERROR;
+    // pos = -pos;
+    RollerMoveRelative(pos, vel, acc);
+    end = MS_TIMER + TIMEOUT_ROLLER;
+    DelayMilliseconds(10);
+
+    while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+    {
+        if ((re = boatCheck()) != NO_ERROR)
+            return re;
+    }
+
+    ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH, 1);
+    return NO_ERROR;
 }
 
 /*** BeginHeader GetTargetPos */
@@ -267,24 +275,24 @@ xmem long GetTargetPos();
 /*** EndHeader */
 xmem long GetTargetPos()
 {
-	long pos;
+    long pos;
 
-	if (g_flatOrientation == UP)
-	{
-		if (g_flatType == SM_WAFER)
-			pos = g_flatUpStep_47;
-		else  // default to big
-			pos = g_flatUpStep_57;
-	}
-	else  // stay down
-	{
-		if (g_flatType == SM_WAFER)
-			pos = g_flatDownStep_47;
-		else // default to big
-			pos = g_flatDownStep_57;
-	}
+    if (g_flatOrientation == UP)
+    {
+        if (g_flatType == SM_WAFER)
+            pos = g_flatUpStep_47;
+        else // default to big
+            pos = g_flatUpStep_57;
+    }
+    else     // stay down
+    {
+        if (g_flatType == SM_WAFER)
+            pos = g_flatDownStep_47;
+        else // default to big
+            pos = g_flatDownStep_57;
+    }
 
-	return -pos;
+    return -pos;
 }
 
 /*** BeginHeader TurnFlatToTargetPos */
@@ -292,37 +300,38 @@ int TurnFlatToTargetPos();
 /*** EndHeader */
 int TurnFlatToTargetPos()
 {
-	unsigned long end;
-	long vel, acc, pos;
-	int re;
+    unsigned long end;
+    long vel, acc, pos;
+    int  re;
 
-	if ((re = MoveBlockUp()) != NO_ERROR)
-		//	 if ((re=MoveBlockDown())!=NO_ERROR)
-		return re;
+    if ((re = MoveBlockUp()) != NO_ERROR)
+        //	 if ((re=MoveBlockDown())!=NO_ERROR)
+        return re;
 
-	vel = VEL_ROLLER[MED];
-	acc = ACC_ROLLER[MED];
+    vel = VEL_ROLLER[MED];
+    acc = ACC_ROLLER[MED];
 
-	pos = GetTargetPos();
+    pos = GetTargetPos();
 
-	printf("Flat Target= %ld\n", pos);
-	//pos = -pos;
-	RollerMoveRelative(pos, vel, acc);
-	end = MS_TIMER + TIMEOUT_ROLLER;
-	DelayMilliseconds(10);
+    printf("Flat Target= %ld\n", pos);
 
-	while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
-	{
-		if ((re = boatCheck()) != NO_ERROR)
-			return re;
-	}
+    // pos = -pos;
+    RollerMoveRelative(pos, vel, acc);
+    end = MS_TIMER + TIMEOUT_ROLLER;
+    DelayMilliseconds(10);
 
-	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
+    while (!ServoMoveDone(ROLLER_MOTOR) && MS_TIMER < end)
+    {
+        if ((re = boatCheck()) != NO_ERROR)
+            return re;
+    }
 
-	if ((re = MoveBlockDown()) != NO_ERROR)
-		return re;
+    ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH, 1);
 
-	return NO_ERROR;
+    if ((re = MoveBlockDown()) != NO_ERROR)
+        return re;
+
+    return NO_ERROR;
 }
 
 /*** BeginHeader MoveBlockUp */
@@ -330,29 +339,29 @@ int MoveBlockUp();
 /*** EndHeader */
 int MoveBlockUp()
 {
-	int re;
-	unsigned long end;
+    int re;
+    unsigned long end;
 
-	if (IsBlockUp())
-		return NO_ERROR;
+    if (IsBlockUp())
+        return NO_ERROR;
 
-	/* let block move and wait */
-	//    digOut(MOVE_DOWN_TRIG, 1);
-	digHout(MOVE_UP_TRIG, 0);
-	end = MS_TIMER + TIMEOUT_UPDOWN;
+    /* let block move and wait */
 
-	while (MS_TIMER < end)
-	{
-		if (IsBlockUp())
-		{
-			digHout(MOVE_UP_TRIG, 1);
-			return NO_ERROR;
-		}
-	}
+    //    digOut(MOVE_DOWN_TRIG, 1);
+    digHout(MOVE_UP_TRIG, 0);
+    end = MS_TIMER + TIMEOUT_UPDOWN;
 
-	digHout(MOVE_UP_TRIG, 1);
-	return ERR_NF_FAILED;
+    while (MS_TIMER < end)
+    {
+        if (IsBlockUp())
+        {
+            digHout(MOVE_UP_TRIG, 1);
+            return NO_ERROR;
+        }
+    }
 
+    digHout(MOVE_UP_TRIG, 1);
+    return ERR_NF_FAILED;
 }
 
 /*** BeginHeader MoveBlockDown */
@@ -360,28 +369,29 @@ int MoveBlockDown();
 /*** EndHeader */
 int MoveBlockDown()
 {
-	int re;
-	unsigned long end;
+    int re;
+    unsigned long end;
 
-	if (IsBlockDown())
-		return NO_ERROR;
+    if (IsBlockDown())
+        return NO_ERROR;
 
-	/* let block move and wait */
-	//    digOut(MOVE_DOWN_TRIG, 1);
-	digHout(MOVE_UP_TRIG, 0);
-	end = MS_TIMER + TIMEOUT_UPDOWN;
+    /* let block move and wait */
 
-	while (MS_TIMER < end)
-	{
-		if (IsBlockDown())
-		{
-			digHout(MOVE_UP_TRIG, 1);
-			return NO_ERROR;
-		}
-	}
+    //    digOut(MOVE_DOWN_TRIG, 1);
+    digHout(MOVE_UP_TRIG, 0);
+    end = MS_TIMER + TIMEOUT_UPDOWN;
 
-	digHout(MOVE_UP_TRIG, 1);
-	return ERR_NF_FAILED;
+    while (MS_TIMER < end)
+    {
+        if (IsBlockDown())
+        {
+            digHout(MOVE_UP_TRIG, 1);
+            return NO_ERROR;
+        }
+    }
+
+    digHout(MOVE_UP_TRIG, 1);
+    return ERR_NF_FAILED;
 }
 
 /*------------------------- end of tray.lib ----------------------------------*/

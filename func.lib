@@ -12,244 +12,231 @@ int InitWhole();
 /*** EndHeader */
 int InitWhole()
 {
+    int re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE]; /* buffer for RS232 message */
 
-	int re;
-	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+    // set servo parameters and enable servo
+    if ((re = InitRoller()) != NO_ERROR)
+        return re;
 
-	//set servo parameters and enable servo
-	if ((re = InitRoller()) != NO_ERROR)
-		return re;
+    if ((re = MoveBlockDown()) != NO_ERROR)
+        return re;
 
-	if ((re = MoveBlockDown()) != NO_ERROR)
-		return re;
+    if ((re = RollerHome()) != NO_ERROR)
+        return re;
 
-	if ((re = RollerHome()) != NO_ERROR)
-		return re;
+    if (g_stage == IN_IO)
+    {
+        msgbuf[0]             = 1;
+        msgbuf[1]             = MSG_INITIALIZED_OK;
+        msgbuf[msgbuf[0] + 1] = '\0';
 
-	if (g_stage == IN_IO)
-	{
-		msgbuf[0] = 1;
-		msgbuf[1] = MSG_INITIALIZED_OK;
-		msgbuf[msgbuf[0] + 1] = '\0';
+        if ((re = sendMsg(msgbuf)) != NO_ERROR)
+            return re;
+    }
 
-		if ((re = sendMsg(msgbuf)) != NO_ERROR)
-			return re;
-	}
-
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader SendPcReady */
 xmem int SendPcReady();
 /*** EndHeader */
-/*==============================================================================
- *              SendPcReady
- *============================================================================*/
 xmem int SendPcReady()
 {
-	/** send ready signal to host computer */
-	int re;
-	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+    /** send ready signal to host computer */
+    int re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE]; /* buffer for RS232 message */
 
-	int slotnum;
+    int slotnum;
 
-	msgbuf[0] = 1;
-	msgbuf[1] = MSG_SB_ASK_READY;
-	msgbuf[msgbuf[0] + 1] = '\0';
+    msgbuf[0]             = 1;
+    msgbuf[1]             = MSG_SB_ASK_READY;
+    msgbuf[msgbuf[0] + 1] = '\0';
 
-	printf("sending ask for ready msg...\n");
+    printf("sending ask for ready msg...\n");
 
-	if ((re = sendMsg(msgbuf)) != NO_ERROR)
-		return re;
+    if ((re = sendMsg(msgbuf)) != NO_ERROR)
+        return re;
 
-	printf("msg sent.\n");
-	return NO_ERROR;
+    printf("msg sent.\n");
+    return NO_ERROR;
 }
 
 /*** BeginHeader SendPcOpStarted */
 xmem int SendPcOpStarted();
 /*** EndHeader */
-/*==============================================================================
- *              SendPcOpStarted
- *============================================================================*/
 xmem int SendPcOpStarted()
 {
-	/** send ready signal to host computer */
-	int re;
-	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
-	unsigned long end;
-	int slotnum;
+    /** send ready signal to host computer */
+    int re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE]; /* buffer for RS232 message */
+    unsigned long end;
+    int slotnum;
 
-	if (!g_bConnected) // no connection, don't send
-	{
-		g_bOpMayStart = TRUE;
-		return NO_ERROR;
-	}
+    if (!g_bConnected) // no connection, don't send
+    {
+        g_bOpMayStart = TRUE;
+        return NO_ERROR;
+    }
 
-	msgbuf[0] = 2;
-	msgbuf[1] = MSG_START_OPERATION;
+    msgbuf[0] = 2;
+    msgbuf[1] = MSG_START_OPERATION;
 
-	if (IsFlatToUp())
-		msgbuf[2] = FLAT_UP;
-	else
-		msgbuf[2] = FLAT_DOWN;
+    if (IsFlatToUp())
+        msgbuf[2] = FLAT_UP;
+    else
+        msgbuf[2] = FLAT_DOWN;
 
-	msgbuf[msgbuf[0] + 1] = '\0';
+    msgbuf[msgbuf[0] + 1] = '\0';
 
-	if ((re = sendMsg(msgbuf)) != NO_ERROR)
-		return re;
+    if ((re = sendMsg(msgbuf)) != NO_ERROR)
+        return re;
 
-	end = MS_TIMER + TIMEOUT_PC_CONNECT / 3;  // wait for 3 secs
+    end = MS_TIMER + TIMEOUT_PC_CONNECT / 3; // wait for 3 secs
 
-	g_bGotConfirmOnOp = FALSE;
+    g_bGotConfirmOnOp = FALSE;
 
-	while (MS_TIMER < end)
-	{
-		printf("entering handleMsg()...\n");
-		handleMsg();
+    while (MS_TIMER < end)
+    {
+        printf("entering handleMsg()...\n");
+        handleMsg();
 
-		if (g_bGotConfirmOnOp)
-			break;
-	}
+        if (g_bGotConfirmOnOp)
+            break;
+    }
 
-	return NO_ERROR;
+    return NO_ERROR;
 }
 
 /*** BeginHeader GetWaferMap */
 xmem int GetWaferMap(int flatCount);
 /*** EndHeader */
-/*==============================================================================
- *              GetWaferMap
- *============================================================================*/
 xmem int GetWaferMap(int flatCount)
 {
-	/** generate wafer map based on the sensor map */
-	int slotnum;
-	int fullBoat;
-	int waferCount;
+    /** generate wafer map based on the sensor map */
+    int slotnum;
+    int fullBoat;
+    int waferCount;
 
-	fullBoat = TRUE;
-	waferCount = 0;
+    fullBoat   = TRUE;
+    waferCount = 0;
 
-	for (slotnum = 1; slotnum <= 25; slotnum++)
-	{
-		if (IsWaferInSlot(slotnum))
-		{
-			g_waferMap[slotnum - 1] = 1;
-			waferCount++;
-		}
-		else
-		{
-			g_waferMap[slotnum - 1] = 0;
-			fullBoat = FALSE;
-		}
-	}
+    for (slotnum = 1; slotnum <= 25; slotnum++)
+    {
+        if (IsWaferInSlot(slotnum))
+        {
+            g_waferMap[slotnum - 1] = 1;
+            waferCount++;
+        }
+        else
+        {
+            g_waferMap[slotnum - 1] = 0;
+            fullBoat                = FALSE;
+        }
+    }
 
-	if (flatCount == 0)  // all are 57
-		g_flatType = BG_WAFER;
-	else if (flatCount < waferCount)  //47 57 mixed
-		g_flatType = MIXED;
-	else if (flatCount == waferCount) // all are 47
-		g_flatType = SM_WAFER;
+    if (flatCount == 0)               // all are 57
+        g_flatType = BG_WAFER;
+    else if (flatCount < waferCount)  // 47 57 mixed
+        g_flatType = MIXED;
+    else if (flatCount == waferCount) // all are 47
+        g_flatType = SM_WAFER;
 
-	return fullBoat;
+    return fullBoat;
 }
 
 /*** BeginHeader SendPcOpDone */
 xmem int SendPcOpDone();
 /*** EndHeader */
-/*==============================================================================
- *              SendPcOpDone
- *============================================================================*/
 xmem int SendPcOpDone()
 {
-	/** generate wafer map based on the sensor map */
-	void *p2, *p3, *p4, *p5, *p6;
-	int re;
-	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+    /** generate wafer map based on the sensor map */
+    void *p2, *p3, *p4, *p5, *p6;
+    int   re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE]; /* buffer for RS232 message */
 
-	int slotnum;
+    int slotnum;
 
-	if (!g_bConnected) // no connection, don't send
-		return NO_ERROR;
+    if (!g_bConnected) // no connection, don't send
+        return NO_ERROR;
 
-	msgbuf[0] = 6;
-	msgbuf[1] = MSG_OPERATION_DONE;
+    msgbuf[0] = 6;
+    msgbuf[1] = MSG_OPERATION_DONE;
 
-	//byte 1 to pc
-	p2 = &msgbuf[2];
-	memset(p2, 0, 1);
+    // byte 1 to pc
+    p2 = &msgbuf[2];
+    memset(p2, 0, 1);
 
-	for (slotnum = 1; slotnum <= 8; slotnum++)
-	{
-		if (g_waferMap[slotnum - 1])
-		{
-			set(p2, (slotnum - 1));
-		}
-		else
-		{
-			res(p2, (slotnum - 1));
-		}
-	}
+    for (slotnum = 1; slotnum <= 8; slotnum++)
+    {
+        if (g_waferMap[slotnum - 1])
+        {
+            set(p2, (slotnum - 1));
+        }
+        else
+        {
+            res(p2, (slotnum - 1));
+        }
+    }
 
-	//byte 2
-	p3 = &msgbuf[3];
-	memset(p3, 0, 1);
+    // byte 2
+    p3 = &msgbuf[3];
+    memset(p3, 0, 1);
 
-	for (slotnum = 9; slotnum <= 16; slotnum++)
-	{
-		if (g_waferMap[slotnum - 1])
-		{
-			set(p3, (slotnum - 9));/* code */
-		}
-		else
-		{
-			res(p3, (slotnum - 9));
-		}	
-	}
+    for (slotnum = 9; slotnum <= 16; slotnum++)
+    {
+        if (g_waferMap[slotnum - 1])
+        {
+            set(p3, (slotnum - 9)); /* code */
+        }
+        else
+        {
+            res(p3, (slotnum - 9));
+        }
+    }
 
-	//byte 3
-	p4 = &msgbuf[4];
-	memset(p4, 0, 1);
+    // byte 3
+    p4 = &msgbuf[4];
+    memset(p4, 0, 1);
 
-	for (slotnum = 17; slotnum <= 24; slotnum++)
-	{
-		if (g_waferMap[slotnum - 1])
-		{
-			set(p4, (slotnum - 17));
-		}
-		else
-		{
-			res(p4, (slotnum - 17));
-		}	
-	}
+    for (slotnum = 17; slotnum <= 24; slotnum++)
+    {
+        if (g_waferMap[slotnum - 1])
+        {
+            set(p4, (slotnum - 17));
+        }
+        else
+        {
+            res(p4, (slotnum - 17));
+        }
+    }
 
-	//byte 4
-	p5 = &msgbuf[5];
-	memset(p5, 0, 1);
-	
-	if (g_waferMap[24])
-	{
-		set(p5, 0);
-	}
-	else
-	{
-		res(p5, 0);
-	}
-	
-	WriteSensorBit(IsFlatToUp, p5, 1, 0);
-	WriteSensorBit(IsBoatPresent, p5, 2, 0);
-	WriteSensorBit(IsBlockUp, p5, 3, 0);
-	WriteSensorBit(IsBlockDown, p5, 4, 0);
+    // byte 4
+    p5 = &msgbuf[5];
+    memset(p5, 0, 1);
 
-	msgbuf[6] = g_flatType;
+    if (g_waferMap[24])
+    {
+        set(p5, 0);
+    }
+    else
+    {
+        res(p5, 0);
+    }
 
-	msgbuf[msgbuf[0] + 1] = '\0';
+    WriteSensorBit(IsFlatToUp,    p5, 1, 0);
+    WriteSensorBit(IsBoatPresent, p5, 2, 0);
+    WriteSensorBit(IsBlockUp,     p5, 3, 0);
+    WriteSensorBit(IsBlockDown,   p5, 4, 0);
 
-	if ((re = sendMsg(msgbuf)) != NO_ERROR)
-		return re;
+    msgbuf[6] = g_flatType;
 
-	return NO_ERROR;
+    msgbuf[msgbuf[0] + 1] = '\0';
+
+    if ((re = sendMsg(msgbuf)) != NO_ERROR)
+        return re;
+
+    return NO_ERROR;
 }
 
 /*** BeginHeader WriteSensorBit */
@@ -279,93 +266,90 @@ xmem int WriteSensorBit(int (*func)(), void *addr, int bit, int reversed)
 /*** BeginHeader GetSensorStatus */
 xmem int GetSensorStatus();
 /*** EndHeader */
-/*==============================================================================
- *              GetSensorStatus
- *============================================================================*/
 xmem int GetSensorStatus()
 {
-	/** send sensor's values to host computer */
-	void *p2, *p3, *p4, *p5, *p6;
-	int re;
-	unsigned char msgbuf[PCPORTOUTBUFSIZE];   /* buffer for RS232 message */
+    /** send sensor's values to host computer */
+    void *p2, *p3, *p4, *p5, *p6;
+    int   re;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE]; /* buffer for RS232 message */
 
-	int slotnum;
+    int slotnum;
 
-	msgbuf[0] = 5;
-	msgbuf[1] = MSG_SENSOR_STATUS;
+    msgbuf[0] = 5;
+    msgbuf[1] = MSG_SENSOR_STATUS;
 
-	//byte 1 to pc
-	p2 = &msgbuf[2];
-	memset(p2, 0, 1);
+    // byte 1 to pc
+    p2 = &msgbuf[2];
+    memset(p2, 0, 1);
 
-	for (slotnum = 1; slotnum <= 8; slotnum++)
-	{
-		if (IsWaferInSlot(slotnum))
-		{
-			set(p2, (slotnum - 1));	
-		}
-		else
-		{
-			res(p2, (slotnum - 1));
-		}
-	}
+    for (slotnum = 1; slotnum <= 8; slotnum++)
+    {
+        if (IsWaferInSlot(slotnum))
+        {
+            set(p2, (slotnum - 1));
+        }
+        else
+        {
+            res(p2, (slotnum - 1));
+        }
+    }
 
-	//byte 2
-	p3 = &msgbuf[3];
-	memset(p3, 0, 1);
+    // byte 2
+    p3 = &msgbuf[3];
+    memset(p3, 0, 1);
 
-	for (slotnum = 9; slotnum <= 16; slotnum++)
-	{
-		if (IsWaferInSlot(slotnum))
-		{
-			set(p3, (slotnum - 9));
-		}
-		else
-		{
-			res(p3, (slotnum - 9));
-		}	
-	}
+    for (slotnum = 9; slotnum <= 16; slotnum++)
+    {
+        if (IsWaferInSlot(slotnum))
+        {
+            set(p3, (slotnum - 9));
+        }
+        else
+        {
+            res(p3, (slotnum - 9));
+        }
+    }
 
-	//byte 3
-	p4 = &msgbuf[4];
-	memset(p4, 0, 1);
+    // byte 3
+    p4 = &msgbuf[4];
+    memset(p4, 0, 1);
 
-	for (slotnum = 17; slotnum <= 24; slotnum++)
-	{
-		if (IsWaferInSlot(slotnum))
-		{
-			set(p4, (slotnum - 17));
-		}	
-		else
-		{
-			res(p4, (slotnum - 17));
-		}
-	}
+    for (slotnum = 17; slotnum <= 24; slotnum++)
+    {
+        if (IsWaferInSlot(slotnum))
+        {
+            set(p4, (slotnum - 17));
+        }
+        else
+        {
+            res(p4, (slotnum - 17));
+        }
+    }
 
-	//byte 4
-	p5 = &msgbuf[5];
-	memset(p5, 0, 1);
-	
-	if (IsWaferInSlot(25))
-	{
-		set(p5, 0);
-	}
-	else
-	{
-		res(p5, 0);
-	}
-	
-	WriteSensorBit(IsFlatToUp, p5, 1, 0);
-	WriteSensorBit(IsBoatPresent, p5, 2, 1);
-	WriteSensorBit(IsBlockUp, p5, 3, 0);
-	WriteSensorBit(IsBlockDown, p5, 4, 0);
+    // byte 4
+    p5 = &msgbuf[5];
+    memset(p5, 0, 1);
 
-	msgbuf[msgbuf[0] + 1] = '\0';
+    if (IsWaferInSlot(25))
+    {
+        set(p5, 0);
+    }
+    else
+    {
+        res(p5, 0);
+    }
 
-	if ((re = sendMsg(msgbuf)) != NO_ERROR)
-		return re;
+    WriteSensorBit(IsFlatToUp,    p5, 1, 0);
+    WriteSensorBit(IsBoatPresent, p5, 2, 1);
+    WriteSensorBit(IsBlockUp,     p5, 3, 0);
+    WriteSensorBit(IsBlockDown,   p5, 4, 0);
 
-	return NO_ERROR;
+    msgbuf[msgbuf[0] + 1] = '\0';
+
+    if ((re = sendMsg(msgbuf)) != NO_ERROR)
+        return re;
+
+    return NO_ERROR;
 }
 
 /*** BeginHeader init */
@@ -373,10 +357,10 @@ void init();
 /*** EndHeader */
 void init()
 {
-	/** initialize rabbit board, open serial port, and global variables */
-	InitIOBoard();
-	InitCommPort();
-	NmcInit();			//get servo address
+    /** initialize rabbit board, open serial port, and global variables */
+    InitIOBoard();
+    InitCommPort();
+    NmcInit(); // get servo address
 }
 
 /*** BeginHeader InitIOBoard */
@@ -384,38 +368,41 @@ void InitIOBoard();
 /*** EndHeader */
 void InitIOBoard()
 {
-	/**
-	 *\code
-	 * configure analog/digital port
-	 * BL 2600:
-	 *   1) 36 digital IO
-	 *      - 16 protected digital inputs: DIN16-DIN31, use digIn() to read
-	 *      - 4 high-current digital outputs: HOUT0-HOUT3
-	 *      - 16 software-configurable as input/output: DIO00-DIO15
-	 *   2) 12 analog channels
-	 *      - 8 11-bit A/D converter inputs
-	 *      - 4 12-bit D/A converter outputs
-	 * \endcode
-	 */
-	int i;
-	/* Initialize the board, it must be called at the begining of program */
-	brdInit();
-	/* Digital High-current outputs: 0 = sinking operation   */
-	//digHoutConfig(0x01);
-	digHoutConfig(0x00);
-	digHTriStateConfig(0x00);
+    /**
+     *\code
+     * configure analog/digital port
+     * BL 2600:
+     *   1) 36 digital IO
+     *      - 16 protected digital inputs: DIN16-DIN31, use digIn() to read
+     *      - 4 high-current digital outputs: HOUT0-HOUT3
+     *      - 16 software-configurable as input/output: DIO00-DIO15
+     *   2) 12 analog channels
+     *      - 8 11-bit A/D converter inputs
+     *      - 4 12-bit D/A converter outputs
+     * \endcode
+     */
+    int i;
 
-	for (i = 0; i <= 3; i++)
-		digHout(i, 1);
+    /* Initialize the board, it must be called at the begining of program */
+    brdInit();
+    /* Digital High-current outputs: 0 = sinking operation   */
 
-	/* 16 configurable I/O(DIO00-DIO15): configure 0 as digital output
-	 * Set all digital outputs to be high-impedance state
-	 */
-	//0000 0000 0000 0001
-	//0001
-	digOutConfig(0x0001);
+    // digHoutConfig(0x01);
+    digHoutConfig(0x00);
+    digHTriStateConfig(0x00);
 
-	digOut(0, 1);
+    for (i = 0; i <= 3; i++)
+        digHout(i, 1);
+
+    /* 16 configurable I/O(DIO00-DIO15): configure 0 as digital output
+     * Set all digital outputs to be high-impedance state
+     */
+
+    // 0000 0000 0000 0001
+    // 0001
+    digOutConfig(0x0001);
+
+    digOut(0, 1);
 }
 
 /*** BeginHeader InitCommPort */
@@ -423,26 +410,26 @@ void InitCommPort(void);
 /*** EndHeader */
 void InitCommPort(void)
 {
-	if (!serCopen(BAUD19200))       //to NMC
-		return;
+    if (!serCopen(BAUD19200))  // to NMC
+        return;
 
-	if (!serEopen(BAUD115200))      //to PC
-		return;
+    if (!serEopen(BAUD115200)) // to PC
+        return;
 
-	serMode(0);
+    serMode(0);
 
-	// Clear serial data buffers
-	serCrdFlush();
-	serCwrFlush();
+    // Clear serial data buffers
+    serCrdFlush();
+    serCwrFlush();
 
-	serErdFlush();
-	serEwrFlush();
+    serErdFlush();
+    serEwrFlush();
 
-	serCdatabits(PARAM_8BIT);
-	serCparity(PARAM_NOPARITY);
+    serCdatabits(PARAM_8BIT);
+    serCparity(PARAM_NOPARITY);
 
-	serEdatabits(PARAM_8BIT);
-	serEparity(PARAM_NOPARITY);
+    serEdatabits(PARAM_8BIT);
+    serEparity(PARAM_NOPARITY);
 }
 
 /*** BeginHeader myinp */
@@ -450,26 +437,26 @@ int myinp(int port);
 /*** EndHeader */
 int myinp(int port)
 {
-	/** read input port
-	  @return 1 or 0    */
-	int i, data;
-	float temp;
+    /** read input port
+       @return 1 or 0    */
+    int   i, data;
+    float temp;
 
-	while (1)
-	{
-		data = 0;
+    while (1)
+    {
+        data = 0;
 
-		for (i = 0; i < 3; i++)
-		{
-			if (port > 0) //DIO01-DIO15 AND DIN16-DIN31 digital inputs
-				data += digIn(port);
-		}
+        for (i = 0; i < 3; i++)
+        {
+            if (port > 0) // DIO01-DIO15 AND DIN16-DIN31 digital inputs
+                data += digIn(port);
+        }
 
-		if (data > 2)
-			return TRUE;
-		else
-			return FALSE;
-	}
+        if (data > 2)
+            return TRUE;
+        else
+            return FALSE;
+    }
 }
 
 /*** BeginHeader boatCheck */
@@ -477,230 +464,226 @@ int boatCheck();
 /*** EndHeader */
 int boatCheck()
 {
-	if (IsBoatPresent())
-		return NO_ERROR;
+    if (IsBoatPresent())
+        return NO_ERROR;
 
-	ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH , 1);
-	return ERR_CASSETTE_PRESENT;
+    ServoStopMotor(ROLLER_MOTOR, AMP_ENABLE | STOP_SMOOTH, 1);
+    return ERR_CASSETTE_PRESENT;
 }
 
 /*** BeginHeader handleMsg */
 xmem int handleMsg();
 /*** EndHeader */
-
-/*==============================================================================
- *           handleMsg
- *============================================================================*/
 xmem int handleMsg()
 {
-	/**
-	 * Message handler
-	 */
-	unsigned char bankdata;
-	int id, re, in_io, keepSupportUp;
-	unsigned char msgbuf[PCPORTOUTBUFSIZE];
+    /**
+     * Message handler
+     */
+    unsigned char bankdata;
+    int id, re, in_io, keepSupportUp;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE];
 
 
-	if (!(id = getMsg()))
-		return NO_ERROR;
+    if (!(id = getMsg()))
+        return NO_ERROR;
 
-	re = NO_ERROR;
+    re = NO_ERROR;
 
-	switch (id)
-	{
-		case CMD_SENSOR_STATUS: // 1
-			re = GetSensorStatus();
-			break;
+    switch (id)
+    {
+        case CMD_SENSOR_STATUS: // 1
+            re = GetSensorStatus();
+            break;
 
 
-		case CMD_INITIAL_DATA:      // 2
-			GetDataFromHost();
-			break;
+        case CMD_INITIAL_DATA: // 2
+            GetDataFromHost();
+            break;
 
-		case CMD_INITIALIZE:    // 3
-			re = InitWhole();
-			break;
+        case CMD_INITIALIZE: // 3
+            re = InitWhole();
+            break;
 
-		case CMD_IO:       // 4
-			in_io = g_msgbuf[DATA_IDX];
+        case CMD_IO: // 4
+            in_io = g_msgbuf[DATA_IDX];
 
-			if (in_io == 1)
-			{
-				g_stage = IN_IO;
-				//setOperationLight();
-			}
-			else
-			{
-				g_stage = READY;
-				setIdleLight();
-			}
+            if (in_io == 1)
+            {
+                g_stage = IN_IO;
 
-			break;
+                // setOperationLight();
+            }
+            else
+            {
+                g_stage = READY;
+                setIdleLight();
+            }
 
-		case CMD_NOTCH_FIND:          // 5
-			keepSupportUp = g_msgbuf[DATA_IDX];
+            break;
 
-			if ((re = FindFlat()) != NO_ERROR)
-				break;
-			else
-			{
-				msgbuf[0] = 1;
-				msgbuf[1] = MSG_IO_DONE;
-				msgbuf[msgbuf[0] + 1] = '\0';
-				sendMsg(msgbuf);
+        case CMD_NOTCH_FIND: // 5
+            keepSupportUp = g_msgbuf[DATA_IDX];
 
-				PrepareForGetFlatType();  //for test
-				/*
-				if (keepSupportUp)
-				{
-					if ((re = MoveBlockUp()) == NO_ERROR)
-				   {
-					  msgbuf[0] = 1;
-							msgbuf[1] = MSG_IO_DONE;
-							msgbuf[msgbuf[0] + 1] = '\0';
-							re = sendMsg(msgbuf);
-				   }
-				}
-				else
-				{
-					msgbuf[0] = 1;
-						msgbuf[1] = MSG_IO_DONE;
-						msgbuf[msgbuf[0] + 1] = '\0';
-						re = sendMsg(msgbuf);
-				} */
-			}
+            if ((re = FindFlat()) != NO_ERROR)
+                break;
+            else
+            {
+                msgbuf[0]             = 1;
+                msgbuf[1]             = MSG_IO_DONE;
+                msgbuf[msgbuf[0] + 1] = '\0';
+                sendMsg(msgbuf);
 
-			break;
+                PrepareForGetFlatType(); // for test
 
-		case CMD_NF_SUPPORT_UP:        // 6
-			if ((re = MoveBlockUp()) == NO_ERROR)
-			{
-				msgbuf[0] = 1;
-				msgbuf[1] = MSG_IO_DONE;
-				msgbuf[msgbuf[0] + 1] = '\0';
-				re = sendMsg(msgbuf);
-			}
+                /*
+                   if (keepSupportUp)
+                   {
+                        if ((re = MoveBlockUp()) == NO_ERROR)
+                   {
+                          msgbuf[0] = 1;
+                                        msgbuf[1] = MSG_IO_DONE;
+                                        msgbuf[msgbuf[0] + 1] = '\0';
+                                        re = sendMsg(msgbuf);
+                   }
+                   }
+                   else
+                   {
+                        msgbuf[0] = 1;
+                                msgbuf[1] = MSG_IO_DONE;
+                                msgbuf[msgbuf[0] + 1] = '\0';
+                                re = sendMsg(msgbuf);
+                   } */
+            }
 
-			break;
+            break;
 
-		case CMD_NF_SUPPORT_DOWN:          // 7
+        case CMD_NF_SUPPORT_UP: // 6
 
-			if ((re = MoveBlockDown()) == NO_ERROR)
-			{
-				msgbuf[0] = 1;
-				msgbuf[1] = MSG_IO_DONE;
-				msgbuf[msgbuf[0] + 1] = '\0';
-				re = sendMsg(msgbuf);
-			}
+            if ((re = MoveBlockUp()) == NO_ERROR)
+            {
+                msgbuf[0]             = 1;
+                msgbuf[1]             = MSG_IO_DONE;
+                msgbuf[msgbuf[0] + 1] = '\0';
+                re                    = sendMsg(msgbuf);
+            }
 
-			break;
+            break;
 
-		case CMD_ABORT:
-			//ResetPausedSignalToHost();
-			//re = InitWhole();
-			if (!g_bConnected)  // connected with host pc
-				g_bConnected = TRUE;
+        case CMD_NF_SUPPORT_DOWN: // 7
 
-			break;
+            if ((re = MoveBlockDown()) == NO_ERROR)
+            {
+                msgbuf[0]             = 1;
+                msgbuf[1]             = MSG_IO_DONE;
+                msgbuf[msgbuf[0] + 1] = '\0';
+                re                    = sendMsg(msgbuf);
+            }
 
-		case CMD_ALARM: // 9
-			recvAlarmMsg();
-			break;
+            break;
 
-		case CMD_LIGHT: // 10
-			SetLight();
-			break;
+        case CMD_ABORT:
 
-		case CMD_MAY_START_OP: // 11
-			g_bOpMayStart = g_msgbuf[DATA_IDX];
-			g_bGotConfirmOnOp = TRUE;
-			break;
+            // ResetPausedSignalToHost();
+            // re = InitWhole();
+            if (!g_bConnected) // connected with host pc
+                g_bConnected = TRUE;
 
-		default:
-			break;
-	}
+            break;
 
-	if (re != NO_ERROR)
-		sendErrMsg(re);
+        case CMD_ALARM: // 9
+            recvAlarmMsg();
+            break;
 
-	return NO_ERROR;
+        case CMD_LIGHT: // 10
+            SetLight();
+            break;
+
+        case CMD_MAY_START_OP: // 11
+            g_bOpMayStart     = g_msgbuf[DATA_IDX];
+            g_bGotConfirmOnOp = TRUE;
+            break;
+
+        default:
+            break;
+    }
+
+    if (re != NO_ERROR)
+        sendErrMsg(re);
+
+    return NO_ERROR;
 }
-
 
 /*** BeginHeader GetDataFromHost */
 xmem void GetDataFromHost();
 /*** EndHeader */
-/*==============================================================================
- *               setData
- *============================================================================*/
 xmem void GetDataFromHost()
 {
-	long up_pos_47, up_pos_57, down_pos_47, down_pos_57;
-	long mapping_pos, flat_type_pos;
-	unsigned char msgbuf[PCPORTOUTBUFSIZE];/* buffer for RS232 message */
+    long up_pos_47, up_pos_57, down_pos_47, down_pos_57;
+    long mapping_pos, flat_type_pos;
+    unsigned char msgbuf[PCPORTOUTBUFSIZE]; /* buffer for RS232 message */
 
-	up_pos_57 = ((long)(g_msgbuf[DATA_IDX]) << 24);
-	up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 1]) << 16);
-	up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 2]) << 8);
-	up_pos_57 |= ((long)g_msgbuf[DATA_IDX + 3]);
+    up_pos_57  = ((long)(g_msgbuf[DATA_IDX]) << 24);
+    up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 1]) << 16);
+    up_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 2]) << 8);
+    up_pos_57 |= ((long)g_msgbuf[DATA_IDX + 3]);
 
-	up_pos_47 = ((long)(g_msgbuf[DATA_IDX + 4]) << 24);
-	up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 5]) << 16);
-	up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 6]) << 8);
-	up_pos_47 |= ((long)g_msgbuf[DATA_IDX + 7]);
+    up_pos_47  = ((long)(g_msgbuf[DATA_IDX + 4]) << 24);
+    up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 5]) << 16);
+    up_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 6]) << 8);
+    up_pos_47 |= ((long)g_msgbuf[DATA_IDX + 7]);
 
-	down_pos_57 = ((long)(g_msgbuf[DATA_IDX + 8]) << 24);
-	down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 9]) << 16);
-	down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 10]) << 8);
-	down_pos_57 |= ((long)g_msgbuf[DATA_IDX + 11]);
+    down_pos_57  = ((long)(g_msgbuf[DATA_IDX + 8]) << 24);
+    down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 9]) << 16);
+    down_pos_57 |= ((long)(g_msgbuf[DATA_IDX + 10]) << 8);
+    down_pos_57 |= ((long)g_msgbuf[DATA_IDX + 11]);
 
-	down_pos_47 = ((long)(g_msgbuf[DATA_IDX + 12]) << 24);
-	down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 13]) << 16);
-	down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 14]) << 8);
-	down_pos_47 |= ((long)g_msgbuf[DATA_IDX + 15]);
+    down_pos_47  = ((long)(g_msgbuf[DATA_IDX + 12]) << 24);
+    down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 13]) << 16);
+    down_pos_47 |= ((long)(g_msgbuf[DATA_IDX + 14]) << 8);
+    down_pos_47 |= ((long)g_msgbuf[DATA_IDX + 15]);
 
-	flat_type_pos = ((long)(g_msgbuf[DATA_IDX + 16]) << 24);
-	flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 17]) << 16);
-	flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 18]) << 8);
-	flat_type_pos |= ((long)g_msgbuf[DATA_IDX + 19]);
+    flat_type_pos  = ((long)(g_msgbuf[DATA_IDX + 16]) << 24);
+    flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 17]) << 16);
+    flat_type_pos |= ((long)(g_msgbuf[DATA_IDX + 18]) << 8);
+    flat_type_pos |= ((long)g_msgbuf[DATA_IDX + 19]);
 
-	mapping_pos = ((long)(g_msgbuf[DATA_IDX + 20]) << 24);
-	mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 21]) << 16);
-	mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 22]) << 8);
-	mapping_pos |= ((long)g_msgbuf[DATA_IDX + 23]);
+    mapping_pos  = ((long)(g_msgbuf[DATA_IDX + 20]) << 24);
+    mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 21]) << 16);
+    mapping_pos |= ((long)(g_msgbuf[DATA_IDX + 22]) << 8);
+    mapping_pos |= ((long)g_msgbuf[DATA_IDX + 23]);
 
-	g_flatUpStep_47 = up_pos_47;
-	g_flatUpStep_57 = up_pos_57;
+    g_flatUpStep_47 = up_pos_47;
+    g_flatUpStep_57 = up_pos_57;
 
-	g_flatDownStep_57 = down_pos_57;
-	g_flatDownStep_47 = down_pos_47;
+    g_flatDownStep_57 = down_pos_57;
+    g_flatDownStep_47 = down_pos_47;
 
-	g_mappingStep = mapping_pos;
-	g_checkFlatTypeStep = flat_type_pos;
+    g_mappingStep       = mapping_pos;
+    g_checkFlatTypeStep = flat_type_pos;
 
-	g_bGotData = TRUE;
+    g_bGotData = TRUE;
 
-	//DelayMilliseconds(1000);
-	printf("up_pos_57 = %ld \n", up_pos_57);
-	printf("up_pos_47 = %ld \n\n", up_pos_47);
-	printf("down_pos_57 = %ld \n", down_pos_57);
-	printf("down_pos_47 = %ld \n\n", down_pos_47);
+    // DelayMilliseconds(1000);
+    printf("up_pos_57 = %ld \n",                     up_pos_57);
+    printf("up_pos_47 = %ld \n\n",                   up_pos_47);
+    printf("down_pos_57 = %ld \n",                 down_pos_57);
+    printf("down_pos_47 = %ld \n\n",               down_pos_47);
 
-	printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
-	printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
-	printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
-	printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
+    printf("g_flatUpStep_57 = %ld \n",         g_flatUpStep_57);
+    printf("g_flatUpStep_47 = %ld \n\n",       g_flatUpStep_47);
+    printf("g_flatDownStep_57 = %ld \n",     g_flatDownStep_57);
+    printf("g_flatDownStep_47 = %ld \n\n",   g_flatDownStep_47);
 
-	printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
-	printf("g_mappingStep = %ld \n", g_mappingStep);
+    printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
+    printf("g_mappingStep = %ld \n",             g_mappingStep);
 
-	msgbuf[0] = 9;
-	msgbuf[1] = MSG_VERSION;
+    msgbuf[0] = 9;
+    msgbuf[1] = MSG_VERSION;
 
-	memcpy(msgbuf + 2, VERSION, 8);
+    memcpy(msgbuf + 2, VERSION, 8);
 
-	msgbuf[msgbuf[0] + 1] = '\0';
-	sendMsg(msgbuf);
+    msgbuf[msgbuf[0] + 1] = '\0';
+    sendMsg(msgbuf);
 }
 
 /*** BeginHeader LoadDefaultValueForSteps */
@@ -708,204 +691,176 @@ xmem void LoadDefaultValueForSteps();
 /*** EndHeader */
 xmem void LoadDefaultValueForSteps()
 {
-	g_flatUpStep_47 = FLAT_UP_STEP_SM;
-	g_flatUpStep_57 = FLAT_UP_STEP_BG;
+    g_flatUpStep_47 = FLAT_UP_STEP_SM;
+    g_flatUpStep_57 = FLAT_UP_STEP_BG;
 
-	g_flatDownStep_57 = FLAT_DOWN_STEP_BG;
-	g_flatDownStep_47 = FLAT_DOWN_STEP_SM;
+    g_flatDownStep_57 = FLAT_DOWN_STEP_BG;
+    g_flatDownStep_47 = FLAT_DOWN_STEP_SM;
 
-	g_mappingStep = STEP_FOR_WAFER_MAP;
-	g_checkFlatTypeStep = STEP_FOR_FLAT_TYPE;
+    g_mappingStep       = STEP_FOR_WAFER_MAP;
+    g_checkFlatTypeStep = STEP_FOR_FLAT_TYPE;
 
-	printf("no connection, loading default... \n");
-	printf("g_flatUpStep_57 = %ld \n", g_flatUpStep_57);
-	printf("g_flatUpStep_47 = %ld \n\n", g_flatUpStep_47);
-	printf("g_flatDownStep_57 = %ld \n", g_flatDownStep_57);
-	printf("g_flatDownStep_47 = %ld \n\n", g_flatDownStep_47);
+    printf("no connection, loading default... \n");
+    printf("g_flatUpStep_57 = %ld \n",         g_flatUpStep_57);
+    printf("g_flatUpStep_47 = %ld \n\n",       g_flatUpStep_47);
+    printf("g_flatDownStep_57 = %ld \n",     g_flatDownStep_57);
+    printf("g_flatDownStep_47 = %ld \n\n",   g_flatDownStep_47);
 
-	printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
-	printf("g_mappingStep = %ld \n", g_mappingStep);
+    printf("g_checkFlatTypeStep = %ld \n", g_checkFlatTypeStep);
+    printf("g_mappingStep = %ld \n",             g_mappingStep);
 }
 
 /*** BeginHeader recvAlarmMsg */
 xmem void recvAlarmMsg();
 /*** EndHeader */
-
-/*==============================================================================
- *            recvAlarmMsg
- *============================================================================*/
 xmem void recvAlarmMsg()
 {
-	if (g_msgbuf[DATA_IDX])    /* turn on alarm */
-		AlarmOn();
-	else    /* turn off alarm */
-		AlarmOff();
+    if (g_msgbuf[DATA_IDX]) /* turn on alarm */
+        AlarmOn();
+    else                    /* turn off alarm */
+        AlarmOff();
 }
 
 /*** BeginHeader AlarmOn */
 xmem void AlarmOn();
 /*** EndHeader */
-/*==============================================================================
- *             AlarmOn
- *============================================================================*/
 xmem void AlarmOn()
 {
-	/** turn alarm on */
-	digHout(ALARM_TRIG, 0);
+    /** turn alarm on */
+    digHout(ALARM_TRIG, 0);
 }
 
 /*** BeginHeader AlarmOff */
 xmem void AlarmOff();
 /*** EndHeader */
-/*==============================================================================
- *             AlarmOff
- *============================================================================*/
 xmem void AlarmOff()
 {
-	/** turn alarm off */
-	digHout(ALARM_TRIG, 1);
+    /** turn alarm off */
+    digHout(ALARM_TRIG, 1);
 }
 
 /*** BeginHeader SetLight */
 xmem void SetLight();
 /*** EndHeader */
-/*==============================================================================
- *               SetLight
- *============================================================================*/
 xmem void SetLight()
 {
-	/** set light color */
-	int color;
+    /** set light color */
+    int color;
 
-	color = g_msgbuf[DATA_IDX];
+    color = g_msgbuf[DATA_IDX];
 
-	SetLightLocal(color);
+    SetLightLocal(color);
 }
 
 /*** BeginHeader SetRedLight */
 xmem void SetRedLight();
 /*** EndHeader */
-/*==============================================================================
- *               SetRedLight
- *============================================================================*/
 xmem void SetRedLight()
 {
-	digHout(LIGHT_RED_TRIG, 0);
+    digHout(LIGHT_RED_TRIG, 0);
 }
 
 /*** BeginHeader ResetRedLight */
 xmem void ResetRedLight();
 /*** EndHeader */
-/*==============================================================================
- *               ResetRedLight
- *============================================================================*/
 xmem void ResetRedLight()
 {
-	digHout(LIGHT_RED_TRIG, 1);
+    digHout(LIGHT_RED_TRIG, 1);
 }
 
 /*** BeginHeader SetGreenLight */
 xmem void SetGreenLight();
 /*** EndHeader */
-/*==============================================================================
- *               SetGreenLight
- *============================================================================*/
 xmem void SetGreenLight()
 {
-	digHout(LIGHT_GREEN_TRIG, 0);
+    digHout(LIGHT_GREEN_TRIG, 0);
 }
 
 /*** BeginHeader ResetGreenLight */
 xmem void ResetGreenLight();
 /*** EndHeader */
-/*==============================================================================
- *               ResetGreenLight
- *============================================================================*/
 xmem void ResetGreenLight()
 {
-	digHout(LIGHT_GREEN_TRIG, 1);
+    digHout(LIGHT_GREEN_TRIG, 1);
 }
 
 /*** BeginHeader setIdleLight */
 xmem void setIdleLight();
 /*** EndHeader */
-/*==============================================================================
- *             setIdleLight
- *============================================================================*/
 xmem void setIdleLight()
 {
-	int color;
-	color = GREEN_LIGHT;
+    int color;
 
-	SetLightLocal(color);
+    color = GREEN_LIGHT;
+
+    SetLightLocal(color);
 }
 
 /*** BeginHeader setOperationLight */
 xmem void setOperationLight();
 /*** EndHeader */
-/*==============================================================================
- *             setOperationLight
- *============================================================================*/
 xmem void setOperationLight()
 {
-	int color;
-	//color = GREEN_LIGHT;
+    int color;
 
-	ResetGreenLight();
-	ResetRedLight();
-	AlarmOff();
-	//SetLightLocal(color);
+    // color = GREEN_LIGHT;
+
+    ResetGreenLight();
+    ResetRedLight();
+    AlarmOff();
+
+    // SetLightLocal(color);
 }
 
 /*** BeginHeader setErrorLight */
 xmem void setErrorLight();
 /*** EndHeader */
-/*==============================================================================
- *             setErrorLight
- *============================================================================*/
 xmem void setErrorLight()
 {
-	int color;
-	color = RED_LIGHT;
+    int color;
 
-	SetLightLocal(color);
-	AlarmOn();
+    color = RED_LIGHT;
+
+    SetLightLocal(color);
+    AlarmOn();
 }
 
 /*** BeginHeader SetLightLocal */
 xmem void SetLightLocal(int color);
 /*** EndHeader */
-/*==============================================================================
- *               SetLightLocal
- *============================================================================*/
 xmem void SetLightLocal(int color)
 {
-	switch (color)
-	{
-		case RED_LIGHT:
-			//        printf("light color: red\n");
-			SetRedLight();
-			ResetGreenLight();
-			//ResetAmberLight();
-			break;
+    switch (color)
+    {
+        case RED_LIGHT:
 
-		case GREEN_LIGHT:
-			//printf("light color: green\n");
-			SetGreenLight();
-			ResetRedLight();
-			//ResetAmberLight();
-			break;
+            //        printf("light color: red\n");
+            SetRedLight();
+            ResetGreenLight();
 
-		case YELLOW_LIGHT:
-			//printf("light color: yellow\n");
-			//SetAmberLight();
-			ResetGreenLight();
-			ResetRedLight();
-			break;
+            // ResetAmberLight();
+            break;
 
-		default:
-			break;
-	}
+        case GREEN_LIGHT:
+
+            // printf("light color: green\n");
+            SetGreenLight();
+            ResetRedLight();
+
+            // ResetAmberLight();
+            break;
+
+        case YELLOW_LIGHT:
+
+            // printf("light color: yellow\n");
+            // SetAmberLight();
+            ResetGreenLight();
+            ResetRedLight();
+            break;
+
+        default:
+            break;
+    }
 }
 
 /*** BeginHeader GetFlatCount */
@@ -913,19 +868,18 @@ xmem int GetFlatCount();
 /*** EndHeader */
 xmem int GetFlatCount()
 {
-	int slotnum;
-	int blockCounter;
+    int slotnum;
+    int blockCounter;
 
-	blockCounter = 0;
+    blockCounter = 0;
 
-	for (slotnum = 1; slotnum <= 25; slotnum++)
-	{
-		if (IsWaferInSlot(slotnum))
-			blockCounter++;
-	}
+    for (slotnum = 1; slotnum <= 25; slotnum++)
+    {
+        if (IsWaferInSlot(slotnum))
+            blockCounter++;
+    }
 
-	return blockCounter;
+    return blockCounter;
 }
-
 
 /*---------------------------- end of func.lib -------------------------------*/
