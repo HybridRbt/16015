@@ -654,7 +654,7 @@ xmem void AlarmOn();
  *============================================================================*/
 xmem void AlarmOn()
 {
-	/** turn alamm on */
+	/** turn alarm on */
 	digHout(ALARM_TRIG, 0);
 }
 
@@ -666,7 +666,7 @@ xmem void AlarmOff();
  *============================================================================*/
 xmem void AlarmOff()
 {
-	/** turn alamm off */
+	/** turn alarm off */
 	digHout(ALARM_TRIG, 1);
 }
 
